@@ -1,0 +1,165 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Definition of the design system. All colors, gradients, fonts, etc should be defined here. 
+All colors MUST be HSL.
+*/
+
+@layer base {
+  :root {
+    /* ClientPass Brand Colors - Exact Blueprint Colors */
+    --background: 0 0% 100%;
+    --foreground: 0 0% 20%;
+
+    --card: 0 0% 100%;
+    --card-foreground: 0 0% 20%;
+
+    --popover: 0 0% 100%;
+    --popover-foreground: 0 0% 20%;
+
+    /* ClientPass brand tokens - Blueprint exact colors */
+    --cp-teal: 180 100% 25%;     /* #008080 - exact blueprint teal */
+    --cp-yellow: 45 100% 50%;    /* #FFC300 - exact blueprint yellow */
+    --cp-dark: 0 0% 20%;         /* #333333 - exact blueprint dark text */
+    --cp-green: 122 39% 49%;     /* #22A06B - success green */
+    --cp-red: 354 70% 54%;       /* #DC3545 - error red */
+    --cp-amber: 38 92% 50%;      /* #F59E0B - warning amber */
+
+    /* Core semantic colors mapped to brand */
+    --primary: var(--cp-teal);
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 180 30% 96%;
+    --secondary-foreground: var(--cp-dark);
+
+    --muted: 0 0% 96%;
+    --muted-foreground: 0 0% 45%;
+
+    --accent: var(--cp-yellow);
+    --accent-foreground: var(--cp-dark);
+
+    --destructive: var(--cp-red);
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 90%;
+    --input: 0 0% 90%;
+    --ring: var(--cp-teal);
+
+    /* Status colors */
+    --success: var(--cp-green);
+    --warning: var(--cp-amber);
+    --error: var(--cp-red);
+
+    /* Button height and radius */
+    --radius: 0.875rem;
+
+    --sidebar-background: 0 0% 98%;
+
+    --sidebar-foreground: 240 5.3% 26.1%;
+
+    --sidebar-primary: 240 5.9% 10%;
+
+    --sidebar-primary-foreground: 0 0% 98%;
+
+    --sidebar-accent: 240 4.8% 95.9%;
+
+    --sidebar-accent-foreground: 240 5.9% 10%;
+
+    --sidebar-border: 220 13% 91%;
+
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+
+  .dark {
+    --background: 0 0% 8%;
+    --foreground: 0 0% 95%;
+
+    --card: 0 0% 10%;
+    --card-foreground: 0 0% 95%;
+
+    --popover: 0 0% 10%;
+    --popover-foreground: 0 0% 95%;
+
+    --primary: 180 100% 35%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 0 0% 15%;
+    --secondary-foreground: 0 0% 95%;
+
+    --muted: 0 0% 15%;
+    --muted-foreground: 0 0% 65%;
+
+    --accent: 48 100% 60%;
+    --accent-foreground: 0 0% 10%;
+
+    --destructive: 0 62.8% 50%;
+    --destructive-foreground: 0 0% 98%;
+
+    --border: 0 0% 20%;
+    --input: 0 0% 20%;
+    --ring: 180 100% 35%;
+    --sidebar-background: 240 5.9% 10%;
+    --sidebar-foreground: 240 4.8% 95.9%;
+    --sidebar-primary: 224.3 76.3% 48%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 240 3.7% 15.9%;
+    --sidebar-accent-foreground: 240 4.8% 95.9%;
+    --sidebar-border: 240 3.7% 15.9%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-background text-foreground font-sans;
+  }
+
+  /* ClientPass specific styles */
+  .status-paid {
+    @apply bg-success/10 text-success dark:bg-success/20 dark:text-success;
+  }
+
+  .status-pending {
+    @apply bg-warning/10 text-warning dark:bg-warning/20 dark:text-warning;
+  }
+
+  .status-canceled {
+    @apply bg-error/10 text-error dark:bg-error/20 dark:text-error;
+  }
+
+  .status-accepted {
+    @apply bg-success/10 text-success dark:bg-success/20 dark:text-success;
+  }
+
+  .status-declined {
+    @apply bg-error/10 text-error dark:bg-error/20 dark:text-error; 
+  }
+
+  .status-completed {
+    @apply bg-accent/10 text-accent-foreground dark:bg-accent/20 dark:text-accent;
+  }
+
+  .button-height {
+    @apply h-12;
+  }
+}
+
+@layer components {
+  .prose .mermaid svg {
+    @apply bg-slate-100 dark:bg-slate-800 rounded-lg p-4;
+  }
+}
+
+@media print {
+  .no-print {
+    display: none !important;
+  }
+}
+
+/* Add Poppins font */
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Nunito:wght@300;400;500;600;700&display=swap');
