@@ -19,9 +19,10 @@ This document provides a high-level overview of the technical architecture for t
 
 The frontend is located in the `src/` directory and follows a standard component-based structure.
 
-- **`src/pages/`**: Contains the top-level components for each route in the application (e.g., `HomePage.tsx`, `Dashboard.tsx`).
-- **`src/components/`**: Contains reusable React components used across different pages. These are further organized by feature (e.g., `auth`, `referrals`, `open-chair`).
-- **`src/stores/`**: Contains Zustand stores for global state management (e.g., `useAuthStore.ts`).
+- **`src/pages/`**: Contains the top-level components for each route in the application (e.g., `HomePage.tsx`, `Dashboard.tsx`, `AdminPage.tsx`).
+- **`src/components/`**: Contains reusable React components used across different pages. These are further organized by feature (e.g., `auth`, `referrals`, `open-chair`, `admin`).
+- **`src/components/auth/RoleGuard.tsx`**: A critical component that protects routes based on user roles (e.g., ensuring only users with the 'admin' role can access the `/admin` page).
+- **`src/contexts/`**: Holds React Context providers, such as `AuthContext.tsx`, which manages user session and profile data globally.
 - **`src/integrations/`**: Contains the Supabase client configuration, which is the primary interface to the backend.
 - **`src/App.tsx`**: The main application component that sets up routing, context providers, and global components like toasters.
 
@@ -29,7 +30,7 @@ The frontend is located in the `src/` directory and follows a standard component
 
 The backend is entirely managed through Supabase, abstracting away the need for a traditional server.
 
-- **Database Schema**: The schema is defined via SQL migration files in `supabase/migrations/`. It includes tables for `users`, `referrals`, `open_chairs`, `payments`, `affiliates`, and more, modeling the core business domains.
+- **Database Schema**: The schema is defined via SQL migration files in `supabase/migrations/`. It includes tables for `users`, `referrals`, `open_chairs`, `payments`, `affiliates`, `admin_audit_log`, `feature_flags`, `platform_settings`, and more, modeling the core business domains.
 - **Edge Functions**: Located in `supabase/functions/`, each folder represents a serverless function that can be invoked from the client. This is where most of the core business logic resides. For example:
   - `send-referral`: Handles the logic for matching and notifying stylists.
   - `accept-open-chair`: Manages the process of a stylist claiming an open chair.

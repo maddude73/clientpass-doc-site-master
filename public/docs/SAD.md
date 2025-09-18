@@ -110,7 +110,7 @@ graph TD
 The system is decomposed into two main containers: the Frontend Application and the Backend Services.
 
 ### 3.1 Frontend Application (Client-Side)
-- **UI Components (React)**: A collection of pages, forms, and custom components built with React, TypeScript, and shadcn-ui.
+- **UI Components (React)**: A collection of pages, forms, and custom components built with React, TypeScript, and shadcn-ui. This includes a comprehensive **Admin Console** for platform management.
 - **Routing Service (React Router)**: Manages client-side navigation and renders the appropriate page components.
 - **State Management Service**: Utilizes TanStack Query for managing server state (caching, re-fetching) and React Context for global UI state like authentication.
 - **API Client Service (Supabase JS Client)**: The sole interface for communicating with the backend. It handles API requests to the database and invokes Edge Functions.
@@ -348,6 +348,25 @@ erDiagram
         UUID referral_id FK
     }
 
+    admin_audit_log {
+        UUID id PK
+        UUID admin_user_id FK
+        string action
+        string target_type
+        string target_id
+    }
+
+    feature_flags {
+        UUID id PK
+        string flag_name
+        boolean enabled
+    }
+
+    platform_settings {
+        string key PK
+        string value
+    }
+
     users ||--o{ referrals : "sends"
     users ||--o{ referrals : "receives"
     users ||--o{ services : "offers"
@@ -355,6 +374,7 @@ erDiagram
     users ||--|{ trusted_network : "builds"
     users ||--o{ hot_seats : "posts"
     users ||--o{ boosts : "activates"
+    users ||--o{ admin_audit_log : "performs"
 
     referrals }o--|| open_chairs : "can be booked in"
     referrals }o--|| hot_seats : "can be for"

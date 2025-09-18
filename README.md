@@ -1,73 +1,41 @@
-# Welcome to your Lovable project
 
-## Project info
+# ClientPass Project Documentation
 
-**URL**: https://lovable.dev/projects/adf22022-6b7a-40a3-9cf8-9fd484373a97
+This directory contains the definitive technical and project management documentation for the ClientPass application. All documents are written in Markdown (`.md`) format.
 
-## How can I edit this code?
+## Documentation Index
 
-There are several ways of editing your application.
+The documentation is organized into the following categories and files:
 
-**Use Lovable**
+### 1. Discovery & Requirements
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/adf22022-6b7a-40a3-9cf8-9fd484373a97) and start prompting.
+-   **`SRS.md`**: The Software Requirements Specification, detailing the functional and non-functional requirements of the system.
 
-Changes made via Lovable will be committed automatically to this repo.
+### 2. Planning & Project Management
 
-**Use your preferred IDE**
+-   **`USER_STORIES.md`**: A backlog of user stories, organized by feature epics.
+-   **`MVP_ESTIMATE.md`**: The scope and effort estimate for the Minimum Viable Product.
+-   **`ESTIMATES.md`**: High-level effort estimates for all major user stories.
+-   **`QA_PLAN.md`**: The Quality Assurance plan, including testing strategies and scenarios.
+-   **`CICD_STRATEGY.md`**: The Continuous Integration and Continuous Deployment strategy.
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+### 3. Architecture & System Design
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+-   **`SAD.md`**: The main Software Architecture Document, providing a comprehensive overview of the system.
+-   **`SYSTEM_DESIGN.md`**: The detailed technical design that responds to the requirements in the SRS.
+-   **`HLA.md`**: A High-Level Architecture diagram and description.
+-   **`FRONTEND_OVERVIEW.md`**: An overview of the frontend architecture, libraries, and project structure.
+-   **`DATABASE_SCHEMA.md`**: An overview of the primary tables in the PostgreSQL database.
+-   **`EDGE_FUNCTIONS.md`**: A description of each serverless backend function.
+-   **`COMPONENT_GUIDE.md`**: A guide to the reusable React components in the frontend.
+-   **`INTEGRATION_GUIDE.md`**: A guide for potential future third-party integrations.
 
-Follow these steps:
+### 4. Process & Use Case Models
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+-   **`USE_CASE_MODELS.md`**: Detailed descriptions of the primary user-system interactions.
+-   **`PROCESS_MODELS.md`**: State machine diagrams for key entities like Referrals and Open Chairs.
+-   **`SEQUENCE_DIAGRAMS.md`**: Detailed sequence diagrams for critical workflows.
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+---
 
-# Step 3: Install the necessary dependencies.
-npm i
-
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
-
-**Edit a file directly in GitHub**
-
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
-
-**Use GitHub Codespaces**
-
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
-- React
-- shadcn-ui
-- Tailwind CSS
-
-## How can I deploy this project?
-
-Simply open [Lovable](https://lovable.dev/projects/adf22022-6b7a-40a3-9cf8-9fd484373a97) and click on Share -> Publish.
-
-## Can I connect a custom domain to my Lovable project?
-
-Yes, you can!
-
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
-
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/tips-tricks/custom-domain#step-by-step-guide)
+*This `README.md` describes the contents of the `/public` directory, which are served by the documentation viewer application.*

@@ -40,6 +40,16 @@ This section highlights some of the most important custom components, organized 
 ### Authentication (`/auth`)
 - **`LoginForm.tsx` / `SignUpForm.tsx`**: Standard forms for user sign-up and sign-in.
 - **`AffiliateLoginForm.tsx` / `AffiliateSignUpForm.tsx`**: A separate set of forms for the affiliate portal, which uses a different authentication context.
+- **`RoleGuard.tsx`**: A higher-order component that wraps around routes to protect them based on user roles. It checks the user's role from the `AuthContext` and redirects them if they do not have the required permissions (e.g., redirecting a non-admin from the `/admin` page).
+
+### Administration (`/admin`)
+- **`MasterAdminConsole.tsx`**: The main container for the entire admin dashboard. It uses a tab-based layout to organize the various administrative modules.
+- **`AdminUsersManagement.tsx`**: A module for viewing, searching, and managing all users on the platform. Includes functionality to change user roles, membership tiers, and active status.
+- **`AdminFeatureFlags.tsx`**: A module for toggling platform-wide feature flags. This allows administrators to enable or disable features in real-time without a new deployment.
+- **`AdminPlatformSettings.tsx`**: An interface for configuring global platform settings, such as fee structures and commission rate limits.
+- **`AdminDataExport.tsx`**: Provides a simple UI for administrators to select a dataset (e.g., users, referrals) and export it as a CSV file.
+- **`AdminAuditLog.tsx`**: Displays a chronological log of all actions taken by administrators within the console, providing accountability.
+- **`ImpersonationContext.tsx`**: A context provider that enables the user impersonation feature, allowing admins to view the application from another user's perspective.
 
 ### Referrals (`/referrals`)
 - **`EnhancedReferralForm.tsx`**: A comprehensive form for creating a new walk-in referral. It includes logic for selecting services, setting commission, and defining client type.

@@ -98,24 +98,9 @@ Tracks interactions (i.e., completed co-op sessions) between users to power the 
 ## Other Key Tables
 
 - **`services`**: A list of all services offered by professionals, including pricing, duration, and category.
-### `boosts`
-
-Tracks active profile boosts, which increase a user's visibility in search and matching.
-
-- `id`: UUID, primary key.
-- `user_id`: The user who purchased or activated the boost.
-- `boost_type`: The type of boost (e.g., '24h', '7d').
-- `start_at`: The timestamp when the boost becomes active.
-- `end_at`: The timestamp when the boost expires.
-- `status`: The current status of the boost ('active', 'expired', 'used').
+- **`boosts`**: Tracks active profile boosts, which increase a user's visibility in search and matching.
 - **`ad_placements`**: Stores the "Pro Deals" (advertisements) shown in the marketplace.
 - **`messages`**: An inbox system for storing all user notifications (e.g., referral alerts, payment confirmations).
-
-### `suite_referral_tracking`
-
-Links referrals to a specific suite, allowing suite owners to track activity and earnings from their renters.
-
-- `id`: UUID, primary key.
-- `suite_owner_id`: The ID of the suite owner.
-- `referral_id`: The ID of the referral that was handled by a renter in the suite.
-- `suite_location`: The location of the suite where the service was performed.
+- **`admin_audit_log`**: Records all actions taken by administrators in the Admin Console for security and accountability.
+- **`feature_flags`**: A simple table to enable or disable platform features in real-time.
+- **`platform_settings`**: Stores global configuration values for the platform, such as fee percentages and feature limits.

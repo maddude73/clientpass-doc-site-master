@@ -59,6 +59,17 @@ This document contains the user story backlog for the ClientPass application, or
 
 ## Epic: Administration
 
+- **Story**: As an admin, I want a global dashboard to get a high-level overview of user activity, revenue, and system health.
+- **Story**: As an admin, I want to manage feature flags to enable or disable specific platform features in real-time.
+- **Story**: As an admin, I want to manage all users, view their profiles, and change their roles or status (active/inactive).
+- **Story**: As an admin, I want to view and manage all business onboarding applications, with the ability to approve or deny them.
+- **Story**: As an admin, I want to configure platform-wide settings, such as pricing, fees, and commission rates.
+- **Story**: As an admin, I want to monitor all referral activity across the platform to identify trends and potential issues.
+- **Story**: As an admin, I want to manage "Open Chair" and "Hot Seat" postings, with the ability to close or modify them.
+- **Story**: As an admin, I want to manage all notification templates (email, SMS, push) sent by the system.
+- **Story**: As an admin, I want to export various datasets (users, referrals, payments) in CSV format for external analysis.
+- **Story**: As an admin, I want to view a detailed audit log of all administrative actions to ensure accountability and security.
+- **Story**: As an admin, I want to impersonate a user to view the platform from their perspective for troubleshooting and support.
 - **Story**: As an admin, I want a dashboard to manage "Pro Deals" that are available to all platform users.
-- **Story**: As an admin, I want to be able to export user, referral, and payment data for analytics and reporting.
 - **Story**: As an admin, I want to view a system health dashboard to monitor platform activity.
+

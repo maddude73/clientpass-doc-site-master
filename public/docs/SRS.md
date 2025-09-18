@@ -92,6 +92,19 @@ The major functions of the system include:
 - **REQ-502**: A Pro shall be able to add other professionals to their Trusted Network.
 - **REQ-503**: After two completed collaborations, the system shall auto-suggest adding the other professional to the user's Trusted Network.
 
+#### 3.1.6 Admin Panels
+- **REQ-601**: The system shall provide a Master Admin Console accessible only to users with 'admin' or 'super_admin' roles.
+- **REQ-602**: The Admin Console shall include a global dashboard displaying key metrics for users, revenue, and platform activity.
+- **REQ-603**: Admins shall be able to manage feature flags, enabling or disabling features across the platform.
+- **REQ-604**: Admins shall have a user management interface to view, search, and edit user profiles, including changing roles and membership tiers.
+- **REQ-605**: Admins shall be able to manage business onboarding applications, with functionality to approve or deny them.
+- **REQ-606**: Admins shall have access to a settings panel to configure platform-wide parameters like fees, commission rates, and feature limits.
+- **REQ-607**: The console shall provide a monitoring tool for all referral, Open Chair, and Hot Seat activities.
+- **REQ-608**: Admins shall be able to manage notification templates for all system-generated communications.
+- **REQ-609**: The system shall provide a data export feature for admins to download datasets (e.g., users, payments) as CSV files.
+- **REQ-610**: A comprehensive, searchable audit log shall record all actions performed by administrators.
+- **REQ-911**: Admins shall have the ability to impersonate a user's account for support and troubleshooting purposes.
+
 ### 3.2 Non-Functional Requirements
 
 - **PERF-01**: Referral notification and timer updates must appear in near real-time (< 5-second delay).

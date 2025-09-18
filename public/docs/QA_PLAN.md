@@ -77,6 +77,16 @@ This section outlines high-level test cases for the core features of ClientPass.
 - **TC-NET-02**: Send a referral with the "Trusted Network first" option. Verify the referral is only sent to trusted partners initially.
 - **TC-NET-03**: Simulate two completed co-ops between users. Verify the system prompts to add the other user to the Trusted Network.
 
+### 4.6 Admin Console
+- **TC-ADMIN-01**: Log in as an admin. Verify the Master Admin Console is visible and all modules are accessible.
+- **TC-ADMIN-02**: Log in as a non-admin user. Verify that navigating to `/admin` redirects to the main dashboard and shows an "Access Denied" error.
+- **TC-ADMIN-03**: In the User Management module, change a user's role from 'member' to 'admin'. Verify the user can now access the admin console.
+- **TC-ADMIN-04**: In the Feature Flags module, disable a feature (e.g., "Hot Seat"). Verify the Hot Seat button/form is no longer visible to regular users.
+- **TC-ADMIN-05**: In the Platform Settings module, change the platform fee percentage. Verify that new referrals use the updated fee in their commission calculations.
+- **TC-ADMIN-06**: In the Data Export module, export the 'users' dataset. Verify a CSV file is downloaded with the correct user data.
+- **TC-ADMIN-07**: Perform an administrative action (e.g., approve a business application). Verify the action is recorded correctly in the Audit Log module.
+- **TC-ADMIN-08**: Use the impersonation feature to view the app as a regular user. Verify the admin banner is present and that admin-level access is disabled during impersonation.
+
 ## 5. Bug Reporting
 
 - All bugs will be tracked in a designated issue tracker (e.g., GitHub Issues).

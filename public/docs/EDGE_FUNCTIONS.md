@@ -79,6 +79,17 @@ This document describes the serverless Edge Functions located in the `supabase/f
 
 ---
 
+### `ensure-demo-user`
+
+- **Purpose**: Creates or verifies the existence of a demo user account for various roles (e.g., pro, client, admin).
+- **Input**: `{ "email": "string", "role": "string", "password": "string" }`
+- **Logic**:
+  1. Checks if a user with the specified email exists.
+  2. If not, it creates a new user in Supabase Auth and a corresponding profile in the `users` table with the specified role.
+  3. This function is used to ensure that demo accounts are always available for use in the login form.
+
+---
+
 ### `end-open-chair-session`
 
 - **Purpose**: Ends a live "Open Chair" session, calculates final earnings, and triggers settlement.
