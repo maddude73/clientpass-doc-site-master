@@ -1,49 +1,71 @@
 # Architecture Overview
 
-This document provides a high-level overview of the technical architecture for the ClientPass application.
+This document provides a high-level overview of the technical architecture for the ClientPass application, covering both the web and mobile frontends.
 
 ## 1. Core Technology Stack
+
+### 1.1. Web Application
 
 - **Frontend**: A modern Single-Page Application (SPA) built with **React** and **Vite**.
   - **Language**: **TypeScript**
   - **UI Components**: **shadcn-ui** on top of Radix UI and Tailwind CSS.
   - **Routing**: **React Router** for client-side navigation.
-  - **State Management**: **Zustand** for lightweight global client state, **TanStack Query** for server state management (caching, refetching), and React Context for localized UI state.
+  - **State Management**: **Zustand** for lightweight global client state, **TanStack Query** for server state management.
 
-- **Backend**: A serverless architecture powered by **Supabase**.
-  - **Database**: A **PostgreSQL** database managed by Supabase.
-  - **Authentication**: Supabase Auth for managing user accounts and sessions.
-  - **Serverless Functions**: Business logic is encapsulated in **Deno-based TypeScript functions** deployed as Supabase Edge Functions. These handle tasks like sending referrals, processing payments, and managing user states.
+### 1.2. Mobile Application
+
+- **Framework**: **React Native** with **Expo**.
+- **Language**: **TypeScript**.
+- **UI Components**: **React Native Paper** for Material Design components.
+- **Routing**: **Expo Router** for file-system based routing.
+- **State Management**: **React Context** for global authentication state.
+
+### 1.3. Backend (Shared)
+
+- **Platform**: A serverless architecture powered by **Supabase**.
+  - **Database**: A **PostgreSQL** database.
+  - **Authentication**: Supabase Auth for managing user accounts and sessions across both clients.
+  - **Serverless Functions**: Business logic encapsulated in **Deno-based TypeScript functions** (Supabase Edge Functions).
 
 ## 2. Frontend Architecture
 
-The frontend is located in the `src/` directory and follows a standard component-based structure.
+### 2.1. Web App (`style-referral-ring`)
 
-- **`src/pages/`**: Contains the top-level components for each route in the application (e.g., `HomePage.tsx`, `Dashboard.tsx`, `AdminPage.tsx`).
-- **`src/components/`**: Contains reusable React components used across different pages. These are further organized by feature (e.g., `auth`, `referrals`, `open-chair`, `admin`).
-- **`src/components/auth/RoleGuard.tsx`**: A critical component that protects routes based on user roles (e.g., ensuring only users with the 'admin' role can access the `/admin` page).
-- **`src/contexts/`**: Holds React Context providers, such as `AuthContext.tsx`, which manages user session and profile data globally.
-- **`src/integrations/`**: Contains the Supabase client configuration, which is the primary interface to the backend.
-- **`src/App.tsx`**: The main application component that sets up routing, context providers, and global components like toasters.
+The web frontend is located in the `src/` directory and follows a standard component-based structure.
+
+- **`src/pages/`**: Top-level components for each route.
+- **`src/components/`**: Reusable React components, organized by feature.
+- **`src/App.tsx`**: The main application component that sets up routing and global providers.
+
+### 2.2. Mobile App (`clientpass-react-native`)
+
+The mobile frontend is built with Expo and uses a file-system based routing approach.
+
+- **`app/`**: The main directory for all routes and screens.
+  - **`app/(tabs)/`**: Defines the primary tab bar navigation for authenticated users.
+  - **`app/(auth)/`**: Defines the authentication stack (login, signup).
+  - **`app/_layout.tsx`**: The root layout component that wraps the entire application and manages the navigation state.
+- **`components/`**: Contains reusable React Native components.
+  - **`components/dashboards/`**: High-level dashboard components for each user role.
+- **`contexts/`**: Holds global React Context providers, like `AuthContext`.
 
 ## 3. Backend Architecture
 
-The backend is entirely managed through Supabase, abstracting away the need for a traditional server.
+The backend is entirely managed through Supabase, serving both the web and mobile clients.
 
-- **Database Schema**: The schema is defined via SQL migration files in `supabase/migrations/`. It includes tables for `users`, `referrals`, `open_chairs`, `payments`, `affiliates`, `admin_audit_log`, `feature_flags`, `platform_settings`, and more, modeling the core business domains.
-- **Edge Functions**: Located in `supabase/functions/`, each folder represents a serverless function that can be invoked from the client. This is where most of the core business logic resides. For example:
-  - `send-referral`: Handles the logic for matching and notifying stylists.
-  - `accept-open-chair`: Manages the process of a stylist claiming an open chair.
-  - `settle-open-chair-commission`: Calculates and records commission splits after a session.
-- **Authentication**: User and session management is handled by Supabase Auth, which integrates directly with the database via the `auth.users` table and RLS (Row Level Security) policies.
+- **Database Schema**: Defined via SQL migration files in `supabase/migrations/`. It includes tables for `users`, `referrals`, `open_chairs`, `payments`, etc.
+- **Edge Functions**: Located in `supabase/functions/`, each folder represents a serverless function that can be invoked from either the web or mobile client.
+- **Authentication**: Supabase Auth provides a unified authentication system for both applications.
 
 ## 4. Data Flow
 
-1.  **User Interaction**: A user performs an action in the React frontend (e.g., fills out a referral form).
+The data flow is consistent for both the web and mobile applications.
+
+1.  **User Interaction**: A user performs an action in the React (web) or React Native (mobile) frontend.
 2.  **Client-Side Logic**: The frontend component calls a function that uses the Supabase client (`@supabase/supabase-js`).
 3.  **Backend Invocation**:
     - For simple data retrieval, the client queries the Supabase database directly (respecting RLS policies).
     - For complex business logic, the client invokes a Supabase Edge Function.
-4.  **Edge Function Execution**: The serverless function runs, often interacting with the Supabase database using the service role key to perform privileged operations.
-5.  **Response**: The Edge Function returns a response to the client.
-6.  **UI Update**: The frontend uses the response to update its state (often via TanStack Query) and re-render the UI.
+4.  **Edge Function Execution**: The serverless function runs, interacting with the database.
+5.  **Response**: The function returns a response to the client.
+6.  **UI Update**: The frontend uses the response to update its state and re-render the UI.

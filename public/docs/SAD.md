@@ -6,7 +6,7 @@
 This document provides a comprehensive architectural overview of the ClientPass application. It is intended for developers, architects, and technical stakeholders to understand the system's structure, components, interactions, and design principles.
 
 ### 1.2 Scope
-The scope of this document covers the frontend web application, the serverless backend, the database schema, and the deployment strategy for the ClientPass platform.
+The scope of this document covers the **ClientPass platform**, which includes a frontend web application, a native mobile application, a serverless backend, the database schema, and the deployment strategy.
 
 ### 1.3 Architectural Representation
 This document uses a simplified version of the **4+1 architectural view model** to describe the system from different perspectives:
@@ -18,20 +18,28 @@ This document uses a simplified version of the **4+1 architectural view model** 
 
 ## 2. System Architecture Diagram
 
-This diagram provides a detailed, high-level view of the entire system architecture, including network boundaries, services, and dependencies.
+This diagram provides a detailed, high-level view of the entire system architecture, including network boundaries, services, and dependencies for both web and mobile clients.
 
 ```mermaid
 graph TB
-    subgraph "User's Device"
-        User["🧍<br/>User"]
-    end
-
-    subgraph "Vercel CDN"
+    subgraph "User's Devices"
         direction LR
-        Frontend[React SPA]
+        UserWeb["🧍<br/>User (Web)"]
+        UserMobile["📱<br/>User (Mobile)"]
     end
 
-    User -- "HTTPS" --> Frontend
+    subgraph "Client Frontends"
+        direction TB
+        subgraph "Vercel CDN"
+            FrontendWeb[React SPA]
+        end
+        subgraph "App Stores"
+            FrontendMobile[React Native App]
+        end
+    end
+
+    UserWeb -- "HTTPS" --> FrontendWeb
+    UserMobile -- "App Install" --> FrontendMobile
 
     subgraph "Supabase Platform (Cloud Provider)"
         direction TB
@@ -58,7 +66,8 @@ graph TB
         EdgeFunctions --> Database
     end
 
-    Frontend -- "HTTPS/WSS" --> Gateway
+    FrontendWeb -- "HTTPS/WSS" --> Gateway
+    FrontendMobile -- "HTTPS/WSS" --> Gateway
 
     subgraph "Third-Party APIs"
         direction TB
@@ -69,7 +78,8 @@ graph TB
     EdgeFunctions -- "HTTPS" --> Stripe
     EdgeFunctions -- "HTTPS" --> Resend
 
-    style Frontend fill:#61DAFB,color:#000
+    style FrontendWeb fill:#61DAFB,color:#000
+    style FrontendMobile fill:#61DAFB,color:#000
     style Gateway fill:#F48024,color:#fff
     style Database fill:#336791,color:#fff
     style Stripe fill:#6772e5,color:#fff
@@ -81,53 +91,58 @@ This diagram illustrates the high-level logical components of the system and the
 
 ```mermaid
 graph TD
-    subgraph "User's Browser"
-        A[React SPA Frontend]
+    subgraph "Client Devices"
+        A[Web Frontend (React)]
+        B[Mobile Frontend (React Native)]
     end
 
     subgraph "Supabase Cloud"
-        B[Authentication]
-        C[Database - PostgreSQL]
-        D[Edge Functions - Deno]
-        E[Real-time Service]
+        C[Authentication]
+        D[Database - PostgreSQL]
+        E[Edge Functions - Deno]
+        F[Real-time Service]
     end
 
     subgraph "Third-Party Services"
-        F[Stripe API]
-        G[Resend API]
+        G[Stripe API]
+        H[Resend API]
     end
 
-    A -- "HTTPS/WSS for Auth & Data" --> B
-    A -- "HTTPS/WSS for Data" --> C
-    A -- "HTTPS for Business Logic" --> D
-    A -- "WSS for Real-time Updates" --> E
+    A -- "API Calls" --> C & D & E & F
+    B -- "API Calls" --> C & D & E & F
 
-    D -- "DB Connection" --> C
-    D -- "HTTPS API Call" --> F
-    D -- "HTTPS API Call" --> G
+    E -- "DB Connection" --> D
+    E -- "HTTPS API Call" --> G
+    E -- "HTTPS API Call" --> H
 ```
 
-The system is decomposed into two main containers: the Frontend Application and the Backend Services.
+The system is decomposed into three main containers: the Web Frontend, the Mobile Frontend, and the shared Backend Services.
 
-### 3.1 Frontend Application (Client-Side)
-- **UI Components (React)**: A collection of pages, forms, and custom components built with React, TypeScript, and shadcn-ui. This includes a comprehensive **Admin Console** for platform management.
-- **Routing Service (React Router)**: Manages client-side navigation and renders the appropriate page components.
-- **State Management Service**: Utilizes TanStack Query for managing server state (caching, re-fetching) and React Context for global UI state like authentication.
-- **API Client Service (Supabase JS Client)**: The sole interface for communicating with the backend. It handles API requests to the database and invokes Edge Functions.
+### 3.1 Frontend Applications (Client-Side)
+
+#### 3.1.1 Web Application
+- **UI Components (React)**: Built with React, TypeScript, and **shadcn-ui**.
+- **Routing Service (React Router)**: Manages client-side navigation.
+- **State Management Service**: Uses **Zustand** and **TanStack Query**.
+
+#### 3.1.2 Mobile Application
+- **UI Components (React Native)**: Built with React Native and **React Native Paper**.
+- **Routing Service (Expo Router)**: Manages native navigation.
+- **State Management Service**: Uses **React Context** for global state.
 
 ### 3.2 Backend Services (Supabase)
-- **Authentication Service (Supabase Auth)**: Manages user sign-up, login, and session management.
+- **Authentication Service (Supabase Auth)**: Manages user sign-up, login, and sessions for both clients.
 - **Database Service (PostgreSQL)**: The primary data store, with access controlled by Row Level Security (RLS) policies.
-- **Business Logic Layer (Edge Functions)**: A suite of serverless functions that encapsulate core business logic (e.g., `send-referral`, `settle-open-chair-commission`).
-- **Real-time Service (Supabase Realtime)**: Pushes live updates to connected clients (e.g., for referral status changes).
+- **Business Logic Layer (Edge Functions)**: A suite of serverless functions that encapsulate core business logic, callable from both clients.
+- **Real-time Service (Supabase Realtime)**: Pushes live updates to connected clients.
 
 ## 4. Process View
 
-This view describes the sequence of interactions for key workflows in the system.
+This view describes the sequence of interactions for key workflows. The processes are client-agnostic, as both the web and mobile apps interact with the same backend services.
+
+(The existing sequence diagrams for Send Referral, Accept Referral, etc., remain valid as they describe the interaction with the backend, which is shared.)
 
 ### 4.1 Send Referral Workflow
-
-This diagram shows the process when a user sends a new referral.
 
 ```mermaid
 sequenceDiagram
@@ -147,8 +162,6 @@ sequenceDiagram
 ```
 
 ### 4.2 Accepting a Referral (Happy Path)
-
-This diagram shows the process when a stylist successfully accepts a referral notification.
 
 ```mermaid
 sequenceDiagram
@@ -174,113 +187,30 @@ sequenceDiagram
     SenderFrontend->>SenderFrontend: Updates UI to show referral was accepted
 ```
 
-### 4.3 Handling an Expired Referral
-
-This diagram illustrates the automated backend process when a referral is not accepted in time.
-
-```mermaid
-sequenceDiagram
-    actor Scheduler
-    participant CronJob as Cron Job (referral-timer)
-    participant Supabase as Backend
-    participant NextProFrontend as Next Pro's App
-
-    Scheduler->>CronJob: Triggers every minute
-    activate CronJob
-    CronJob->>Supabase: Queries for `referrals` where `status` is 'pending' AND `expires_at` < now()
-    activate Supabase
-    Supabase-->>CronJob: Returns list of expired referrals
-    deactivate Supabase
-
-    loop For each expired referral
-        CronJob->>Supabase: Invokes `reassign-referral` Edge Function
-        activate Supabase
-        Supabase->>Supabase: Finds next best available Pro, excluding previous receivers
-        alt Next Pro Found
-            Supabase->>Supabase: Updates `referrals` record with new `receiver_id` and new `expires_at`
-            Supabase->>Supabase: Creates notification for the new Pro in `messages` table
-            Supabase->>NextProFrontend: (Later) Sends real-time notification
-        else No Pro Found
-            Supabase->>Supabase: Updates `referrals` status to 'expired'
-            Supabase->>Supabase: Notifies original sender that no one was found
-        end
-        deactivate Supabase
-    end
-    deactivate CronJob
-```
-
-### 4.4 Open Chair Session Workflow
-
-This diagram shows the end-to-end flow of a stylist using an Open Chair, from check-in to settlement.
-
-```mermaid
-sequenceDiagram
-    actor Pro
-    participant Frontend
-    participant Supabase as Backend
-
-    Pro->>Frontend: Clicks "Check In" for an accepted Open Chair
-    Frontend->>Supabase: Invokes `check-in-open-chair` Edge Function
-    activate Supabase
-    Supabase->>Supabase: Updates `open_chairs` status to 'live'
-    Supabase-->>Frontend: Returns success
-    deactivate Supabase
-    Frontend->>Pro: Displays "Live Session" dashboard
-
-    Note over Pro, Backend: During the session, the Pro performs services...
-
-    Pro->>Frontend: Logs a completed service (e.g., via a button in the Live Session UI)
-    Frontend->>Supabase: Updates a `referrals` record status to 'completed' and sets `open_chair_id`
-
-    Note over Pro, Backend: At the end of the day...
-
-    Pro->>Frontend: Clicks "End Session"
-    Frontend->>Supabase: Invokes `end-open-chair-session` Edge Function
-    activate Supabase
-    Supabase->>Supabase: Updates `open_chairs` status to 'completed'
-    Supabase->>Supabase: Fetches all associated `referrals` marked as completed during the session
-    loop For each completed service
-        Supabase->>Supabase: Invokes `settle-open-chair-commission` function
-        activate Supabase
-        Supabase->>Supabase: Calculates platform fee, host share, and stylist net
-        Supabase->>Supabase: Inserts records into `commissions` table for host and stylist
-        deactivate Supabase
-    end
-    Supabase-->>Frontend: Returns success
-    deactivate Supabase
-    Frontend->>Pro: Shows session summary and total earnings
-```
-
 ## 5. Development View
 
-This view describes the organization of the source code.
+This view describes the organization of the source code across the two main projects.
 
-- **`style-referral-ring/` (Root)**
-  - **`src/`**: Contains all frontend source code.
-    - **`components/`**: Reusable React components, organized by feature.
-    - **`pages/`**: Top-level components for each application route.
-    - **`contexts/`**: Global state providers (e.g., `AuthContext`).
-    - **`integrations/`**: Supabase client setup.
-  - **`supabase/`**: Contains all backend code and configuration.
-    - **`functions/`**: Each sub-directory is a self-contained Edge Function.
-    - **`migrations/`**: Contains SQL files that define the database schema history.
-  - **`docs/`**: Contains all project documentation, including this SAD.
-  - **`package.json`**: Manages all Node.js dependencies for the frontend.
-  - **`vite.config.ts`**: Configuration for the Vite build tool.
+- **`style-referral-ring/` (Web App)**
+  - **`src/`**: Contains all web frontend source code (React, shadcn-ui).
+- **`clientpass-react-native/` (Mobile App)**
+  - **`app/`**: Contains all mobile app screens and routing logic (Expo Router).
+  - **`components/`**: Contains reusable React Native components.
+- **`supabase/` (Shared Backend)**
+  - **`functions/`**: Self-contained Edge Functions callable by both clients.
+  - **`migrations/`**: SQL files defining the shared database schema.
 
 ## 6. Physical (Deployment) View
 
 The application is deployed on a modern serverless infrastructure.
 
-- **Frontend**: The static assets (HTML, CSS, JS) generated by the Vite build process are hosted on **Vercel's** global CDN. This provides fast load times for users worldwide.
-- **Backend**: All backend services are hosted on **Supabase**.
-  - **Database**: A managed PostgreSQL instance running in the cloud.
-  - **Edge Functions**: Deployed to a globally distributed network of Deno-based runtimes, ensuring low-latency execution of backend logic.
-  - **File Storage**: Supabase Storage is used for user-uploaded assets like profile photos.
+- **Web Frontend**: The static assets are hosted on **Vercel's** global CDN.
+- **Mobile Frontend**: The application is built and deployed to the **Apple App Store** and **Google Play Store** via Expo Application Services (EAS).
+- **Backend**: All backend services are hosted on **Supabase**, serving both web and mobile clients.
 
 ## 7. Data View
 
-The data architecture is defined by the PostgreSQL schema. The following Entity-Relationship Diagram (ERD) illustrates the relationships between the core entities of the system.
+The data architecture is defined by the shared PostgreSQL schema. The ERD remains the same as it represents the single source of truth for both applications.
 
 ```mermaid
 erDiagram
@@ -288,8 +218,10 @@ erDiagram
         UUID id PK
         string full_name
         string role
-        string pro_id
         string membership_tier
+        string pro_id
+        boolean active_mode
+        boolean coverage_mode
     }
 
     referrals {
@@ -308,6 +240,7 @@ erDiagram
         string location
         timestamp start_at
         timestamp end_at
+        string status
     }
 
     hot_seats {
@@ -327,11 +260,32 @@ erDiagram
     trusted_network {
         UUID owner_id PK, FK
         UUID partner_id PK, FK
+        string status
+    }
+    
+    auto_suggest_tracking {
+        UUID user_id PK, FK
+        UUID partner_id PK, FK
+        int completed_count
     }
 
     payments {
         UUID id PK
         UUID referral_id FK
+        decimal amount
+    }
+    
+    commissions {
+        UUID id PK
+        UUID referral_id FK
+        UUID payee_id FK
+        decimal amount
+    }
+
+    affiliate_commissions {
+        UUID id PK
+        UUID referral_id FK
+        UUID earner_id FK
         decimal amount
     }
 
@@ -342,23 +296,28 @@ erDiagram
         timestamp end_at
     }
 
-    suite_referral_tracking {
+    ad_placements {
         UUID id PK
-        UUID suite_owner_id FK
-        UUID referral_id FK
+        string title
+        string category
+        boolean active
+    }
+
+    messages {
+        UUID id PK
+        UUID user_id FK
+        string title
+        string kind
     }
 
     admin_audit_log {
         UUID id PK
         UUID admin_user_id FK
         string action
-        string target_type
-        string target_id
     }
 
     feature_flags {
-        UUID id PK
-        string flag_name
+        string flag_name PK
         boolean enabled
     }
 
@@ -371,17 +330,21 @@ erDiagram
     users ||--o{ referrals : "receives"
     users ||--o{ services : "offers"
     users ||--o{ open_chairs : "hosts"
-    users ||--|{ trusted_network : "builds"
     users ||--o{ hot_seats : "posts"
     users ||--o{ boosts : "activates"
+    users ||--o{ messages : "receives"
     users ||--o{ admin_audit_log : "performs"
-
-    referrals }o--|| open_chairs : "can be booked in"
-    referrals }o--|| hot_seats : "can be for"
+    users ||--|{ trusted_network : "owns"
+    users ||--|{ trusted_network : "is_partner_in"
+    users ||--|{ auto_suggest_tracking : "tracks"
+    users ||--|{ auto_suggest_tracking : "is_tracked_with"
+    users ||--o{ affiliate_commissions : "earns"
+    
+    referrals }o--|| open_chairs : "books_into"
+    referrals }o--|| hot_seats : "is_for"
     referrals ||--o{ payments : "generates"
-    referrals ||--o{ suite_referral_tracking : "is tracked in"
-
-    users }o--|| suite_referral_tracking : "owns"
+    referrals ||--o{ commissions : "results_in"
+    referrals ||--o{ affiliate_commissions : "generates"
 ```
 
 For a complete and detailed breakdown of every table and column, please refer to the **`docs/DATABASE_SCHEMA.md`** document.
