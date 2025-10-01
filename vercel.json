@@ -2,15 +2,16 @@
   "rewrites": [
     { "source": "/api/(.*)", "destination": "/backend/server.js" }
   ],
+  "functions": {
+    "backend/server.js": {
+      "runtime": "@vercel/node@2.0.0"
+    }
+  },
   "builds": [
     {
       "src": "package.json",
       "use": "@vercel/static-build",
       "config": { "distDir": "dist" }
-    },
-    {
-      "src": "backend/package.json",
-      "use": "@vercel/node"
     }
   ]
 }
