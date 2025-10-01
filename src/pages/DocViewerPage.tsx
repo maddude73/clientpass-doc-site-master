@@ -322,3 +322,6 @@ function DocViewerPage() {
         />
     </div>
   );
+}
+
+export default DocViewerPage;
