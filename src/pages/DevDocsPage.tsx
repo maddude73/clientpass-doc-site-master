@@ -2,10 +2,12 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { FileText, LogOut, Send } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
-import { useState } from "react";
+import { useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
+import { useQuery } from "@tanstack/react-query";
+import { docApi } from "@/api/docs";
 
 const discoveryDocs = [
   { name: "SRS.md", description: "The Software Requirements Specification." },
@@ -50,7 +52,8 @@ const DocSectionHeader = ({ title }: { title: string }) => (
   <h2 className="text-2xl font-semibold border-b pb-3 mb-6">{title}</h2>
 );
 
-const DocCard = ({ doc }: { doc: { name: string, description: string } }) => {
+const DocCard = ({ doc, updatedAt, revision }: { doc: { name: string, description: string }, updatedAt?: string, revision?: number }) => {
+  console.log(`DocCard for ${doc.name}: updatedAt=${updatedAt}, revision=${revision}`); // Debug log
   return (
     <Link
       key={doc.name}
@@ -66,6 +69,16 @@ const DocCard = ({ doc }: { doc: { name: string, description: string } }) => {
         </CardHeader>
         <CardContent>
           <p className="text-sm text-muted-foreground">{doc.description}</p>
+          {updatedAt && (
+            <p className="text-xs text-muted-foreground mt-2">
+              Last updated: {new Date(updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' })}
+            </p>
+          )}
+          {revision !== undefined && (
+            <p className="text-xs text-muted-foreground">
+              Revision: {revision}
+            </p>
+          )}
         </CardContent>
       </Card>
     </Link>
@@ -122,6 +135,23 @@ const InviteUserForm = () => {
 const DevDocsPage = () => {
   const { profile, signOut } = useAuth();
 
+  const { data: allDocs, isLoading: isLoadingDocs } = useQuery({
+    queryKey: ["allDocs"],
+    queryFn: docApi.getAllDocuments,
+  });
+
+  const docMetadataMap = useMemo(() => {
+    const map = new Map<string, { updatedAt: string, revision: number }>();
+    allDocs?.forEach(doc => {
+      map.set(`${doc.name}.md`, { updatedAt: doc.updatedAt, revision: doc.revision });
+    });
+    return map;
+  }, [allDocs]);
+
+  if (isLoadingDocs) {
+    return <div className="flex justify-center items-center min-h-screen">Loading documents...</div>;
+  }
+
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
       <header className="max-w-5xl mx-auto mb-8 flex justify-end">
@@ -144,35 +174,45 @@ const DevDocsPage = () => {
           <section>
             <DocSectionHeader title="Discovery" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {discoveryDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+              {discoveryDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
             </div>
           </section>
 
           <section>
             <DocSectionHeader title="Planning Documents" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {planningDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+              {planningDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
             </div>
           </section>
 
           <section>
             <DocSectionHeader title="Architecture & Design" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {architectureDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+              {architectureDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
             </div>
           </section>
 
           <section>
             <DocSectionHeader title="Features" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {featuresDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+              {featuresDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
             </div>
           </section>
 
           <section>
             <DocSectionHeader title="Components" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {componentsDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+              {componentsDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
             </div>
           </section>
         </div>

@@ -12,6 +12,7 @@ import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css'; // Import Quill's CSS
 import TurndownService from 'turndown';
 import { marked } from 'marked'; // For Markdown to HTML conversion
+import { docApi } from '@/api/docs';
 
 const DocViewerPage = () => {
   const { docName } = useParams<{ docName: string }>();
@@ -22,22 +23,31 @@ const DocViewerPage = () => {
   const { signOut } = useAuth();
 
   useEffect(() => {
-    const fetchMarkdown = async () => {
+    const fetchDocument = async () => { // Renamed for clarity
       if (!docName) return;
 
       const safeDocName = docName.replace(/[^a-z0-9_-]/gi, '');
       
       try {
-        const response = await fetch(`/docs/${safeDocName.toUpperCase()}.md`);
-        if (response.ok) {
-          const text = await response.text();
-          setMarkdown(text);
-          setEditedMarkdown(marked.parse(text)); // Convert Markdown to HTML for editor
+        let fetchedContent = '';
+        const dbDoc = await docApi.getDocument(safeDocName);
+
+        if (dbDoc) {
+          fetchedContent = dbDoc.content;
         } else {
-          const errorText = '# Document Not Found\n\nCould not load the requested document.';
-          setMarkdown(errorText);
-          setEditedMarkdown(marked.parse(errorText));
+          // Fallback to fetching static .md file if not in simulated DB
+          const response = await fetch(`/docs/${safeDocName.toUpperCase()}.md`);
+          if (response.ok) {
+            fetchedContent = await response.text();
+            // Seed the simulated DB with this content for future edits
+            await docApi.createDocument(safeDocName, fetchedContent);
+          } else {
+            fetchedContent = '# Document Not Found\n\nCould not load the requested document.';
+          }
         }
+
+        setMarkdown(fetchedContent);
+        setEditedMarkdown(marked.parse(fetchedContent)); // Convert Markdown to HTML for editor
       } catch (error) {
         console.error("Failed to fetch document:", error);
         const errorText = '# Error\n\nThere was an error loading the document.';
@@ -48,7 +58,7 @@ const DocViewerPage = () => {
       }
     };
 
-    fetchMarkdown();
+    fetchDocument(); // Call the renamed function
   }, [docName]);
 
   useEffect(() => {
@@ -72,17 +82,17 @@ const DocViewerPage = () => {
     const turndownService = new TurndownService();
     const markdownToSave = turndownService.turndown(editedMarkdown);
 
-    setMarkdown(markdownToSave); // Update view mode with new markdown
-    setIsEditing(false);
-    console.log('Simulating save:', markdownToSave);
-
-    // Here's where a backend call would go to persist the changes.
-    // Example: await fetch('/api/save-doc', { method: 'POST', body: JSON.stringify({ docName, content: markdownToSave }) });
-    // For now, I will use the write_file tool to simulate saving.
     const safeDocName = docName.replace(/[^a-z0-9_-]/gi, '');
-    const filePath = `/Users/rhfluker/Projects/clientpass-doc-site-master/public/docs/${safeDocName.toUpperCase()}.md`;
-    // This is a placeholder for the actual write_file call by the Gemini agent.
-    // print(default_api.write_file(file_path=filePath, content=markdownToSave));
+
+    try {
+      await docApi.updateDocument(safeDocName, markdownToSave);
+      setMarkdown(markdownToSave); // Update view mode with new markdown
+      setIsEditing(false);
+      console.log('Document saved successfully to simulated DB:', markdownToSave);
+    } catch (error) {
+      console.error('Failed to save document:', error);
+      // Optionally, show an error message to the user
+    }
   };
 
   const handleCancel = () => {
