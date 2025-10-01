@@ -1,9 +1,9 @@
 {
   "rewrites": [
-    { "source": "/api/(.*)", "destination": "/backend/server.js" }
+    { "source": "/api/(.*)", "destination": "/api/server.js" }
   ],
   "functions": {
-    "backend/server.js": {
+    "api/server.js": {
       "runtime": "@vercel/node@2.0.0"
     }
   }
