@@ -199,6 +199,5 @@ const DocViewerPage = () => {
     </div>
   );
 };
-};
 
 export default DocViewerPage;
