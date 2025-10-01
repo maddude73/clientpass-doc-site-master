@@ -32,6 +32,20 @@ const architectureDocs = [
   { name: "INTEGRATION_GUIDE.md", description: "For external connections." },
 ];
 
+const featuresDocs = [
+  { name: "DEMO_MODE.md", description: "Explains the new demo mode." },
+  { name: "AUTO_MATCH_SYSTEM.md", description: "Documents the AutoMatchSystem component." },
+  { name: "WALK_IN_REFERRALS.md", description: "Documents the WalkInReferralForm component." },
+  { name: "SERVICE_SELECTION.md", description: "Documents the ServiceSelection component." },
+  { name: "SUITE_TOOLS.md", description: "Documents the new suite tools for salon owners." },
+];
+
+const componentsDocs = [
+  { name: "SIGN_UP_FORM.md", description: "Documents the updated sign-up form." },
+  { name: "STYLIST_PROFILE_SETUP.md", description: "Documents the updated stylist profile setup." },
+  { name: "OPEN_CHAIR_FORM.md", description: "Documents the updated open chair form." },
+];
+
 const DocSectionHeader = ({ title }: { title: string }) => (
   <h2 className="text-2xl font-semibold border-b pb-3 mb-6">{title}</h2>
 );
@@ -145,6 +159,20 @@ const DevDocsPage = () => {
             <DocSectionHeader title="Architecture & Design" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {architectureDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+            </div>
+          </section>
+
+          <section>
+            <DocSectionHeader title="Features" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {featuresDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
+            </div>
+          </section>
+
+          <section>
+            <DocSectionHeader title="Components" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {componentsDocs.map((doc) => <DocCard key={doc.name} doc={doc} />)}
             </div>
           </section>
         </div>
