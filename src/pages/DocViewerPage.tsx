@@ -100,7 +100,7 @@ const CommentSection = ({ docName, comments, ownerId, ownerName, onAddComment }:
   );
 };
 
-const DocViewerPage = () => {
+function DocViewerPage() {
   const { docName } = useParams<{ docName: string }>();
   const [markdown, setMarkdown] = useState('');
   const [isEditing, setIsEditing] = useState(false);
@@ -199,8 +199,14 @@ const DocViewerPage = () => {
     const turndownService = new TurndownService();
     const markdownToSave = turndownService.turndown(editedMarkdown);
 
+    if (!profile?.full_name) {
+      console.error("User full name not available for lastUpdatedBy.");
+      // Optionally, show a toast notification
+      return;
+    }
+
     try {
-      await docApi.updateDocument(safeDocName, markdownToSave);
+      await docApi.updateDocument(safeDocName, markdownToSave, profile.full_name);
       setMarkdown(markdownToSave);
       setIsEditing(false);
       queryClient.invalidateQueries({ queryKey: ['document', safeDocName] });
@@ -270,6 +276,11 @@ const DocViewerPage = () => {
                     </div>
                 ) : (
                     <article className="prose dark:prose-invert lg:prose-xl">
+                        <div className="mb-4 text-sm text-muted-foreground">
+                            <p>Last updated: {dbDoc?.updatedAt ? new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</p>
+                            <p>Revision: {dbDoc?.revision ?? 'N/A'}</p>
+                            <p>Last updated by: {dbDoc?.lastUpdatedBy ?? 'N/A'}</p>
+                        </div>
                         <ReactMarkdown
                             key={markdown}
                             remarkPlugins={[remarkGfm]}
@@ -311,4 +322,3 @@ const DocViewerPage = () => {
         />
     </div>
   );
-};
