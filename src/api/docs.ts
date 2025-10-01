@@ -3,12 +3,21 @@
 // In a real application, this would be configured via environment variables.
 const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'; // User needs to change this to their deployed backend URL
 
+interface Comment {
+  ownerId: string;
+  ownerName: string;
+  text: string;
+  createdAt: string;
+}
+
 interface Document {
   name: string;
   content: string;
   createdAt: string;
   updatedAt: string;
   revision: number;
+  comments: Comment[];
+  lastUpdatedBy?: string;
 }
 
 export const docApi = {
@@ -22,13 +31,13 @@ export const docApi = {
     return data;
   },
 
-  async updateDocument(docName: string, content: string): Promise<Document | null> {
+  async updateDocument(docName: string, content: string, lastUpdatedBy: string): Promise<Document | null> {
     const response = await fetch(`${BASE_API_URL}/docs/${docName}`, {
       method: 'PUT',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ content }),
+      body: JSON.stringify({ content, lastUpdatedBy }),
     });
     if (!response.ok) {
       if (response.status === 404) return null;
@@ -68,6 +77,21 @@ export const docApi = {
     const response = await fetch(`${BASE_API_URL}/docs`);
     if (!response.ok) {
       throw new Error(`Error fetching all documents: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  },
+
+  async addComment(docName: string, ownerId: string, ownerName: string, text: string): Promise<Comment> {
+    const response = await fetch(`${BASE_API_URL}/docs/${docName}/comments`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ ownerId, ownerName, text }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error adding comment: ${response.statusText}`);
     }
     const data = await response.json();
     return data;

@@ -25,6 +25,15 @@ const documentSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
   revision: { type: Number, default: 1 },
+  comments: [
+    {
+      ownerId: { type: String, required: true },
+      ownerName: { type: String, required: true },
+      text: { type: String, required: true },
+      createdAt: { type: Date, default: Date.now },
+    },
+  ],
+  lastUpdatedBy: { type: String },
 });
 
 const Document = mongoose.model('Document', documentSchema);
@@ -70,14 +79,14 @@ app.post('/api/docs', async (req, res) => {
 
 // PUT (Update) an existing document by name
 app.put('/api/docs/:docName', async (req, res) => {
-  const { content } = req.body;
+  const { content, lastUpdatedBy } = req.body;
   if (!content) {
     return res.status(400).json({ message: 'Document content is required' });
   }
   try {
     const updatedDoc = await Document.findOneAndUpdate(
       { name: req.params.docName.toUpperCase() },
-      { $set: { content: content, updatedAt: Date.now() }, $inc: { revision: 1 } },
+      { $set: { content: content, updatedAt: Date.now(), lastUpdatedBy: lastUpdatedBy }, $inc: { revision: 1 } },
       { new: true } // Return the updated document
     );
     if (!updatedDoc) {
@@ -97,6 +106,27 @@ app.delete('/api/docs/:docName', async (req, res) => {
       return res.status(404).json({ message: 'Document not found' });
     }
     res.json({ message: 'Document deleted successfully' });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST (Add) a new comment to a document
+app.post('/api/docs/:docName/comments', async (req, res) => {
+  const { ownerId, ownerName, text } = req.body;
+  if (!ownerId || !ownerName || !text) {
+    return res.status(400).json({ message: 'Owner ID, owner name, and comment text are required' });
+  }
+  try {
+    const updatedDoc = await Document.findOneAndUpdate(
+      { name: req.params.docName.toUpperCase() },
+      { $push: { comments: { ownerId, ownerName, text, createdAt: new Date() } } },
+      { new: true } // Return the updated document
+    );
+    if (!updatedDoc) {
+      return res.status(404).json({ message: 'Document not found' });
+    }
+    res.status(201).json(updatedDoc.comments[updatedDoc.comments.length - 1]); // Return the newly added comment
   } catch (err) {
     res.status(500).json({ message: err.message });
   }
