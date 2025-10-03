@@ -245,7 +245,7 @@ function DocViewerPage() {
           <div className="flex items-center gap-4">
             <Link to="/docs" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
               <ArrowLeft className="h-4 w-4" />
-              Back to Documentation Hub
+              Back to Hub
             </Link>
             {!isEditing && (
               <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="flex items-center gap-1">
