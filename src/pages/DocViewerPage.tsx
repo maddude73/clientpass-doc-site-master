@@ -111,6 +111,7 @@ function DocViewerPage() {
   const queryClient = useQueryClient();
 
   const safeDocName = docName?.replace(/[^a-z0-9_-]/gi, '') || '';
+  console.log('docName:', docName, 'safeDocName:', safeDocName);
 
   const { data: dbDoc, isLoading, isError, error } = useQuery<DocumentData>({
     queryKey: ['document', safeDocName],
