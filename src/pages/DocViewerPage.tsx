@@ -30,6 +30,7 @@ interface DocumentData {
   updatedAt: string;
   revision: number;
   comments: Comment[];
+  lastUpdatedBy?: string;
 }
 
 const CommentSection = ({ docName, comments, ownerId, ownerName, onAddComment }: {
@@ -105,6 +106,7 @@ function DocViewerPage() {
   const [markdown, setMarkdown] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedMarkdown, setEditedMarkdown] = useState('');
+  const [isCommentsVisible, setIsCommentsVisible] = useState(true);
   const { user, profile, signOut } = useAuth();
   const queryClient = useQueryClient();
 
@@ -236,90 +238,98 @@ function DocViewerPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background no-print flex">
-        <div className="flex-grow flex flex-col">
-            <header className="sticky top-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
-                <div className="max-w-5xl mx-auto h-14 flex items-center justify-between px-4">
-                    <div className="flex items-center gap-4">
-                        <Link to="/docs" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                            <ArrowLeft className="h-4 w-4" />
-                            Back to Documentation Hub
-                        </Link>
-                        {!isEditing && (
-                            <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="flex items-center gap-1">
-                                <Pencil className="h-4 w-4" />
-                                Edit
-                            </Button>
-                        )}
-                    </div>
-                    <button onClick={signOut} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-                        <LogOut className="h-4 w-4" />
-                        Logout
-                    </button>
-                </div>
-            </header>
-            <main className="max-w-4xl mx-auto p-4 sm:p-6 lg:p-8 flex-grow">
-                {isLoading ? (
-                    <p>Loading document...</p>
-                ) : isEditing ? (
-                    <div className="space-y-4">
-                        <ReactQuill
-                            theme="snow"
-                            value={editedMarkdown}
-                            onChange={setEditedMarkdown}
-                            className="min-h-[500px]"
-                        />
-                        <div className="flex justify-end gap-2">
-                            <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                            <Button onClick={handleSave}>Save</Button>
-                        </div>
-                    </div>
-                ) : (
-                    <article className="prose dark:prose-invert lg:prose-xl">
-                        <div className="mb-4 text-sm text-muted-foreground">
-                            <p>Last updated: {dbDoc?.updatedAt ? new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</p>
-                            <p>Revision: {dbDoc?.revision ?? 'N/A'}</p>
-                            <p>Last updated by: {dbDoc?.lastUpdatedBy ?? 'N/A'}</p>
-                        </div>
-                        <ReactMarkdown
-                            key={markdown}
-                            remarkPlugins={[remarkGfm]}
-                            rehypePlugins={[rehypeRaw]}
-                            components={{
-                                code({ node, inline, className, children, ...props }) {
-                                    const match = /language-(\w+)/.exec(className || '');
-                                    if (!inline && match && match[1] === 'mermaid') {
-                                        return (
-                                            <pre className="mermaid" {...props}>
-                                                {String(children).replace(/\n$/, '')}
-                                            </pre>
-                                        );
-                                    }
-                                    return !inline && match ? (
-                                        <code className={className} {...props}>
-                                            {children}
-                                        </code>
-                                    ) : (
-                                        <code className={className} {...props}>
-                                            {children}
-                                        </code>
-                                    );
-                                },
-                            }}
-                        >
-                            {markdown}
-                        </ReactMarkdown>
-                    </article>
-                )}
-            </main>
+    <div className="h-screen bg-background no-print flex flex-col">
+      <header className="flex-shrink-0 z-40 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60 border-b border-border">
+        <div className="mx-auto h-14 flex items-center justify-between px-4 max-w-7xl">
+          <div className="flex items-center gap-4">
+            <Link to="/docs" className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Documentation Hub
+            </Link>
+            {!isEditing && (
+              <Button variant="ghost" size="sm" onClick={() => setIsEditing(true)} className="flex items-center gap-1">
+                <Pencil className="h-4 w-4" />
+                Edit
+              </Button>
+            )}
+            <Button variant="ghost" size="sm" onClick={() => setIsCommentsVisible(!isCommentsVisible)} className="flex items-center gap-1">
+              <MessageSquare className="h-4 w-4" />
+              {isCommentsVisible ? 'Hide Comments' : 'Show Comments'}
+            </Button>
+          </div>
+          <button onClick={signOut} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+            <LogOut className="h-4 w-4" />
+            Logout
+          </button>
         </div>
-        <CommentSection
-          docName={safeDocName}
-          comments={dbDoc?.comments || []}
-          ownerId={user?.id || ''}
-          ownerName={profile?.full_name || 'Anonymous'}
-          onAddComment={handleAddComment}
-        />
+      </header>
+      <div className="flex flex-grow overflow-hidden">
+        <div className="flex-grow overflow-y-auto">
+          <main className={cn("mx-auto p-4 sm:p-6 lg:p-8 w-full", isCommentsVisible ? "max-w-4xl" : "max-w-7xl")}>
+            {isLoading ? (
+              <p>Loading document...</p>
+            ) : isEditing ? (
+              <div className="space-y-4">
+                <ReactQuill
+                  theme="snow"
+                  value={editedMarkdown}
+                  onChange={setEditedMarkdown}
+                  className="min-h-[500px]"
+                />
+                <div className="flex justify-end gap-2">
+                  <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                  <Button onClick={handleSave}>Save</Button>
+                </div>
+              </div>
+            ) : (
+              <article className="prose dark:prose-invert lg:prose-xl">
+                <div className="mb-4 text-sm text-muted-foreground">
+                  <p>Last updated: {dbDoc?.updatedAt ? new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</p>
+                  <p>Revision: {dbDoc?.revision ?? 'N/A'}</p>
+                  <p>Last updated by: {dbDoc?.lastUpdatedBy ?? 'N/A'}</p>
+                </div>
+                <ReactMarkdown
+                  key={markdown}
+                  remarkPlugins={[remarkGfm]}
+                  rehypePlugins={[rehypeRaw]}
+                  components={{
+                    code({ node, inline, className, children, ...props }) {
+                      const match = /language-(\w+)/.exec(className || '');
+                      if (!inline && match && match[1] === 'mermaid') {
+                        return (
+                          <pre className="mermaid" {...props}>
+                            {String(children).replace(/\n$/, '')}
+                          </pre>
+                        );
+                      }
+                      return !inline && match ? (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      ) : (
+                        <code className={className} {...props}>
+                          {children}
+                        </code>
+                      );
+                    },
+                  }}
+                >
+                  {markdown}
+                </ReactMarkdown>
+              </article>
+            )}
+          </main>
+        </div>
+        {isCommentsVisible && (
+          <CommentSection
+            docName={safeDocName}
+            comments={dbDoc?.comments || []}
+            ownerId={user?.id || ''}
+            ownerName={profile?.full_name || 'Anonymous'}
+            onAddComment={handleAddComment}
+          />
+        )}
+      </div>
     </div>
   );
 }
