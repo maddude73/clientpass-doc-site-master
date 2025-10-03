@@ -106,7 +106,7 @@ function DocViewerPage() {
   const [markdown, setMarkdown] = useState('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedMarkdown, setEditedMarkdown] = useState('');
-  const [isCommentsVisible, setIsCommentsVisible] = useState(true);
+  const [isCommentsVisible, setIsCommentsVisible] = useState(false);
   const { user, profile, signOut } = useAuth();
   const queryClient = useQueryClient();
 
