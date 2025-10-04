@@ -108,8 +108,14 @@ graph TD
         H[Resend API]
     end
 
-    A -- "API Calls" --> C & D & E & F
-    B -- "API Calls" --> C & D & E & F
+    A -- "API Calls" --> C
+    A -- "API Calls" --> D
+    A -- "API Calls" --> E
+    A -- "API Calls" --> F
+    B -- "API Calls" --> C
+    B -- "API Calls" --> D
+    B -- "API Calls" --> E
+    B -- "API Calls" --> F
 
     E -- "DB Connection" --> D
     E -- "HTTPS API Call" --> G
@@ -334,10 +340,10 @@ erDiagram
     users ||--o{ boosts : "activates"
     users ||--o{ messages : "receives"
     users ||--o{ admin_audit_log : "performs"
-    users ||--|{ trusted_network : "owns"
-    users ||--|{ trusted_network : "is_partner_in"
-    users ||--|{ auto_suggest_tracking : "tracks"
-    users ||--|{ auto_suggest_tracking : "is_tracked_with"
+    users }o--o{ trusted_network : "owns"
+    users }o--o{ trusted_network : "is_partner_in"
+    users }o--o{ auto_suggest_tracking : "tracks"
+    users }o--o{ auto_suggest_tracking : "is_tracked_with"
     users ||--o{ affiliate_commissions : "earns"
     
     referrals }o--|| open_chairs : "books_into"

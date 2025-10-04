@@ -1,9 +1,9 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { ArrowLeft, LogOut, Pencil, MessageSquare, ChevronDown, ChevronUp } from 'lucide-react';
+import { ArrowLeft, LogOut, Pencil, MessageSquare, ChevronDown, ChevronUp, ZoomIn, ZoomOut, ExternalLink } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import mermaid from 'mermaid';
 import { Button } from '@/components/ui/button';
@@ -15,6 +15,7 @@ import { marked } from 'marked'; // For Markdown to HTML conversion
 import { docApi } from '@/api/docs';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { cn } from '@/lib/utils';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 
 interface Comment {
   ownerId: string;
@@ -96,6 +97,96 @@ const CommentSection = ({ docName, comments, ownerId, ownerName, onAddComment }:
         <Button onClick={handlePostComment} className="w-full">
           Post Comment
         </Button>
+      </div>
+    </div>
+  );
+};
+
+const MermaidDiagram = ({ content }: { content: string }) => {
+  const [zoom, setZoom] = useState(1);
+  const [modalZoom, setModalZoom] = useState(1);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const modalDiagramId = `mermaid-modal-${Math.random().toString(36).substr(2, 9)}`;
+
+  const handleZoomIn = () => setZoom(prev => prev + 0.1);
+  const handleZoomOut = () => setZoom(prev => prev > 0.2 ? prev - 0.1 : 0.1);
+
+  const handleModalZoomIn = () => setModalZoom(prev => prev + 0.1);
+  const handleModalZoomOut = () => setModalZoom(prev => prev > 0.2 ? prev - 0.1 : 0.1);
+
+  useEffect(() => {
+    if (isModalOpen) {
+      setTimeout(() => {
+        try {
+          const element = document.getElementById(modalDiagramId);
+          if (element) {
+            mermaid.run({
+              nodes: [element]
+            });
+          }
+        } catch (e) {
+          console.error("Mermaid rendering error in modal:", e);
+        }
+      }, 0);
+    }
+  }, [isModalOpen, modalDiagramId]);
+
+  return (
+    <div className="relative group my-6">
+      <div className="absolute top-2 right-2 z-10 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Button variant="ghost" size="icon" onClick={handleZoomIn} className="h-8 w-8">
+          <ZoomIn className="h-4 w-4" />
+        </Button>
+        <Button variant="ghost" size="icon" onClick={handleZoomOut} className="h-8 w-8">
+          <ZoomOut className="h-4 w-4" />
+        </Button>
+        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+          <DialogTrigger asChild>
+            <Button variant="ghost" size="icon" className="h-8 w-8">
+              <ExternalLink className="h-4 w-4" />
+            </Button>
+          </DialogTrigger>
+          <DialogContent className="max-w-4xl h-[80vh] flex flex-col">
+            <DialogHeader>
+              <DialogTitle>Mermaid Diagram</DialogTitle>
+            </DialogHeader>
+            <div className="flex-grow overflow-auto">
+              <pre
+                id={modalDiagramId}
+                className="mermaid"
+                style={{
+                  transform: `scale(${modalZoom})`,
+                  transformOrigin: 'top left',
+                  transition: 'transform 0.2s ease-in-out',
+                }}
+              >
+                {content}
+              </pre>
+            </div>
+            <div className="flex justify-center gap-2">
+              <Button variant="outline" onClick={handleModalZoomOut}>
+                <ZoomOut className="h-4 w-4 mr-2" />
+                Zoom Out
+              </Button>
+              <Button variant="outline" onClick={handleModalZoomIn}>
+                <ZoomIn className="h-4 w-4 mr-2" />
+                Zoom In
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      </div>
+      <div className="overflow-auto">
+        <pre
+          className="mermaid"
+          style={{
+            transform: `scale(${zoom})`,
+            transformOrigin: 'top left',
+            transition: 'transform 0.2s ease-in-out',
+          }}
+        >
+          {content}
+        </pre>
       </div>
     </div>
   );
@@ -297,11 +388,8 @@ function DocViewerPage() {
                     code({ node, inline, className, children, ...props }) {
                       const match = /language-(\w+)/.exec(className || '');
                       if (!inline && match && match[1] === 'mermaid') {
-                        return (
-                          <pre className="mermaid" {...props}>
-                            {String(children).replace(/\n$/, '')}
-                          </pre>
-                        );
+                        const content = String(children).replace(/\n$/, '');
+                        return <MermaidDiagram content={content} />;
                       }
                       return !inline && match ? (
                         <code className={className} {...props}>

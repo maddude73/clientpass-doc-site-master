@@ -24,9 +24,11 @@ const planningDocs = [
 const architectureDocs = [
   { name: "SAD.md", description: "Software Architecture Document." },
   { name: "SYSTEM_DESIGN.md", description: "The detailed design, responding to the SRS." },
+  { name: "PRO_DASHBOARD.md", description: "Overview of the Pro Dashboard." },
   { name: "HLA.md", description: "High Level Architecture." },
   { name: "FRONTEND_OVERVIEW.md", description: "Specifics of the frontend." },
   { name: "DATABASE_SCHEMA.md", description: "The data model." },
+  { name: "DATABASE_RECOMMENDATIONS.md", description: "Comparison of MongoDB and Firestore." },
   { name: "EDGE_FUNCTIONS.md", description: "The backend logic." },
   { name: "USE_CASE_MODELS.md", description: "Detailed user flows." },
   { name: "PROCESS_MODELS.md", description: "State diagrams and process flows." },
@@ -40,6 +42,9 @@ const featuresDocs = [
   { name: "WALK_IN_REFERRALS.md", description: "Documents the WalkInReferralForm component." },
   { name: "SERVICE_SELECTION.md", description: "Documents the ServiceSelection component." },
   { name: "SUITE_TOOLS.md", description: "Documents the new suite tools for salon owners." },
+  { name: "SUITE_DASHBOARD.md", description: "Overview of the Suite Dashboard." },
+  { name: "AFFILIATE_DASHBOARD.md", description: "Overview of the Affiliate Dashboard." },
+  { name: "CLIENT_DASHBOARD.md", description: "Overview of the Client Dashboard." },
 ];
 
 const componentsDocs = [
