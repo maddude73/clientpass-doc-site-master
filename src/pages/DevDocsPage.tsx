@@ -24,7 +24,6 @@ const planningDocs = [
 const architectureDocs = [
   { name: "SAD.md", description: "Software Architecture Document." },
   { name: "SYSTEM_DESIGN.md", description: "The detailed design, responding to the SRS." },
-  { name: "PRO_DASHBOARD.md", description: "Overview of the Pro Dashboard." },
   { name: "HLA.md", description: "High Level Architecture." },
   { name: "FRONTEND_OVERVIEW.md", description: "Specifics of the frontend." },
   { name: "DATABASE_SCHEMA.md", description: "The data model." },
@@ -42,9 +41,16 @@ const featuresDocs = [
   { name: "WALK_IN_REFERRALS.md", description: "Documents the WalkInReferralForm component." },
   { name: "SERVICE_SELECTION.md", description: "Documents the ServiceSelection component." },
   { name: "SUITE_TOOLS.md", description: "Documents the new suite tools for salon owners." },
+  { name: "PRO_DASHBOARD.md", description: "Overview of the Pro Dashboard." },
   { name: "SUITE_DASHBOARD.md", description: "Overview of the Suite Dashboard." },
   { name: "AFFILIATE_DASHBOARD.md", description: "Overview of the Affiliate Dashboard." },
   { name: "CLIENT_DASHBOARD.md", description: "Overview of the Client Dashboard." },
+  { name: "AFFILIATE_AUTHENTICATION.md", description: "Authentication for affiliates." },
+  { name: "AFFILIATE_HOME_PAGE.md", description: "Home page for affiliates." },
+  { name: "AFFILIATE_MARKETPLACE.md", description: "Marketplace for affiliates." },
+  { name: "OPEN_CHAIR_ALERTS.md", description: "Alerts for open chairs." },
+  { name: "OPEN_CHAIR_LIST.md", description: "List of open chairs." },
+  { name: "POST_OPEN_CHAIR.md", description: "Post a new open chair." },
 ];
 
 const componentsDocs = [
