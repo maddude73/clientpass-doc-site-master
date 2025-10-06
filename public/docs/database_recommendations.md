@@ -1,6 +1,6 @@
 ---
 id: 68dccbb8479feecff6266aa6
-revision: 10
+revision: 14
 ---
 
 # Database Recommendations: MongoDB vs. Firestore vs. Supabase

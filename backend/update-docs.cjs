@@ -28,8 +28,17 @@ async function updateDocuments() {
         }
 
         try {
-          await axios.put(`${API_BASE_URL}/docs/${docName}`, { content, lastUpdatedBy: 'system-update', revision });
-          console.log(`Successfully updated: ${docName}`);
+          const response = await axios.put(`${API_BASE_URL}/docs/${docName}`, { content, lastUpdatedBy: 'system-update', revision }, {
+            validateStatus: function (status) {
+              return status >= 200 && status < 300 || status === 304;
+            }
+          });
+          console.log(`Status for ${docName}: ${response.status}`);
+          if (response.status === 200) {
+            console.log(`Successfully updated: ${docName}`);
+          } else if (response.status === 304) {
+            console.log(`No changes for: ${docName}`);
+          }
         } catch (error) {
           if (error.response && error.response.status === 404) {
             console.log(`Document ${docName} not found, creating it...`);

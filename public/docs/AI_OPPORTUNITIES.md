@@ -1,6 +1,6 @@
 ---
 id: 68e300ca77e8ead370b13dc9
-revision: 2
+revision: 6
 ---
 
 # AI and LLM Opportunities in ClientPass

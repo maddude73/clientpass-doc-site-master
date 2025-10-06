@@ -8,6 +8,7 @@ const bodyParser = require('body-parser');
 const app = express();
 const PORT = process.env.PORT || 5001;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/docdb'; // Replace with your MongoDB URI
+console.log('Connecting to MongoDB:', MONGODB_URI);
 
 // Middleware
 app.use(cors()); // Enable CORS for frontend access
@@ -85,29 +86,34 @@ app.put('/api/docs/:docName', async (req, res) => {
   }
   try {
     const docName = req.params.docName.toUpperCase();
-    const query = { name: docName };
+    const existingDoc = await Document.findOne({ name: docName });
 
-    if (revision !== undefined) {
-      query.revision = revision;
-    }
-
-    const updatedDoc = await Document.findOneAndUpdate(
-      query,
-      { $set: { content: content, updatedAt: Date.now(), lastUpdatedBy: lastUpdatedBy }, $inc: { revision: 1 } },
-      { new: true } // Return the updated document
-    );
-
-    if (!updatedDoc) {
-      // If revision was provided and no doc was found, it's a conflict.
-      if (revision !== undefined) {
-        const existingDoc = await Document.findOne({ name: docName });
-        if (existingDoc) {
-          return res.status(409).json({ message: `Conflict: Document has been updated by someone else. Your revision is ${revision}, but the current revision is ${existingDoc.revision}.` });
-        }
-      }
+    if (!existingDoc) {
       return res.status(404).json({ message: 'Document not found' });
     }
-    res.json(updatedDoc);
+
+    if (revision !== undefined) {
+      if (revision < existingDoc.revision) {
+        return res.status(409).json({ message: `Conflict: Your revision ${revision} is older than the current revision ${existingDoc.revision}.` });
+      }
+      if (revision > existingDoc.revision) {
+        return res.status(409).json({ message: `Conflict: Your revision ${revision} is newer than the current revision ${existingDoc.revision}. Please sync your local files first.` });
+      }
+      if (content === existingDoc.content) {
+        console.log('Content is the same, sending 304');
+        return res.status(304).send(); // Not Modified
+      } else {
+        console.log('Content is different, updating document');
+      }
+    }
+
+    existingDoc.content = content;
+    existingDoc.lastUpdatedBy = lastUpdatedBy;
+    existingDoc.updatedAt = Date.now();
+    existingDoc.revision += 1;
+    await existingDoc.save();
+
+    res.json(existingDoc);
   } catch (err) {
     res.status(500).json({ message: err.message });
   }

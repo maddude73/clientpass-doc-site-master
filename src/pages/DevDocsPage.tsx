@@ -22,6 +22,7 @@ const planningDocs = [
 ];
 
 const recommendationsDocs = [
+  { name: "MARKETING_RECOMMENDATIONS.md", description: "Marketing strategy for the application." },
   { name: "AI_OPPORTUNITIES.md", description: "Potential AI/LLM use cases." },
   { name: "DATABASE_RECOMMENDATIONS.md", description: "Comparison of MongoDB and Firestore." },
 ];
