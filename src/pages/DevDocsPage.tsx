@@ -58,12 +58,22 @@ const featuresDocs = [
   { name: "OPEN_CHAIR_ALERTS.md", description: "Alerts for open chairs." },
   { name: "OPEN_CHAIR_LIST.md", description: "List of open chairs." },
   { name: "POST_OPEN_CHAIR.md", description: "Post a new open chair." },
+  { name: "CLIENT_REFERRAL.md", description: "Client referral booking page." },
+  { name: "REFERRAL_TIMERS.md", description: "Dashboard for managing referral timers." },
+  { name: "SHARE_AND_EARN.md", description: "Feature for clients to earn rewards." },
+  { name: "STYLIST_PROFILE.md", description: "Stylist's public profile page." },
+  { name: "STYLIST_PROFILE_SETUP.md", description: "Setup and management of stylist profile." },
+  { name: "BOOST_PROFILE.md", description: "Feature to boost stylist profile visibility." },
+  { name: "COVERAGE_MODE.md", description: "Feature for stylists to manage unavailability." },
+  { name: "WAITING_FOR_RESPONSE.md", description: "Page for tracking referral response status." },
 ];
 
 const componentsDocs = [
   { name: "SIGN_UP_FORM.md", description: "Documents the updated sign-up form." },
   { name: "STYLIST_PROFILE_SETUP.md", description: "Documents the updated stylist profile setup." },
   { name: "OPEN_CHAIR_FORM.md", description: "Documents the updated open chair form." },
+  { name: "COUNTDOWN_TIMER.md", description: "Reusable countdown timer component." },
+  { name: "REFERRAL_COMPLETE.md", description: "Confirmation screen for completed referrals." },
 ];
 
 const DocSectionHeader = ({ title }: { title: string }) => (

@@ -1,6 +1,6 @@
 ---
 id: 68e30a9777e8ead370b13e61
-revision: 8
+revision: 9
 ---
 
 # Comprehensive Marketing Strategy for ClientPass

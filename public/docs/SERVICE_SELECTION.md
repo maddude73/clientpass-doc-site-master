@@ -1,43 +1,46 @@
----
-id: 68dccbb8479feecff6266a94
-revision: 14
----
-
 # Service Selection
 
-The `ServiceSelection` component provides a simple and intuitive interface for clients to specify the type of service they are looking for. It is a key step in the booking process, helping to narrow down the search for the right professional.
+This document provides a detailed description of the Service Selection feature, which allows stylists to manage the services they offer.
 
-## Key Features
+## 1. Overview
 
-- **Professional Type Selection**: Clients can choose between `Barber` and `Stylist` to indicate the type of professional they need.
-- **Service Tag Filtering**: Once a professional type is selected, a list of relevant service tags is displayed. Clients can select one or more tags to specify the services they are interested in.
-- **Selection Summary**: A summary of the selected professional type and service tags is displayed to the user.
-- **Extensibility**: The service tags are managed in the `src/lib/enums.ts` file, making it easy to add, remove, or modify the available services.
+The Service Selection feature provides stylists with a comprehensive tool to define, categorize, and price their professional services. This ensures that clients can accurately view and book the specific services offered by each stylist.
 
-## Component Usage
+The feature is primarily implemented within the `ServiceManager.tsx` component, which is integrated into pages like `StylistProfileSetup.tsx`.
 
-The `ServiceSelection` component is used at the beginning of the client's booking flow to gather their service requirements.
+## 2. Features
 
-```tsx
-import { ServiceSelection } from '@/components/client/ServiceSelection';
-import { ServiceDiscipline } from '@/lib/enums';
+### 2.1. Service Management
 
-const MyPage = () => {
-  const handleSelectionComplete = (discipline: ServiceDiscipline, selectedTags: string[]) => {
-    console.log('Selected discipline:', discipline);
-    console.log('Selected tags:', selectedTags);
-  };
+-   **Add New Service:** Stylists can add new services to their profile by providing:
+    -   **Name:** A descriptive name for the service (e.g., "Women's Haircut", "Full Balayage").
+    -   **Description:** An optional detailed description of the service.
+    -   **Price:** The price of the service.
+    -   **Duration:** The estimated duration of the service in minutes.
+    -   **Category:** The service can be assigned to a predefined category (e.g., "Haircuts", "Coloring").
+-   **Edit Existing Service:** Stylists can modify the details of any existing service.
+-   **Delete Service:** Stylists can remove services they no longer offer.
 
-  return (
-    <ServiceSelection onSelectionComplete={handleSelectionComplete} />
-  );
-};
-```
+### 2.2. Service Categorization
 
-## Data Flow
+-   Services can be organized into categories, making it easier for clients to browse and find what they need.
+-   The categories are fetched from the `service_categories` table in the Supabase database.
 
-1.  The user selects a professional type (Barber or Stylist).
-2.  The component then displays the relevant service tags for the selected discipline.
-3.  The user can select or deselect service tags.
-4.  When the user clicks the "Find Professionals" button, the `onSelectionComplete` callback is called with the selected discipline and tags.
-5.  The parent component can then use this information to search for matching professionals.
+### 2.3. Price and Duration Configuration
+
+-   Stylists have full control over the pricing and estimated duration for each service, allowing for flexible business models.
+
+## 3. Data Model
+
+The Service Selection feature interacts with the following tables in the Supabase database:
+
+-   `services`: This table stores the details of each service offered by a stylist, including `name`, `description`, `price`, `duration_minutes`, and `category_id`.
+-   `service_categories`: This table stores the predefined categories for services.
+
+## 4. User Interface
+
+The user interface for service selection typically includes:
+
+-   A form for adding or editing service details.
+-   A list or grid displaying all currently offered services, with options to edit or delete each one.
+-   Dropdowns or selectors for choosing service categories.

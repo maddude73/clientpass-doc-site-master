@@ -1,43 +1,69 @@
----
-id: 68dccbb8479feecff6266a9a
-revision: 14
----
-
 # Stylist Profile Setup
 
-The `StylistProfileSetup` component allows professionals to configure and manage their public profile, services, and commission settings. It is a central hub for professionals to present themselves to clients and other professionals within the platform.
+This document provides a detailed description of the Stylist Profile Setup feature.
 
-## Key Features
+## 1. Overview
 
-- **Basic Information**: Professionals can update their full name, phone number, business location (address, city, state, ZIP code), and a professional bio.
-- **Profile Photo Upload**: Users can upload a profile photo to personalize their profile.
-- **Suite Tools Integration**: A prominent section allows salon suite owners to "Enable Suite Tools," which updates their profile role and redirects them to suite management features.
-- **Service & Pricing Manager**: Integrates the `ServiceManager` component, allowing professionals to define and manage their service offerings and pricing.
-- **Commission Settings**: Professionals can set their default commission rates for different scenarios:
-    - **Referral Commission**: The percentage earned when referring a client to another professional.
-    - **Coverage Commission**: The percentage earned when another professional covers their clients.
-    - **Open Chair Commission**: The percentage earned as a chair provider when another professional works in their chair or suite.
-- **Portfolio & Gallery (Coming Soon)**: A placeholder for future functionality to showcase their work.
-- **Trusted Network**: Integrates the `TrustedNetwork` component, allowing professionals to manage their trusted connections.
+The Stylist Profile Setup page allows professional users to create and manage their comprehensive stylist profile. This profile is crucial for attracting clients, managing services, and configuring commission settings.
 
-## Component Usage
+The page is implemented in the `StylistProfileSetupPage.tsx` page, which wraps the `StylistProfileSetup` component.
 
-The `StylistProfileSetup` component is typically accessed by logged-in professionals to manage their profile.
+## 2. Key Features
 
-```tsx
-import { StylistProfileSetup } from '@/components/stylist/StylistProfileSetup';
+### 2.1. Profile Photo Upload
 
-const ProfilePage = () => {
-  return (
-    <StylistProfileSetup />
-  );
-};
-```
+-   Stylists can upload a professional photo to their profile.
+-   The system provides a user-friendly interface for photo selection and preview.
 
-## Data Flow
+### 2.2. Basic Information
 
-1.  On component mount, existing profile data is loaded from the `useAuth` context.
-2.  Users can modify their basic information, upload a photo (simulated), and adjust commission settings.
-3.  The "Enable Suite Tools" button triggers an `updateProfile` call to set `suite_owner` to `true` and `role_tag` to `suite_owner`.
-4.  When the "Save Profile" button is clicked, the `handleSaveProfile` function updates the user's profile in the backend (via `updateProfile` from `useAuth`) with all the modified data, including the new commission percentages.
-5.  Success or error messages are displayed using `useToast`.
+-   Stylists can enter and update their basic personal and business information, including:
+    -   Full Name
+    -   Phone Number
+    -   Business Location (e.g., salon name or address)
+    -   City, State, and ZIP Code
+    -   Professional Bio
+
+### 2.3. Service & Pricing Manager
+
+-   Integrated `ServiceManager` component for comprehensive service configuration:
+    -   Add, edit, and delete services offered.
+    -   Set custom pricing and duration for each service.
+    -   Categorize services for better organization and client discoverability.
+
+### 2.4. Commission Settings
+
+-   Stylists can configure their default commission rates for various scenarios:
+    -   **Referral Commission:** The percentage earned when sending a client to another stylist.
+    -   **Coverage Commission:** The percentage earned when another stylist covers their clients.
+    -   **Open Chair Commission (Host %):** The percentage earned as a host when renting out their chair.
+-   These settings are managed via interactive sliders with defined ranges (e.g., 15-25%).
+
+### 2.5. Portfolio & Gallery (Coming Soon)
+
+-   A dedicated section for stylists to showcase their work through images.
+-   This feature is planned for future development, allowing stylists to build a visual portfolio.
+
+### 2.6. My Network
+
+-   Integration with the `TrustedNetwork` component, allowing stylists to manage their professional network.
+-   This enables collaboration and referral opportunities within a trusted circle.
+
+### 2.7. Enable Suite Tools
+
+-   For stylists who are also salon suite owners, there's an option to enable "Suite Tools".
+-   Activating this feature updates their profile to `suite_owner` and unlocks specialized suite management functionalities.
+
+## 3. Data Model
+
+The Stylist Profile Setup feature interacts with the `users` table (for profile data and commission settings) and the `services` and `service_categories` tables (for service management) in the Supabase database.
+
+## 4. User Interface
+
+The Stylist Profile Setup page is organized into a tabbed interface for easy navigation:
+
+-   **Basic Info:** For personal and business details.
+-   **Services:** For managing services and commission settings.
+-   **Portfolio:** For showcasing work (coming soon).
+-   **My Network:** For managing trusted professional connections.
+-   A sticky footer with a "Save Profile" button to persist changes.

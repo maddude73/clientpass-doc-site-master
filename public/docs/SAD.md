@@ -1,6 +1,6 @@
 ---
 id: 68dccbb8479feecff6266a90
-revision: 14
+revision: 17
 ---
 
 # Software Architecture Document (SAD)
@@ -113,18 +113,18 @@ graph TD
         H[Resend API]
     end
 
-    A -- "API Calls" --> C
-    A -- "API Calls" --> D
-    A -- "API Calls" --> E
-    A -- "API Calls" --> F
-    B -- "API Calls" --> C
-    B -- "API Calls" --> D
-    B -- "API Calls" --> E
-    B -- "API Calls" --> F
+    A -- API_Calls --> C
+    A -- API_Calls --> D
+    A -- API_Calls --> E
+    A -- API_Calls --> F
+    B -- API_Calls --> C
+    B -- API_Calls --> D
+    B -- API_Calls --> E
+    B -- API_Calls --> F
 
-    E -- "DB Connection" --> D
-    E -- "HTTPS API Call" --> G
-    E -- "HTTPS API Call" --> H
+    E -- DB_Connection --> D
+    E -- HTTPS_API_Call --> G
+    E -- HTTPS_API_Call --> H
 ```
 
 The system is decomposed into three main containers: the Web Frontend, the Mobile Frontend, and the shared Backend Services.
