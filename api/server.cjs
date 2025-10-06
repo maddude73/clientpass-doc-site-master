@@ -79,17 +79,32 @@ app.post('/api/docs', async (req, res) => {
 
 // PUT (Update) an existing document by name
 app.put('/api/docs/:docName', async (req, res) => {
-  const { content, lastUpdatedBy } = req.body;
+  const { content, lastUpdatedBy, revision } = req.body;
   if (!content) {
     return res.status(400).json({ message: 'Document content is required' });
   }
   try {
+    const docName = req.params.docName.toUpperCase();
+    const query = { name: docName };
+
+    if (revision !== undefined) {
+      query.revision = revision;
+    }
+
     const updatedDoc = await Document.findOneAndUpdate(
-      { name: req.params.docName.toUpperCase() },
+      query,
       { $set: { content: content, updatedAt: Date.now(), lastUpdatedBy: lastUpdatedBy }, $inc: { revision: 1 } },
       { new: true } // Return the updated document
     );
+
     if (!updatedDoc) {
+      // If revision was provided and no doc was found, it's a conflict.
+      if (revision !== undefined) {
+        const existingDoc = await Document.findOne({ name: docName });
+        if (existingDoc) {
+          return res.status(409).json({ message: `Conflict: Document has been updated by someone else. Your revision is ${revision}, but the current revision is ${existingDoc.revision}.` });
+        }
+      }
       return res.status(404).json({ message: 'Document not found' });
     }
     res.json(updatedDoc);

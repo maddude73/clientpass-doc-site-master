@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a7c
+revision: 10
+---
+
 # Demo Mode
 
 The application includes a comprehensive Demo Mode to allow for safe testing and demonstration of all features without affecting live data. This mode is controlled by a central configuration and simulates the entire backend, including payments, notifications, and data seeding.

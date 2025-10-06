@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a76
+revision: 10
+---
+
 # CI/CD Strategy
 
 ## 1. Introduction

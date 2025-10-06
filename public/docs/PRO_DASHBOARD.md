@@ -1,3 +1,8 @@
+---
+id: 68e064ee77e8ead370b13b94
+revision: 8
+---
+
 # Pro Dashboard
 
 The Pro Dashboard is the main hub for professional users (stylists, barbers) to manage their business on ClientPass. It provides a comprehensive set of tools for managing referrals, schedule, earnings, and more.

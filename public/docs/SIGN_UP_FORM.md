@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a96
+revision: 10
+---
+
 # Sign Up Form
 
 The `SignUpForm` component facilitates user registration within the application, allowing new users to create an account with various roles and configurations. The form has been updated to support new user types and referral mechanisms.

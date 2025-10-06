@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a80
+revision: 10
+---
+
 # Sizing & Effort Estimates
 
 This document provides high-level, relative effort estimates for the user stories in the project backlog. These are for initial planning and prioritization purposes and are subject to change after more detailed analysis.

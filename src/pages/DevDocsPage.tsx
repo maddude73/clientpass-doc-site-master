@@ -21,13 +21,19 @@ const planningDocs = [
   { name: "CICD_STRATEGY.md", description: "How the product will be delivered." },
 ];
 
+const recommendationsDocs = [
+  { name: "AI_OPPORTUNITIES.md", description: "Potential AI/LLM use cases." },
+  { name: "DATABASE_RECOMMENDATIONS.md", description: "Comparison of MongoDB and Firestore." },
+];
+
 const architectureDocs = [
   { name: "SAD.md", description: "Software Architecture Document." },
   { name: "SYSTEM_DESIGN.md", description: "The detailed design, responding to the SRS." },
+  { name: "WIREFRAMES.md", description: "Textual wireframes for the main pages." },
+  { name: "NAVIGATION_FLOW.md", description: "Application navigation flowchart." },
   { name: "HLA.md", description: "High Level Architecture." },
   { name: "FRONTEND_OVERVIEW.md", description: "Specifics of the frontend." },
   { name: "DATABASE_SCHEMA.md", description: "The data model." },
-  { name: "DATABASE_RECOMMENDATIONS.md", description: "Comparison of MongoDB and Firestore." },
   { name: "EDGE_FUNCTIONS.md", description: "The backend logic." },
   { name: "USE_CASE_MODELS.md", description: "Detailed user flows." },
   { name: "PROCESS_MODELS.md", description: "State diagrams and process flows." },
@@ -195,6 +201,15 @@ const DevDocsPage = () => {
             <DocSectionHeader title="Planning Documents" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {planningDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <DocSectionHeader title="Recommendations" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {recommendationsDocs.map((doc) => (
                 <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
               ))}
             </div>

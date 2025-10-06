@@ -1,3 +1,8 @@
+---
+id: 68e064ee77e8ead370b13ba0
+revision: 8
+---
+
 # Suite Dashboard
 
 The Suite Dashboard is designed for salon suite owners and managers. It provides tools for managing the suite, tracking in-suite referrals, and posting open chairs.

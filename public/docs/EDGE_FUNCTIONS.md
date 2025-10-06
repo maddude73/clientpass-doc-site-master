@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a7e
+revision: 10
+---
+
 # Edge Functions Overview
 
 This document describes the serverless Edge Functions located in the `supabase/functions/` directory. These functions contain the core backend business logic for the application.

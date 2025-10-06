@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a9c
+revision: 10
+---
+
 # Suite Tools
 
 Suite Tools are a set of features designed specifically for salon suite owners and managers, enabling them to efficiently manage their suite operations, particularly around chair availability and in-suite referrals. These tools enhance the ability of suite owners to maximize their space utilization and foster a collaborative environment.

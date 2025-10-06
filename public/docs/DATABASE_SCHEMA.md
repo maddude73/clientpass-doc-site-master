@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a7a
+revision: 10
+---
+
 # Database Schema Overview
 
 This document outlines the structure of the primary tables in the PostgreSQL database managed by Supabase.

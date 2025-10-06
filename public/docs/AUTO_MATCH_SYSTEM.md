@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a74
+revision: 10
+---
+
 # Auto-Match System
 
 The `AutoMatchSystem` component is a comprehensive feature that allows clients to find and connect with professionals based on a variety of criteria. It provides a user-friendly interface for clients to specify their needs and receive a list of suitable stylists or barbers.

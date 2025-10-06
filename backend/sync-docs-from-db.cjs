@@ -12,7 +12,14 @@ async function syncDocsFromDb() {
 
     for (const doc of documents) {
       const filePath = path.join(DOCS_DIR, `${doc.name}.md`);
-      fs.writeFileSync(filePath, doc.content, 'utf8');
+      const frontmatter = `---
+id: ${doc._id}
+revision: ${doc.revision}
+---
+
+`;
+      const content = frontmatter + doc.content;
+      fs.writeFileSync(filePath, content, 'utf8');
       console.log(`Successfully synced: ${doc.name}.md`);
     }
 

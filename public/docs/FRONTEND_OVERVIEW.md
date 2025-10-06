@@ -1,3 +1,8 @@
+---
+id: 68dccbb7479feecff6266a82
+revision: 10
+---
+
 # Frontend Overview
 
 This document provides a high-level overview of the frontend architecture, structure, and key libraries used in the ClientPass application. It now covers both the web and the React Native mobile application.

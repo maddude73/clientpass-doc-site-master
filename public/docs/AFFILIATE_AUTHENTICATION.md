@@ -1,3 +1,8 @@
+---
+id: 68e2f5e277e8ead370b13ccd
+revision: 7
+---
+
 # Affiliate Authentication
 
 This document describes the authentication process for affiliates.

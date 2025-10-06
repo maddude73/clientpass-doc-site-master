@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a9a
+revision: 10
+---
+
 # Stylist Profile Setup
 
 The `StylistProfileSetup` component allows professionals to configure and manage their public profile, services, and commission settings. It is a central hub for professionals to present themselves to clients and other professionals within the platform.

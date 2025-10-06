@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a88
+revision: 10
+---
+
 # MVP Scope & Effort Estimate
 
 This document defines the scope and provides a high-level effort estimate for the Minimum Viable Product (MVP) of the ClientPass application.

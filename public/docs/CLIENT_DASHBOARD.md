@@ -1,3 +1,8 @@
+---
+id: 68e064ee77e8ead370b13b86
+revision: 8
+---
+
 # Client Dashboard
 
 The Client Dashboard is the main interface for clients using the ClientPass platform. It allows them to book appointments, manage their schedule, and track their referrals.

@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266aa2
+revision: 10
+---
+
 <!-- TODO: Fix Mermaid diagram rendering issue in Section 4. The diagrams are not rendering correctly, and this is a known issue. -->
 
 # Use Case Models

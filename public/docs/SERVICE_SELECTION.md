@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a94
+revision: 10
+---
+
 # Service Selection
 
 The `ServiceSelection` component provides a simple and intuitive interface for clients to specify the type of service they are looking for. It is a key step in the booking process, helping to narrow down the search for the right professional.

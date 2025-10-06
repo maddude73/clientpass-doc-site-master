@@ -1,3 +1,8 @@
+---
+id: 68e2f57777e8ead370b13cae
+revision: 7
+---
+
 # Affiliate Home Page
 
 This document describes the home page for affiliates.

@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a8a
+revision: 10
+---
+
 # Post Open Chair Form
 
 The `PostOpenChairForm` component allows salon suite owners and managers to post available chairs for other professionals to utilize. This form is a core part of the Suite Tools, enabling efficient management of temporary workspace and fostering collaboration within the professional community.

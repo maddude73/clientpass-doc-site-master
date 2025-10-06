@@ -1,3 +1,8 @@
+---
+id: 68dccbb8479feecff6266a92
+revision: 10
+---
+
 # Sequence Diagrams
 
 This document provides detailed sequence diagrams for key workflows within the ClientPass application. These diagrams illustrate the dynamic interactions between different parts of the system.

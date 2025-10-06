@@ -1,3 +1,8 @@
+---
+id: 68e0649277e8ead370b13b76
+revision: 9
+---
+
 # Affiliate Dashboard
 
 The Affiliate Dashboard is a dedicated portal for affiliate partners to track their performance, manage their network, and access marketing materials.
