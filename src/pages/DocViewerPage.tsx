@@ -276,7 +276,15 @@ function DocViewerPage() {
     if (!isLoading && markdown) {
       mermaid.initialize({
         startOnLoad: false,
-        theme: 'neutral',
+        theme: 'base',
+        themeVariables: {
+          'primaryColor': '#3B82F6',
+          'primaryTextColor': '#FFFFFF',
+          'primaryBorderColor': '#3B82F6',
+          'lineColor': '#6B7280',
+          'textColor': '#1F2937',
+          'tertiaryColor': '#F3F4F6',
+        },
         securityLevel: 'loose',
       });
       setTimeout(() => {

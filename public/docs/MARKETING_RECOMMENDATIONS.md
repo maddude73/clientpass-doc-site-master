@@ -1,6 +1,6 @@
 ---
 id: 68e30a9777e8ead370b13e61
-revision: 5
+revision: 8
 ---
 
 # Comprehensive Marketing Strategy for ClientPass
@@ -45,19 +45,17 @@ Our messaging needs to resonate with the specific goals and pain points of each 
 We will use a combination of online and offline channels to reach our target audiences.
 
 ```mermaid
-graph TD
-    A[Marketing Channels] --> B[Online];
-    A --> C[Offline];
-
-    B --> B1[Social Media (Instagram, TikTok, Facebook)];
-    B --> B2[Content Marketing (Blog, YouTube)];
-    B --> B3[Email Marketing];
-    B_B4[...]
-    B --> B_B4[Paid Advertising (Social & Search)];
-
-    C --> C1[Industry Events & Trade Shows];
-    C --> C2[Partnerships with Beauty Schools];
-    C --> C3[Local Meetups & Workshops];
+mindmap
+  root((Marketing Channels))
+    (Online)
+      (Social Media)
+      (Content Marketing)
+      (Email Marketing)
+      (Paid Advertising)
+    (Offline)
+      (Industry Events)
+      (Partnerships)
+      (Local Meetups)
 ```
 
 - **Social Media:** This is our most important channel. We will create a content calendar and post a mix of educational, inspirational, and promotional content. We will also run targeted ad campaigns to reach specific audience segments.
