@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from "./contexts/AuthContext";
 import { AuthPage } from "./pages/AuthPage";
 import DevDocsPage from "./pages/DevDocsPage";
 import DocViewerPage from "./pages/DocViewerPage";
+import ChatbotPage from "./pages/ChatbotPage"; // Import ChatbotPage
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
@@ -23,6 +24,7 @@ const AppRoutes = () => {
         <>
           <Route path="/docs" element={<DevDocsPage />} />
           <Route path="/docs/:docName" element={<DocViewerPage />} />
+          <Route path="/chatbot" element={<ChatbotPage />} /> {/* Add ChatbotPage route */}
           <Route path="*" element={<Navigate to="/docs" />} />
         </>
       ) : (

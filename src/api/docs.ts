@@ -22,12 +22,19 @@ interface Document {
 
 export const docApi = {
   async getDocument(docName: string): Promise<Document | null> {
-    const response = await fetch(`${BASE_API_URL}/docs/${docName}`);
+    const url = `${BASE_API_URL}/docs/${docName}`;
+    console.log('Fetching document from URL:', url);
+    const response = await fetch(url);
+    console.log('Raw response status:', response.status);
     if (!response.ok) {
-      if (response.status === 404) return null;
+      if (response.status === 404) {
+        console.log(`Document ${docName} not found (404).`);
+        return null;
+      }
       throw new Error(`Error fetching document: ${response.statusText}`);
     }
     const data = await response.json();
+    console.log('Document data received:', data);
     return data;
   },
 

@@ -4,22 +4,33 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
+const { GoogleGenerativeAI } = require('@google/generative-ai'); // Import GoogleGenerativeAI
 
 const app = express();
 const PORT = process.env.PORT || 5001;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/docdb'; // Replace with your MongoDB URI
-console.log('Connecting to MongoDB:', MONGODB_URI);
 
-// Middleware
-app.use(cors()); // Enable CORS for frontend access
+// Configure CORS to allow requests from your frontend's origin
+app.use(cors({
+  origin: 'http://localhost:8080', // Allow requests from your frontend
+  methods: ['GET', 'POST', 'PUT', 'DELETE'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+}));
+
 app.use(bodyParser.json()); // Parse JSON request bodies
 
-// MongoDB Connection
-mongoose.connect(MONGODB_URI)
-  .then(() => console.log('MongoDB connected successfully'))
-  .catch(err => console.error('MongoDB connection error:', err));
+// MongoDB Connection for Document content (test database)
+const MONGODB_URI_TEST = process.env.MONGODB_URI_TEST || 'mongodb://localhost:27017/test';
+const testConnection = mongoose.createConnection(MONGODB_URI_TEST);
+testConnection.on('connected', () => console.log('MongoDB (test DB) connected successfully'));
+testConnection.on('error', err => console.error('MongoDB (test DB) connection error:', err));
 
-// Document Schema and Model
+// MongoDB Connection for Document chunks (docs database)
+const MONGODB_URI_DOCS = process.env.MONGODB_URI_DOCS || 'mongodb://localhost:27017/docs';
+const docsConnection = mongoose.createConnection(MONGODB_URI_DOCS);
+docsConnection.on('connected', () => console.log('MongoDB (docs DB) connected successfully'));
+docsConnection.on('error', err => console.error('MongoDB (docs DB) connection error:', err));
+
+// Document Schema and Model for the test database
 const documentSchema = new mongoose.Schema({
   name: { type: String, required: true, unique: true },
   content: { type: String, required: true },
@@ -37,8 +48,13 @@ const documentSchema = new mongoose.Schema({
   lastUpdatedBy: { type: String },
 });
 
-const Document = mongoose.model('Document', documentSchema);
+const Document = testConnection.model('Document', documentSchema);
 
+// Initialize Google Generative AI client
+const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
+const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
+const chatModel = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL_ID || "gemini-2.5-pro" });
 // API Routes
 // GET all documents (optional, for listing)
 app.get('/api/docs', async (req, res) => {
@@ -152,6 +168,84 @@ app.post('/api/docs/:docName/comments', async (req, res) => {
     res.status(500).json({ message: err.message });
   }
 });
+
+// NEW: POST /api/docs/search for RAG
+app.post('/api/docs/search', async (req, res) => {
+  const { query } = req.body;
+  if (!query) {
+    return res.status(400).json({ message: 'Query is required' });
+  }
+
+  try {
+    // 1. Generate embedding for the user query
+    const queryEmbeddingResult = await callWithRetry(
+      () => embeddingModel.embedContent([query]),
+      5, // maxRetries
+      1000, // delay
+      (result) => result && result.embedding && result.embedding.values // Custom validation for embedding model
+    );
+    const queryEmbedding = queryEmbeddingResult.embedding.values;
+    console.log('Query Embedding:', queryEmbedding);
+
+    // 2. Perform Atlas Vector Search
+    const collection = docsConnection.collection('document_chunks'); // Access the raw collection from docsConnection
+    const searchResults = await collection.aggregate([
+      {
+        $vectorSearch: {
+          queryVector: queryEmbedding,
+          path: 'embedding',
+          numCandidates: 100, // Number of documents to scan
+          limit: 5, // Number of results to return
+          index: 'vector_index' // Your Atlas Vector Search index name
+        }
+      },
+      {
+        $project: {
+          _id: 0,
+          content: 1,
+          source_file: 1,
+          score: { $meta: 'vectorSearchScore' }
+        }
+      }
+    ]).toArray();
+
+    // 3. Construct prompt for LLM
+    let context = searchResults.map(result => `Document: ${result.source_file}
+Content: ${result.content}`).join('\n\n');
+    
+    const prompt = `You are a helpful assistant for the ClientPass documentation. Answer the following question based *only* on the provided context. If the answer is not in the context, state that you don't know. Cite the document names you used (e.g., [DEMO_MODE.md]).
+
+Question: ${query}
+
+Context:
+${context}
+
+Answer:`;
+
+    // 4. Get answer from LLM
+    console.log('Sending prompt to LLM:', prompt);
+    const chatResult = await callWithRetry(() => chatModel.generateContent({ contents: [{ role: "user", parts: [{ text: prompt }] }] }));
+    console.log('LLM Result:', JSON.stringify(chatResult, null, 2)); // Log the full result for inspection
+
+    // Error handling for no candidates or empty response
+    if (!chatResult.response || !chatResult.response.candidates || chatResult.response.candidates.length === 0 || !chatResult.response.candidates[0].content || !chatResult.response.candidates[0].content.parts || chatResult.response.candidates[0].content.parts.length === 0) {
+      console.error('Invalid LLM response structure:', chatResult);
+      return res.status(500).json({ message: 'Failed to get a valid response from the language model.' });
+    }
+
+    const llmAnswer = chatResult.response.candidates[0].content.parts[0].text;
+    console.log('LLM Answer:', llmAnswer);
+
+    // 5. Return LLM's answer and sources
+    const sources = searchResults.map(result => result.source_file);
+    res.json({ answer: llmAnswer, sources: [...new Set(sources)] }); // Return unique sources
+
+  } catch (err) {
+    console.error('Error during RAG search:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
 
 // Start the server
 app.listen(PORT, () => {

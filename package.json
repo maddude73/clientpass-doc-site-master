@@ -11,6 +11,7 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "@hookform/resolvers": "^3.10.0",
     "@radix-ui/react-accordion": "^1.2.11",
     "@radix-ui/react-alert-dialog": "^1.1.14",
@@ -45,9 +46,12 @@
     "clsx": "^2.1.1",
     "cmdk": "^1.1.1",
     "date-fns": "^3.6.0",
+    "dotenv": "^17.2.3",
     "embla-carousel-react": "^8.6.0",
+    "gray-matter": "^4.0.3",
     "input-otp": "^1.4.2",
     "lucide-react": "^0.462.0",
+    "markdown-it": "^14.1.0",
     "mermaid": "^11.11.0",
     "next-themes": "^0.3.0",
     "react": "^18.3.1",

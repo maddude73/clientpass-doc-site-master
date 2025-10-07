@@ -202,7 +202,6 @@ function DocViewerPage() {
   const queryClient = useQueryClient();
 
   const safeDocName = docName?.replace(/[^a-z0-9_-]/gi, '') || '';
-  console.log('docName:', docName, 'safeDocName:', safeDocName);
 
   const { data: dbDoc, isLoading, isError, error } = useQuery<DocumentData>({
     queryKey: ['document', safeDocName],
@@ -225,20 +224,23 @@ function DocViewerPage() {
   });
 
   useEffect(() => {
-    const loadDocumentContent = async () => {
-      if (isLoading) return;
+    if (isLoading) return; // Wait for the query to settle
 
-      if (dbDoc) {
-        setMarkdown(dbDoc.content);
-        setEditedMarkdown(marked.parse(dbDoc.content));
-      } else if (isError && error) {
-        console.error("Error fetching document from DB:", error);
+    if (dbDoc) {
+      // Document found in DB, use its content
+      setMarkdown(dbDoc.content);
+      setEditedMarkdown(marked.parse(dbDoc.content));
+    } else if (!dbDoc && !isLoading) {
+      // Document not found in DB, or DB query finished and returned null
+      // Attempt to load from static markdown file as a fallback
+      const loadStaticDocument = async () => {
         try {
           const response = await fetch(`/docs/${safeDocName.toUpperCase()}.md`);
           if (response.ok) {
             const fetchedContent = await response.text();
             setMarkdown(fetchedContent);
             setEditedMarkdown(marked.parse(fetchedContent));
+            // Optionally, create the document in DB if it was found statically
             docApi.createDocument(safeDocName, fetchedContent).catch(console.error);
           } else {
             setMarkdown('# Document Not Found\n\nCould not load the requested document.');
@@ -249,27 +251,30 @@ function DocViewerPage() {
           setMarkdown('# Error\n\nThere was an error loading the document.');
           setEditedMarkdown(marked.parse('# Error\n\nThere was an error loading the document.'));
         }
-      } else if (!dbDoc && !isLoading && !isError) {
+      };
+      loadStaticDocument();
+    } else if (isError) {
+      // An error occurred during DB fetch, fallback to static markdown
+      console.error("Error fetching document from DB:", error);
+      const loadStaticDocumentOnError = async () => {
         try {
           const response = await fetch(`/docs/${safeDocName.toUpperCase()}.md`);
           if (response.ok) {
             const fetchedContent = await response.text();
             setMarkdown(fetchedContent);
             setEditedMarkdown(marked.parse(fetchedContent));
-            docApi.createDocument(safeDocName, fetchedContent).catch(console.error);
           } else {
             setMarkdown('# Document Not Found\n\nCould not load the requested document.');
             setEditedMarkdown(marked.parse('# Document Not Found\n\nCould not load the requested document.'));
           }
         } catch (staticError) {
-          console.error("Failed to fetch static document:", staticError);
+          console.error("Failed to fetch static document on error fallback:", staticError);
           setMarkdown('# Error\n\nThere was an error loading the document.');
           setEditedMarkdown(marked.parse('# Error\n\nThere was an error loading the document.'));
         }
-      }
-    };
-
-    loadDocumentContent();
+      };
+      loadStaticDocumentOnError();
+    }
   }, [dbDoc, isLoading, isError, error, safeDocName]);
 
   useEffect(() => {
