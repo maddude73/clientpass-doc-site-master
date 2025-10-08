@@ -6,12 +6,62 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const { GoogleGenerativeAI } = require('@google/generative-ai'); // Import GoogleGenerativeAI
 
+// Helper function for retries with exponential backoff
+async function callWithRetry(apiCall, maxRetries = 5, delay = 1000, validate = (result) => result && result.response) {
+  for (let i = 0; i < maxRetries; i++) {
+    try {
+      const result = await apiCall();
+      console.log('API Call Result:', JSON.stringify(result, null, 2)); // Log the full result for inspection
+      // Use the provided validate function for validation
+      if (validate(result)) {
+        return result;
+      } else {
+        throw new Error("Invalid API response structure");
+      }
+    } catch (error) {
+      console.error(`Attempt ${i + 1} failed: ${error.message}`);
+      if (i < maxRetries - 1) {
+        await new Promise(resolve => setTimeout(resolve, delay * Math.pow(2, i)));
+      } else {
+        throw error; // Re-throw if max retries reached
+      }
+    }
+  }
+}
+
 const app = express();
 const PORT = process.env.PORT || 5001;
 
-// Configure CORS to allow requests from your frontend's origin
+// Define trusted origins/domains. These can be configured via environment variables in a real app.
+const TRUSTED_DOMAINS = [
+  'localhost:8080', // Your local frontend development server
+  '.vercel.app',    // Vercel deployments (wildcard for subdomains)
+  // Add your custom production domain here, e.g., 'your-custom-domain.com'
+];
+
 app.use(cors({
-  origin: 'http://localhost:8080', // Allow requests from your frontend
+  origin: (origin, callback) => {
+    // Allow requests with no origin (like mobile apps or curl requests)
+    if (!origin) return callback(null, true);
+
+    // Check if the origin matches any of the trusted domains
+    const isTrusted = TRUSTED_DOMAINS.some(domain => {
+      if (domain.startsWith('.')) {
+        // Wildcard subdomain match for Vercel
+        return origin.endsWith(domain);
+      } else {
+        // Exact match for localhost or custom domains
+        return origin === `http://${domain}` || origin === `https://${domain}`;
+      }
+    });
+
+    if (isTrusted) {
+      callback(null, true);
+    } else {
+      const msg = `The CORS policy for this site does not allow access from the specified Origin: ${origin}`;
+      callback(new Error(msg), false);
+    }
+  },
   methods: ['GET', 'POST', 'PUT', 'DELETE'],
   allowedHeaders: ['Content-Type', 'Authorization'],
 }));

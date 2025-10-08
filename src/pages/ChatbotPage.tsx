@@ -2,13 +2,15 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send } from "lucide-react";
+import { Send, LogOut } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
+import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
 const ChatbotPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'bot'; text: string; sources?: string[] }>>([]);
   const [loading, setLoading] = useState(false);
+  const { signOut } = useAuth(); // Destructure signOut from useAuth
 
   const handleSendMessage = async () => {
     if (input.trim() === '') return;
@@ -32,6 +34,7 @@ const ChatbotPage: React.FC = () => {
       }
 
       const data = await response.json();
+      console.log('Backend response data:', data);
       const botMessage = { type: 'bot' as const, text: data.answer, sources: data.sources };
       setMessages(prevMessages => [...prevMessages, botMessage]);
     } catch (error) {
@@ -44,17 +47,21 @@ const ChatbotPage: React.FC = () => {
 
   return (
     <div className="flex flex-col h-screen bg-background">
-      <header className="bg-primary text-primary-foreground p-4 shadow-md">
+      <header className="bg-primary text-primary-foreground p-4 shadow-md flex justify-between items-center">
         <h1 className="text-2xl font-bold">Documentation Chatbot</h1>
+        <button onClick={signOut} className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-primary-foreground">
+            <LogOut className="h-4 w-4" />
+            Logout
+        </button>
       </header>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-7xl mx-auto">
+      <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-screen-2xl mx-auto">
         {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <Card
-              className={`max-w-xs lg:max-w-md ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+              className={`w-fit ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
             >
               <CardContent className="p-3">
                 {msg.type === 'bot' ? (
@@ -74,7 +81,7 @@ const ChatbotPage: React.FC = () => {
                             href={`/docs/${source.replace('.md', '')}`} // Assuming docs are served under /docs/
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-blue-200 hover:underline"
+                            className="font-bold text-blue-700 hover:underline text-base"
                           >
                             {source}
                           </a>
@@ -88,7 +95,7 @@ const ChatbotPage: React.FC = () => {
           </div>
         ))}
       </div>
-      <div className="p-4 bg-background border-t border-border flex items-center max-w-7xl mx-auto">
+      <div className="p-4 bg-background border-t border-border flex items-center max-w-screen-2xl mx-auto">
         <Input
           type="text"
           placeholder="Ask a question..."
@@ -100,7 +107,7 @@ const ChatbotPage: React.FC = () => {
             }
           }}
           disabled={loading}
-          className="flex-1 mr-2"
+          className="w-full"
         />
         <Button
           onClick={handleSendMessage}
