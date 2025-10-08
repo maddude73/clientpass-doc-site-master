@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { supabase } from "@/integrations/supabase/client";
 import { useQuery } from "@tanstack/react-query";
 import { docApi } from "@/api/docs";
+import ChatbotPage from "./ChatbotPage"; // Import ChatbotPage
 
 const discoveryDocs = [
   { name: "SRS.md", description: "The Software Requirements Specification." },
@@ -182,21 +183,29 @@ const DevDocsPage = () => {
 
   return (
     <div className="min-h-screen bg-background p-4 sm:p-6">
-      <header className="max-w-5xl mx-auto mb-8 flex justify-end">
-        <button onClick={signOut} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
-            <LogOut className="h-4 w-4" />
-            Logout
-        </button>
-      </header>
       <div className="max-w-5xl mx-auto">
-        <div className="text-center mb-12">
+        <div className="relative text-center mb-12">
           <h1 className="text-4xl font-bold">Project Documentation</h1>
           <p className="text-muted-foreground mt-2">
             A central hub for all project planning and architecture documents.
           </p>
+          <div className="absolute top-0 right-0">
+            <button onClick={signOut} className="flex items-center gap-2 text-sm text-muted-foreground hover:text-foreground">
+              <LogOut className="h-4 w-4" />
+              Logout
+            </button>
+          </div>
         </div>
 
         {profile?.role === 'admin' && <InviteUserForm />}
+
+        <section className="mt-12">
+          <DocSectionHeader title="Librarian" />
+          <p className="text-muted-foreground -mt-4 mb-4">Ask the Librarian any question about Clientpass.</p>
+          <div className="border rounded-lg overflow-hidden">
+            <ChatbotPage />
+          </div>
+        </section>
 
         <div className="space-y-12">
           <section>

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, LogOut } from "lucide-react";
+import { Send, LogOut, Loader } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
@@ -10,6 +10,7 @@ const ChatbotPage: React.FC = () => {
   const [input, setInput] = useState('');
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'bot'; text: string; sources?: string[] }>>([]);
   const [loading, setLoading] = useState(false);
+  const [isThinking, setIsThinking] = useState(false);
   const { signOut } = useAuth(); // Destructure signOut from useAuth
 
   const handleSendMessage = async () => {
@@ -19,6 +20,13 @@ const ChatbotPage: React.FC = () => {
     setMessages(prevMessages => [...prevMessages, userMessage]);
     setInput('');
     setLoading(true);
+    setIsThinking(true);
+
+    const thinkingTimeout = setTimeout(() => {
+      setIsThinking(false);
+      setLoading(false);
+      setMessages(prevMessages => [...prevMessages, { type: 'bot', text: 'We are busy, please try again later.' }]);
+    }, 15000);
 
     try {
       const response = await fetch('http://localhost:5001/api/docs/search', {
@@ -29,6 +37,8 @@ const ChatbotPage: React.FC = () => {
         body: JSON.stringify({ query: userMessage.text }),
       });
 
+      clearTimeout(thinkingTimeout);
+
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
@@ -38,30 +48,25 @@ const ChatbotPage: React.FC = () => {
       const botMessage = { type: 'bot' as const, text: data.answer, sources: data.sources };
       setMessages(prevMessages => [...prevMessages, botMessage]);
     } catch (error) {
+      clearTimeout(thinkingTimeout);
       console.error('Error sending message:', error);
-      setMessages(prevMessages => [...prevMessages, { type: 'bot', text: 'Sorry, something went wrong. Please try again.' }]);
+      setMessages(prevMessages => [...prevMessages, { type: 'bot', text: 'We are having technical difficulties.' }]);
     } finally {
+      setIsThinking(false);
       setLoading(false);
     }
   };
 
   return (
-    <div className="flex flex-col h-screen bg-background">
-      <header className="bg-primary text-primary-foreground p-4 shadow-md flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Documentation Chatbot</h1>
-        <button onClick={signOut} className="flex items-center gap-2 text-sm text-primary-foreground/80 hover:text-primary-foreground">
-            <LogOut className="h-4 w-4" />
-            Logout
-        </button>
-      </header>
-      <div className="flex-1 overflow-y-auto p-4 space-y-4 max-w-screen-2xl mx-auto">
-        {messages.map((msg, index) => (
+        <div className="flex flex-col bg-background">
+          <div className="flex-1 p-4 space-y-4">
+            {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <Card
-              className={`w-fit ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-muted'}`}
+className={`w-fit ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-[#c1c2c3]'}`}
             >
               <CardContent className="p-3">
                 {msg.type === 'bot' ? (
@@ -94,6 +99,17 @@ const ChatbotPage: React.FC = () => {
             </Card>
           </div>
         ))}
+        {isThinking && (
+          <div className="flex justify-start">
+            <Card className="w-fit bg-[#c1c2c3]">
+              <CardContent className="p-3">
+                <div className="prose dark:prose-invert">
+                  Thinking...
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
       </div>
       <div className="p-4 bg-background border-t border-border flex items-center max-w-screen-2xl mx-auto">
         <Input
@@ -107,14 +123,17 @@ const ChatbotPage: React.FC = () => {
             }
           }}
           disabled={loading}
-          className="w-full"
+          className="w-[512px]"
         />
         <Button
           onClick={handleSendMessage}
           disabled={loading}
         >
-          <Send className="h-4 w-4 mr-2" />
-          {loading ? 'Sending...' : 'Send'}
+          {loading ? (
+            <Loader className="h-4 w-4 animate-spin" />
+          ) : (
+            <Send className="h-4 w-4" />
+          )}
         </Button>
       </div>
     </div>

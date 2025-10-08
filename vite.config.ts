@@ -8,6 +8,9 @@ export default defineConfig(() => ({
     host: "::",
     port: 8080,
     historyApiFallback: true,
+    hmr: {
+      overlay: false,
+    },
   },
   plugins: [
     react(),

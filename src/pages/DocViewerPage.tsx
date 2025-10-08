@@ -107,6 +107,35 @@ const MermaidDiagram = ({ content }: { content: string }) => {
   const [modalZoom, setModalZoom] = useState(1);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const modalDiagramId = `mermaid-modal-${Math.random().toString(36).substr(2, 9)}`;
+  const diagramId = `mermaid-${Math.random().toString(36).substr(2, 9)}`;
+
+  useEffect(() => {
+    mermaid.initialize({
+      startOnLoad: false,
+      theme: 'base',
+      themeVariables: {
+        'primaryColor': '#3B82F6',
+        'primaryTextColor': '#FFFFFF',
+        'primaryBorderColor': '#3B82F6',
+        'lineColor': '#6B7280',
+        'textColor': '#1F2937',
+        'tertiaryColor': '#F3F4F6',
+      },
+      securityLevel: 'loose',
+    });
+    setTimeout(() => {
+      try {
+        const element = document.getElementById(diagramId);
+        if (element) {
+          mermaid.run({
+            nodes: [element]
+          });
+        }
+      } catch (e) {
+        console.error("Mermaid rendering error:", e);
+      }
+    }, 0);
+  }, [diagramId]);
 
   const handleZoomIn = () => setZoom(prev => prev + 0.1);
   const handleZoomOut = () => setZoom(prev => prev > 0.2 ? prev - 0.1 : 0.1);
@@ -178,6 +207,7 @@ const MermaidDiagram = ({ content }: { content: string }) => {
       </div>
       <div className="overflow-auto">
         <pre
+          id={diagramId}
           className="mermaid"
           style={{
             transform: `scale(${zoom})`,
@@ -277,30 +307,7 @@ function DocViewerPage() {
     }
   }, [dbDoc, isLoading, isError, error, safeDocName]);
 
-  useEffect(() => {
-    if (!isLoading && markdown) {
-      mermaid.initialize({
-        startOnLoad: false,
-        theme: 'base',
-        themeVariables: {
-          'primaryColor': '#3B82F6',
-          'primaryTextColor': '#FFFFFF',
-          'primaryBorderColor': '#3B82F6',
-          'lineColor': '#6B7280',
-          'textColor': '#1F2937',
-          'tertiaryColor': '#F3F4F6',
-        },
-        securityLevel: 'loose',
-      });
-      setTimeout(() => {
-        try {
-          mermaid.run({ querySelector: '.mermaid' });
-        } catch (e) {
-          console.error("Mermaid rendering error:", e);
-        }
-      }, 100);
-    }
-  }, [isLoading, markdown]);
+
 
   const handleSave = async () => {
     const turndownService = new TurndownService();
@@ -368,70 +375,33 @@ function DocViewerPage() {
           </button>
         </div>
       </header>
-      <div className="flex flex-grow overflow-hidden">
-        <div className="flex-grow overflow-y-auto">
-          <main className={cn("mx-auto p-4 sm:p-6 lg:p-8 w-full", isCommentsVisible ? "max-w-4xl" : "max-w-7xl")}>
-            {isLoading ? (
-              <p>Loading document...</p>
-            ) : isEditing ? (
-              <div className="space-y-4">
-                <ReactQuill
-                  theme="snow"
-                  value={editedMarkdown}
-                  onChange={setEditedMarkdown}
-                  className="min-h-[500px]"
-                />
-                <div className="flex justify-end gap-2">
-                  <Button variant="outline" onClick={handleCancel}>Cancel</Button>
-                  <Button onClick={handleSave}>Save</Button>
-                </div>
-              </div>
-            ) : (
-              <article className="prose dark:prose-invert lg:prose-xl">
-                <div className="mb-4 text-sm text-muted-foreground">
-                  <p>Last updated: {dbDoc?.updatedAt ? new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { year: 'numeric', month: 'short', day: 'numeric', hour: '2-digit', minute: '2-digit' }) : 'N/A'}</p>
-                  <p>Revision: {dbDoc?.revision ?? 'N/A'}</p>
-                  <p>Last updated by: {dbDoc?.lastUpdatedBy ?? 'N/A'}</p>
-                </div>
-                <ReactMarkdown
-                  key={markdown}
-                  remarkPlugins={[remarkGfm]}
-                  rehypePlugins={[rehypeRaw]}
-                  components={{
-                    code({ node, inline, className, children, ...props }) {
-                      const match = /language-(\w+)/.exec(className || '');
-                      if (!inline && match && match[1] === 'mermaid') {
-                        const content = String(children).replace(/\n$/, '');
-                        return <MermaidDiagram content={content} />;
-                      }
-                      return !inline && match ? (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      ) : (
-                        <code className={className} {...props}>
-                          {children}
-                        </code>
-                      );
-                    },
-                  }}
-                >
-                  {markdown}
-                </ReactMarkdown>
-              </article>
-            )}
-          </main>
+      <main className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto">
+        <div className="prose dark:prose-invert">
+          <ReactMarkdown
+            remarkPlugins={[remarkGfm]}
+            rehypePlugins={[rehypeRaw]}
+            components={{
+              code({ node, inline, className, children, ...props }) {
+                const match = /language-(\w+)/.exec(className || '');
+                if (match && match[1] === 'mermaid') {
+                  return <MermaidDiagram content={String(children).replace(/\n$/, '')} />;
+                }
+                return !inline && match ? (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                ) : (
+                  <code className={className} {...props}>
+                    {children}
+                  </code>
+                );
+              },
+            }}
+          >
+            {markdown}
+          </ReactMarkdown>
         </div>
-        {isCommentsVisible && (
-          <CommentSection
-            docName={safeDocName}
-            comments={dbDoc?.comments || []}
-            ownerId={user?.id || ''}
-            ownerName={profile?.full_name || 'Anonymous'}
-            onAddComment={handleAddComment}
-          />
-        )}
-      </div>
+      </main>
     </div>
   );
 }
