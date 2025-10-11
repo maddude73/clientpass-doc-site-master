@@ -375,33 +375,59 @@ function DocViewerPage() {
           </button>
         </div>
       </header>
-      <main className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto">
-        <div className="prose dark:prose-invert">
-          <ReactMarkdown
-            remarkPlugins={[remarkGfm]}
-            rehypePlugins={[rehypeRaw]}
-            components={{
-              code({ node, inline, className, children, ...props }) {
-                const match = /language-(\w+)/.exec(className || '');
-                if (match && match[1] === 'mermaid') {
-                  return <MermaidDiagram content={String(children).replace(/\n$/, '')} />;
-                }
-                return !inline && match ? (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                ) : (
-                  <code className={className} {...props}>
-                    {children}
-                  </code>
-                );
-              },
-            }}
-          >
-            {markdown}
-          </ReactMarkdown>
-        </div>
-      </main>
+      <div className="flex flex-1 overflow-hidden">
+        <main className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto">
+          {isEditing ? (
+            <div className="flex flex-col h-full" key={isEditing ? 'editor' : 'viewer'}>
+              <ReactQuill
+                theme="snow"
+                value={editedMarkdown}
+                onChange={setEditedMarkdown}
+                className="flex-grow"
+              />
+              <div className="flex justify-end gap-2 mt-4">
+                <Button variant="outline" onClick={handleCancel}>Cancel</Button>
+                <Button onClick={handleSave}>Save</Button>
+              </div>
+            </div>
+          ) : (
+            <div className="prose dark:prose-invert">
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={{
+                  code({ node, inline, className, children, ...props }) {
+                    const match = /language-(\w+)/.exec(className || '');
+                    if (match && match[1] === 'mermaid') {
+                      return <MermaidDiagram content={String(children).replace(/\n$/, '')} />;
+                    }
+                    return !inline && match ? (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    ) : (
+                      <code className={className} {...props}>
+                        {children}
+                      </code>
+                    );
+                  },
+                }}
+              >
+                {markdown}
+              </ReactMarkdown>
+            </div>
+          )}
+        </main>
+        {isCommentsVisible && dbDoc && user && profile && (
+          <CommentSection
+            docName={safeDocName}
+            comments={dbDoc.comments}
+            ownerId={user.id}
+            ownerName={profile.full_name}
+            onAddComment={handleAddComment}
+          />
+        )}
+      </div>
     </div>
   );
 }
