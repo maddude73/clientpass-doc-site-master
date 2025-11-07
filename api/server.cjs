@@ -101,15 +101,119 @@ const documentSchema = new mongoose.Schema({
 
 const Document = testConnection.model('Document', documentSchema);
 
-// Initialize OpenAI and Anthropic clients
-const openai = new OpenAI({
+// Initialize OpenAI and Anthropic clients (make them optional to avoid startup errors)
+const openai = process.env.OPENAI_API_KEY ? new OpenAI({
   apiKey: process.env.OPENAI_API_KEY,
+}) : null;
+
+const anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+}) : null;
+
+// Dynamic configuration storage (in-memory for now, could be moved to DB)
+let dynamicConfig = {
+  activeProvider: 'openai',
+  configs: {
+    google: { systemPrompt: 'You are a helpful documentation assistant.' },
+    openai: { systemPrompt: 'You are an expert technical assistant.' },
+    anthropic: { systemPrompt: 'You are a knowledgeable coding assistant.' },
+    ollama: { systemPrompt: 'You are a helpful AI assistant.' }
+  }
+};
+
+// API Routes
+
+// POST: Update configuration dynamically
+app.post('/api/update-config', async (req, res) => {
+  try {
+    const { activeProvider, configs } = req.body;
+
+    if (activeProvider) {
+      dynamicConfig.activeProvider = activeProvider;
+    }
+
+    if (configs) {
+      dynamicConfig.configs = {
+        ...dynamicConfig.configs,
+        ...configs
+      };
+    }
+
+    console.log('Configuration updated:', dynamicConfig);
+    res.json({ success: true, message: 'Configuration updated successfully' });
+  } catch (error) {
+    console.error('Error updating config:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
 
-const anthropic = new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
+// POST: Test prompt with specific provider
+app.post('/api/test-prompt', async (req, res) => {
+  try {
+    const { provider, config, userMessage } = req.body;
+
+    if (!provider || !config || !userMessage) {
+      return res.status(400).json({ message: 'Provider, config, and userMessage are required' });
+    }
+
+    let response = '';
+
+    switch (provider) {
+      case 'google':
+        // Note: Gemini support would require @google/generative-ai package
+        return res.status(501).json({ message: 'Google Gemini testing not yet implemented' });
+
+      case 'openai':
+        const openaiClient = new OpenAI({ apiKey: config.apiKey });
+        const openaiResponse = await openaiClient.chat.completions.create({
+          model: config.model || 'gpt-4-turbo-preview',
+          messages: [
+            { role: 'system', content: config.systemPrompt || 'You are a helpful assistant.' },
+            { role: 'user', content: userMessage }
+          ],
+          max_tokens: 500
+        });
+        response = openaiResponse.choices[0].message.content;
+        break;
+
+      case 'anthropic':
+        const anthropicClient = new Anthropic({ apiKey: config.apiKey });
+        const anthropicResponse = await anthropicClient.messages.create({
+          model: config.model || 'claude-3-5-sonnet-20241022',
+          max_tokens: 500,
+          system: config.systemPrompt || 'You are a helpful assistant.',
+          messages: [{ role: 'user', content: userMessage }]
+        });
+        response = anthropicResponse.content[0].text;
+        break;
+
+      case 'ollama':
+        // Basic Ollama support
+        const ollamaUrl = config.url || 'http://localhost:11434';
+        const ollamaResponse = await fetch(`${ollamaUrl}/api/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: config.model || 'llama3.2',
+            prompt: `${config.systemPrompt || 'You are a helpful assistant.'}\n\nUser: ${userMessage}\n\nAssistant:`,
+            stream: false
+          })
+        });
+        const ollamaData = await ollamaResponse.json();
+        response = ollamaData.response;
+        break;
+
+      default:
+        return res.status(400).json({ message: 'Invalid provider' });
+    }
+
+    res.json({ success: true, response });
+  } catch (error) {
+    console.error('Error testing prompt:', error);
+    res.status(500).json({ success: false, message: error.message });
+  }
 });
-// API Routes
+
 // GET all documents (optional, for listing)
 app.get('/api/docs', async (req, res) => {
   try {
@@ -230,6 +334,14 @@ app.post('/api/docs/search', async (req, res) => {
     return res.status(400).json({ message: 'Query is required' });
   }
 
+  if (!openai) {
+    return res.status(503).json({ message: 'OpenAI client not configured. Please set OPENAI_API_KEY.' });
+  }
+
+  if (!anthropic) {
+    return res.status(503).json({ message: 'Anthropic client not configured. Please set ANTHROPIC_API_KEY.' });
+  }
+
   try {
     // 1. Generate embedding for the user query using OpenAI
     const embeddingResponse = await openai.embeddings.create({
@@ -267,8 +379,14 @@ app.post('/api/docs/search', async (req, res) => {
     // 3. Construct prompt for Claude
     let context = searchResults.map(result => `Document: ${result.source_file}
 Content: ${result.content}`).join('\n\n');
-    
-    const prompt = `You are a helpful assistant for the ClientPass documentation. Answer the following question based *only* on the provided context. If the answer is not in the context, state that you don't know. Cite the document names you used (e.g., [DEMO_MODE.md]).
+
+    // Use dynamic system prompt if available
+    const systemPrompt = dynamicConfig.configs.anthropic?.systemPrompt ||
+      'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.';
+
+    const prompt = `${systemPrompt}
+
+Answer the following question based *only* on the provided context. If the answer is not in the context, state that you don't know. Cite the document names you used (e.g., [DEMO_MODE.md]).
 
 Question: ${query}
 
@@ -297,6 +415,109 @@ Answer:`;
 
   } catch (err) {
     console.error('Error during RAG search:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/test-prompt - Test a system prompt with a provider
+app.post('/api/test-prompt', async (req, res) => {
+  try {
+    const { provider, config, userMessage } = req.body;
+
+    if (!provider || !userMessage) {
+      return res.status(400).json({ message: 'Provider and userMessage are required' });
+    }
+
+    let response = '';
+
+    switch (provider) {
+      case 'openai':
+        if (!config.apiKey) {
+          return res.status(400).json({ message: 'OpenAI API key is required' });
+        }
+        const openaiClient = new OpenAI({ apiKey: config.apiKey });
+        const openaiResponse = await openaiClient.chat.completions.create({
+          model: config.model || 'gpt-4-turbo-preview',
+          messages: [
+            { role: 'system', content: config.systemPrompt || 'You are a helpful assistant.' },
+            { role: 'user', content: userMessage }
+          ],
+          max_tokens: 500,
+        });
+        response = openaiResponse.choices[0].message.content;
+        break;
+
+      case 'anthropic':
+        if (!config.apiKey) {
+          return res.status(400).json({ message: 'Anthropic API key is required' });
+        }
+        const anthropicClient = new Anthropic({ apiKey: config.apiKey });
+        const anthropicResponse = await anthropicClient.messages.create({
+          model: config.model || 'claude-3-5-sonnet-20241022',
+          max_tokens: 500,
+          system: config.systemPrompt || 'You are a helpful assistant.',
+          messages: [{ role: 'user', content: userMessage }]
+        });
+        response = anthropicResponse.content[0].text;
+        break;
+
+      case 'google':
+        // Note: Google Gemini would require their SDK here
+        return res.status(501).json({ message: 'Google Gemini testing not yet implemented' });
+
+      case 'ollama':
+        // Note: Ollama would require fetch to local server
+        if (!config.url) {
+          return res.status(400).json({ message: 'Ollama URL is required' });
+        }
+        const ollamaResponse = await fetch(`${config.url}/api/generate`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            model: config.model || 'llama3.2',
+            prompt: `${config.systemPrompt || 'You are a helpful assistant.'}\n\nUser: ${userMessage}\nAssistant:`,
+            stream: false,
+          }),
+        });
+        const ollamaData = await ollamaResponse.json();
+        response = ollamaData.response;
+        break;
+
+      default:
+        return res.status(400).json({ message: 'Invalid provider' });
+    }
+
+    res.json({ success: true, response });
+
+  } catch (err) {
+    console.error('Error testing prompt:', err);
+    res.status(500).json({ message: err.message });
+  }
+});
+
+// POST /api/update-config - Update AI configuration dynamically
+app.post('/api/update-config', async (req, res) => {
+  try {
+    const { activeProvider, configs } = req.body;
+
+    if (!activeProvider || !configs) {
+      return res.status(400).json({ message: 'activeProvider and configs are required' });
+    }
+
+    // Update in-memory configuration
+    dynamicConfig.activeProvider = activeProvider;
+    dynamicConfig.configs = configs;
+
+    console.log('Configuration updated:', dynamicConfig);
+
+    res.json({
+      success: true,
+      message: 'Configuration updated successfully',
+      activeProvider: dynamicConfig.activeProvider
+    });
+
+  } catch (err) {
+    console.error('Error updating configuration:', err);
     res.status(500).json({ message: err.message });
   }
 });

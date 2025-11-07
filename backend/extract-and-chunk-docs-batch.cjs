@@ -22,13 +22,13 @@ async function getEmbeddingsBatch(texts) {
   if (!OPENAI_API_KEY) {
     throw new Error('OPENAI_API_KEY environment variable is not set.');
   }
-  
+
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-large',
     input: texts,
     dimensions: 1536, // Explicitly set dimensions
   });
-  
+
   return response.data.map(item => item.embedding);
 }
 
@@ -49,12 +49,12 @@ async function extractAndChunkDocsBatch() {
 
       // Convert markdown to plain text (strip HTML tags and replace newlines with spaces)
       const plainText = md.render(content).replace(/<[^>]*>/g, '').replace(/\n/g, ' ');
-      
+
       // Simple fixed-size chunking logic
       let currentPosition = 0;
       while (currentPosition < plainText.length) {
         let chunk = plainText.substring(currentPosition, currentPosition + CHUNK_SIZE);
-        
+
         allChunks.push({
           doc_id: docId,
           content: chunk.trim(),

@@ -400,12 +400,12 @@ function DocViewerPage() {
                   <Clock className="h-4 w-4 text-muted-foreground" />
                   <span className="font-medium">Last Updated:</span>
                   <span className="text-muted-foreground">
-                    {new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { 
-                      year: 'numeric', 
-                      month: 'short', 
-                      day: 'numeric', 
-                      hour: '2-digit', 
-                      minute: '2-digit' 
+                    {new Date(dbDoc.updatedAt).toLocaleDateString(undefined, {
+                      year: 'numeric',
+                      month: 'short',
+                      day: 'numeric',
+                      hour: '2-digit',
+                      minute: '2-digit'
                     })}
                   </span>
                 </div>
