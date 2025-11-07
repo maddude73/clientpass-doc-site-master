@@ -200,7 +200,27 @@ const DevDocsPage = () => {
         {profile?.role === 'admin' && <InviteUserForm />}
 
         <section className="mt-12">
-          <DocSectionHeader title="Librarian" />
+          <div className="flex items-center gap-2 mb-6">
+            <DocSectionHeader title="Librarian" />
+            {(() => {
+              const getActiveProvider = () => {
+                if (localStorage.getItem('openai_api_key')) return { name: 'OpenAI', color: 'text-green-500' };
+                if (localStorage.getItem('anthropic_api_key')) return { name: 'Claude', color: 'text-orange-500' };
+                if (localStorage.getItem('google_api_key')) return { name: 'Gemini', color: 'text-blue-500' };
+                if (localStorage.getItem('ollama_api_key')) return { name: 'Ollama', color: 'text-purple-500' };
+                return { name: 'Not configured', color: 'text-gray-400' };
+              };
+              const provider = getActiveProvider();
+              return (
+                <div className="flex items-center gap-1.5 text-sm" title={`Active AI: ${provider.name}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={provider.color}>
+                    <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
+                  </svg>
+                  <span className={`${provider.color} font-medium`}>{provider.name}</span>
+                </div>
+              );
+            })()}
+          </div>
           <p className="text-muted-foreground -mt-4 mb-4">Ask the Librarian any question about Clientpass.</p>
           <div className="border rounded-lg overflow-hidden">
             <ChatbotPage />
