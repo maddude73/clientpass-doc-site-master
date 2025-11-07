@@ -4,6 +4,7 @@ import { AuthPage } from "./pages/AuthPage";
 import DevDocsPage from "./pages/DevDocsPage";
 import DocViewerPage from "./pages/DocViewerPage";
 import ChatbotPage from "./pages/ChatbotPage";
+import AIConfiguration from "./pages/AIConfiguration";
 import { MainLayout } from "./components/MainLayout";
 import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
@@ -26,6 +27,7 @@ const AppRoutes = () => {
           <Route path="/docs" element={<MainLayout><DevDocsPage /></MainLayout>} />
           <Route path="/docs/:docName" element={<MainLayout><DocViewerPage /></MainLayout>} />
           <Route path="/chatbot" element={<MainLayout><ChatbotPage /></MainLayout>} />
+          <Route path="/ai-config" element={<MainLayout><AIConfiguration /></MainLayout>} />
           <Route path="*" element={<Navigate to="/docs" />} />
         </>
       ) : (

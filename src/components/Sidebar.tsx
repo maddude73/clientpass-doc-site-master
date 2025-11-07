@@ -27,7 +27,7 @@ export const Sidebar = () => {
 
     const navItems = [
         { path: '/docs', icon: FileText, label: 'Documentation' },
-        { path: '/chatbot', icon: MessageSquare, label: 'AI Chatbot' },
+        { path: '/ai-config', icon: Settings, label: 'AI Configuration' },
     ]; const isActive = (path: string) => location.pathname === path;
 
     return (
