@@ -69,8 +69,12 @@ export const Sidebar = () => {
                         <div className="flex items-center justify-between">
                             {!isCollapsed && (
                                 <div className="flex flex-col gap-2 flex-1">
-                                    <div className="invert brightness-0 dark:invert-0 dark:brightness-100">
-                                        <ClientPassLogo size="md" className="justify-start" />
+                                    <div className="invert brightness-0 dark:invert-0 dark:brightness-100 w-[192px]">
+                                        <img
+                                            src="/clientpass-logo.png"
+                                            alt="ClientPass"
+                                            className="w-full h-auto object-contain"
+                                        />
                                     </div>
                                     <div className="flex items-center gap-2 text-xs">
                                         <Sparkles className={`h-3 w-3 ${activeProvider.color}`} />
