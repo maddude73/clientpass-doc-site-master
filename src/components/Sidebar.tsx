@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, FileText, Settings, LogOut, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { ClientPassLogo } from '@/components/ClientPassLogo';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
 
@@ -67,10 +68,8 @@ export const Sidebar = () => {
                     <div className="p-6 border-b border-gray-700">
                         <div className="flex items-center justify-between">
                             {!isCollapsed && (
-                                <div className="flex flex-col gap-1">
-                                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                        ClientPass
-                                    </h2>
+                                <div className="flex flex-col gap-2">
+                                    <ClientPassLogo size="sm" className="justify-start" />
                                     <div className="flex items-center gap-2 text-xs">
                                         <Sparkles className={`h-3 w-3 ${activeProvider.color}`} />
                                         <span className="text-gray-400">
