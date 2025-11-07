@@ -200,20 +200,28 @@ const DevDocsPage = () => {
         {profile?.role === 'admin' && <InviteUserForm />}
 
         <section className="mt-12">
-          <div className="flex items-center gap-2 mb-6">
+          <div className="flex items-center gap-3 mb-6">
             <DocSectionHeader title="Librarian" />
             {(() => {
               const getActiveProvider = () => {
-                if (localStorage.getItem('openai_api_key')) return { name: 'OpenAI', color: 'text-green-500' };
-                if (localStorage.getItem('anthropic_api_key')) return { name: 'Claude', color: 'text-orange-500' };
-                if (localStorage.getItem('google_api_key')) return { name: 'Gemini', color: 'text-blue-500' };
-                if (localStorage.getItem('ollama_api_key')) return { name: 'Ollama', color: 'text-purple-500' };
-                return { name: 'Not configured', color: 'text-gray-400' };
+                // Check environment variables that are used by the backend
+                // Since we're using OpenAI embeddings + Claude chat by default
+                const hasOpenAI = import.meta.env.VITE_OPENAI_API_KEY;
+                const hasClaude = import.meta.env.VITE_ANTHROPIC_API_KEY;
+                const hasGemini = import.meta.env.VITE_GEMINI_API_KEY;
+                
+                // Priority: OpenAI (for embeddings) + Claude (for chat)
+                if (hasOpenAI && hasClaude) return { name: 'OpenAI + Claude', color: 'text-green-500', bgColor: 'bg-green-500/10' };
+                if (hasClaude) return { name: 'Claude', color: 'text-orange-500', bgColor: 'bg-orange-500/10' };
+                if (hasOpenAI) return { name: 'OpenAI', color: 'text-green-500', bgColor: 'bg-green-500/10' };
+                if (hasGemini) return { name: 'Gemini', color: 'text-blue-500', bgColor: 'bg-blue-500/10' };
+                
+                return { name: 'Not configured', color: 'text-gray-400', bgColor: 'bg-gray-400/10' };
               };
               const provider = getActiveProvider();
               return (
-                <div className="flex items-center gap-1.5 text-sm" title={`Active AI: ${provider.name}`}>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={provider.color}>
+                <div className={`flex items-center gap-1.5 text-sm px-3 py-1.5 rounded-md ${provider.bgColor}`} title={`Active AI: ${provider.name}`}>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={provider.color}>
                     <path d="M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z"/>
                   </svg>
                   <span className={`${provider.color} font-medium`}>{provider.name}</span>
