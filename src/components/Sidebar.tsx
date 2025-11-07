@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
-import { Menu, X, FileText, MessageSquare, Settings, LogOut, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Menu, X, FileText, Settings, LogOut, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/integrations/supabase/client';
 import { useToast } from '@/hooks/use-toast';
@@ -11,6 +11,17 @@ export const Sidebar = () => {
     const location = useLocation();
     const navigate = useNavigate();
     const { toast } = useToast();
+
+    // Detect active AI provider from environment
+    const getActiveProvider = () => {
+        if (import.meta.env.VITE_OPENAI_API_KEY) return { name: 'OpenAI', color: 'text-green-400' };
+        if (import.meta.env.VITE_ANTHROPIC_API_KEY) return { name: 'Claude', color: 'text-orange-400' };
+        if (import.meta.env.VITE_GEMINI_API_KEY) return { name: 'Gemini', color: 'text-blue-400' };
+        if (import.meta.env.VITE_OLLAMA_URL) return { name: 'Ollama', color: 'text-purple-400' };
+        return { name: 'None', color: 'text-gray-400' };
+    };
+
+    const activeProvider = getActiveProvider();
 
     const handleSignOut = async () => {
         const { error } = await supabase.auth.signOut();
@@ -56,9 +67,20 @@ export const Sidebar = () => {
                     <div className="p-6 border-b border-gray-700">
                         <div className="flex items-center justify-between">
                             {!isCollapsed && (
-                                <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
-                                    ClientPass
-                                </h2>
+                                <div className="flex flex-col gap-1">
+                                    <h2 className="text-xl font-bold bg-gradient-to-r from-blue-400 to-purple-400 bg-clip-text text-transparent">
+                                        ClientPass
+                                    </h2>
+                                    <div className="flex items-center gap-2 text-xs">
+                                        <Sparkles className={`h-3 w-3 ${activeProvider.color}`} />
+                                        <span className="text-gray-400">
+                                            AI: <span className={activeProvider.color}>{activeProvider.name}</span>
+                                        </span>
+                                    </div>
+                                </div>
+                            )}
+                            {isCollapsed && (
+                                <Sparkles className={`h-5 w-5 ${activeProvider.color}`} />
                             )}
                             <Button
                                 variant="ghost"
