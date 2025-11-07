@@ -100,12 +100,62 @@ Manages a user's list of trusted partners. Referrals can be configured to be sen
 
 Tracks interactions (i.e., completed co-op sessions) between users to power the "auto-suggest" feature, which prompts users to add frequently-worked-with professionals to their trusted network.
 
+## Service Catalog Tables (New)
+
+### `service_catalog`
+
+Centralized catalog of all available services on the platform. Enables standardized service management and taxonomy.
+
+- `id`: UUID, primary key.
+- `name`: Standardized service name (e.g., "Women's Haircut").
+- `category`: Top-level category (e.g., "Hair", "Nails", "Skincare").
+- `subcategory`: More specific categorization within the category.
+- `description`: Detailed description of the service.
+- `typical_duration`: Average duration in minutes for the service.
+- `typical_price_range`: Suggested price range as JSONB (e.g., {"min": 50, "max": 150}).
+- `requires_consultation`: Boolean indicating if consultation is recommended.
+- `active`: Boolean indicating if the service is currently offered.
+- `created_at`, `updated_at`: Timestamps for tracking.
+
+### `referral_adjustments`
+
+Tracks all modifications made to referrals after initial creation, including service changes, price adjustments, and duration modifications.
+
+- `id`: UUID, primary key.
+- `referral_id`: UUID, foreign key to referrals table.
+- `adjustment_type`: TEXT, type of adjustment ('service_add', 'service_remove', 'price_change', 'duration_change').
+- `original_value`: JSONB, the original value before adjustment.
+- `new_value`: JSONB, the new value after adjustment.
+- `reason`: TEXT, explanation for the adjustment.
+- `price_impact`: NUMERIC, the financial impact of the adjustment.
+- `requested_by`: UUID, the user who requested the adjustment.
+- `status`: TEXT, approval status ('pending', 'approved', 'declined', 'auto_approved').
+- `approved_by`: UUID, nullable, the user who approved the adjustment.
+- `approved_at`: TIMESTAMP, when the adjustment was approved.
+- `created_at`, `updated_at`: Timestamps for tracking.
+
 ## Other Key Tables
 
-- **`services`**: A list of all services offered by professionals, including pricing, duration, and category.
+- **`services`**: A list of all services offered by professionals, including pricing, duration, and category. _Note: This table is being transitioned to reference the `service_catalog` for standardization._
 - **`boosts`**: Tracks active profile boosts, which increase a user's visibility in search and matching.
 - **`ad_placements`**: Stores the "Pro Deals" (advertisements) shown in the marketplace.
 - **`messages`**: An inbox system for storing all user notifications (e.g., referral alerts, payment confirmations).
 - **`admin_audit_log`**: Records all actions taken by administrators in the Admin Console for security and accountability.
 - **`feature_flags`**: A simple table to enable or disable platform features in real-time.
 - **`platform_settings`**: Stores global configuration values for the platform, such as fee percentages and feature limits.
+
+## Recent Schema Changes (October 2024)
+
+### New Features Added
+
+1. **Service Catalog System**: New `service_catalog` table for centralized service management
+2. **Referral Adjustments**: New `referral_adjustments` table for tracking post-creation modifications
+3. **Auto-Confirmation**: Edge function support for automatic adjustment approval
+4. **Enhanced Service Taxonomy**: Category and subcategory fields for better organization
+5. **Price Range Tracking**: JSONB fields for flexible price range storage
+
+### Modified Tables
+
+- **`referrals`**: Added support for linked adjustments and service catalog references
+- **`services`**: Added `catalog_service_id` field to link to standardized catalog entries
+- **`users`**: Enhanced with additional fields for service catalog preferences

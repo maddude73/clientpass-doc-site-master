@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Configuration
-STYLE_REFERRAL_RING_PATH="/Users/rhfluker/Projects/backups/style-referral-ring"
+STYLE_REFERRAL_RING_PATH="/Users/rhfluker/Projects/style-referral-ring"
 DOC_SITE_PATH="/Users/rhfluker/Projects/clientpass-doc-site-master"
 
 # 1. Pull latest changes from the source repository
@@ -52,7 +52,7 @@ done
 
 # 4. Update the DevDocsPage.tsx file
 echo "Updating DevDocsPage.tsx..."
-node "$DOC_SITE_PATH/backend/update-dev-docs-page.js" "${new_pages[@]}"
+node "$DOC_SITE_PATH/backend/update-dev-docs-page.cjs" "${new_pages[@]}"
 
 # 5. Sync the new documents to the database
 echo "Syncing new documents to the database..."

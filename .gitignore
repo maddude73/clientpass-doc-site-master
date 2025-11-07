@@ -27,3 +27,20 @@ dist-ssr
 # Environment variables
 .env
 .env*.local
+
+# Backend
+backend/node_modules
+backend/ollama_data/
+backend/*.log
+backend/container.logs
+backend/docker-compose.yml
+
+# Large data files
+backend/docs-chunks-batch.json
+
+# Deployment
+deployment_urls.txt
+urls.txt
+
+# Snyk Security Extension - AI Rules (auto-generated)
+.github/instructions/snyk_rules.instructions.md
