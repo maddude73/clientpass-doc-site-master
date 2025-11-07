@@ -57,11 +57,12 @@ export const Sidebar = () => {
             {/* Sidebar */}
             <aside
                 className={`
-          fixed top-0 left-0 h-full bg-primary text-primary-foreground
+          fixed top-0 left-0 h-full text-white
           transition-all duration-300 ease-in-out z-40 shadow-xl
           ${isCollapsed ? 'w-20' : 'w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
         `}
+                style={{ backgroundColor: '#008080' }}
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}
