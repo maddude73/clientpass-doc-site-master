@@ -57,7 +57,7 @@ export const Sidebar = () => {
             {/* Sidebar */}
             <aside
                 className={`
-          fixed top-0 left-0 h-full bg-gradient-to-b from-gray-900 to-gray-800 text-white
+          fixed top-0 left-0 h-full bg-primary text-primary-foreground
           transition-all duration-300 ease-in-out z-40 shadow-xl
           ${isCollapsed ? 'w-20' : 'w-64'}
           ${isMobileOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}
@@ -65,7 +65,7 @@ export const Sidebar = () => {
             >
                 <div className="flex flex-col h-full">
                     {/* Header */}
-                    <div className="p-6 border-b border-gray-700">
+                    <div className="p-6 border-b border-primary-foreground/20">
                         <div className="flex items-center justify-between">
                             {!isCollapsed && (
                                 <div className="flex flex-col gap-2 flex-1">
@@ -78,7 +78,7 @@ export const Sidebar = () => {
                                     </div>
                                     <div className="flex items-center gap-2 text-xs">
                                         <Sparkles className={`h-3 w-3 ${activeProvider.color}`} />
-                                        <span className="text-gray-400">
+                                        <span className="text-primary-foreground/70">
                                             AI: <span className={activeProvider.color}>{activeProvider.name}</span>
                                         </span>
                                     </div>
@@ -91,7 +91,7 @@ export const Sidebar = () => {
                                 variant="ghost"
                                 size="icon"
                                 onClick={() => setIsCollapsed(!isCollapsed)}
-                                className="hidden md:flex hover:bg-gray-700"
+                                className="hidden md:flex hover:bg-primary-foreground/10"
                             >
                                 {isCollapsed ? (
                                     <ChevronRight className="h-5 w-5" />
@@ -116,8 +116,8 @@ export const Sidebar = () => {
                                     className={`
                     flex items-center gap-3 px-4 py-3 rounded-lg transition-all
                     ${active
-                                            ? 'bg-blue-600 text-white shadow-lg'
-                                            : 'hover:bg-gray-700 text-gray-300 hover:text-white'
+                                            ? 'bg-primary-foreground/20 text-primary-foreground shadow-lg'
+                                            : 'hover:bg-primary-foreground/10 text-primary-foreground/80 hover:text-primary-foreground'
                                         }
                     ${isCollapsed ? 'justify-center' : ''}
                   `}
@@ -132,12 +132,12 @@ export const Sidebar = () => {
                     </nav>
 
                     {/* Footer */}
-                    <div className="p-4 border-t border-gray-700">
+                    <div className="p-4 border-t border-primary-foreground/20">
                         <Button
                             variant="ghost"
                             onClick={handleSignOut}
                             className={`
-                w-full text-gray-300 hover:text-white hover:bg-red-600/20
+                w-full text-primary-foreground/80 hover:text-primary-foreground hover:bg-red-600/20
                 ${isCollapsed ? 'px-2' : 'justify-start'}
               `}
                         >
