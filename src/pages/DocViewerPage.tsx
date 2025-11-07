@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
-import { ArrowLeft, LogOut, Pencil, MessageSquare, ChevronDown, ChevronUp, ZoomIn, ZoomOut, ExternalLink } from 'lucide-react';
+import { ArrowLeft, LogOut, Pencil, MessageSquare, ChevronDown, ChevronUp, ZoomIn, ZoomOut, ExternalLink, Database, FileText, Clock, Hash } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import mermaid from 'mermaid';
 import { Button } from '@/components/ui/button';
@@ -377,6 +377,56 @@ function DocViewerPage() {
       </header>
       <div className="flex flex-1 overflow-hidden">
         <main className="flex-1 overflow-y-auto p-8 max-w-5xl mx-auto">
+          {/* Document Metadata Section */}
+          {dbDoc && (
+            <div className="mb-6 p-4 bg-muted/50 rounded-lg border border-border">
+              <div className="flex flex-wrap gap-6 text-sm">
+                <div className="flex items-center gap-2">
+                  <Database className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Source:</span>
+                  <span className="text-muted-foreground">MongoDB Database</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <FileText className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Document:</span>
+                  <span className="text-muted-foreground">{dbDoc.name}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Hash className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Revision:</span>
+                  <span className="text-muted-foreground">{dbDoc.revision}</span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="h-4 w-4 text-muted-foreground" />
+                  <span className="font-medium">Last Updated:</span>
+                  <span className="text-muted-foreground">
+                    {new Date(dbDoc.updatedAt).toLocaleDateString(undefined, { 
+                      year: 'numeric', 
+                      month: 'short', 
+                      day: 'numeric', 
+                      hour: '2-digit', 
+                      minute: '2-digit' 
+                    })}
+                  </span>
+                </div>
+                {dbDoc.lastUpdatedBy && (
+                  <div className="flex items-center gap-2">
+                    <span className="font-medium">By:</span>
+                    <span className="text-muted-foreground">{dbDoc.lastUpdatedBy}</span>
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+          {!dbDoc && (
+            <div className="mb-6 p-4 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg border border-yellow-200 dark:border-yellow-800">
+              <div className="flex items-center gap-2 text-sm text-yellow-800 dark:text-yellow-200">
+                <FileText className="h-4 w-4" />
+                <span className="font-medium">Source:</span>
+                <span>Static File (not in database)</span>
+              </div>
+            </div>
+          )}
           {isEditing ? (
             <div className="flex flex-col h-full" key={isEditing ? 'editor' : 'viewer'}>
               <ReactQuill
