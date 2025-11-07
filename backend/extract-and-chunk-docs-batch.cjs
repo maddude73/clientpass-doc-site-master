@@ -1,30 +1,35 @@
 const fs = require('fs').promises;
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') }); // Load .env from backend directory
+require('dotenv').config({ path: path.resolve(__dirname, '.env.local') }); // Load .env.local from backend directory
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
-const { GoogleGenerativeAI } = require('@google/generative-ai');
+const OpenAI = require('openai');
 
 // Configuration
 const DOCS_DIR = path.join(__dirname, '../public/docs');
 const OUTPUT_FILE = path.join(__dirname, 'docs-chunks-batch.json'); // Output file for chunks
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY; // Google AI Studio API Key
+const OPENAI_API_KEY = process.env.OPENAI_API_KEY;
 
 const CHUNK_SIZE = 500; // characters
-// const CHUNK_OVERLAP = 100; // characters (removed)
-const BATCH_SIZE = 10; // Number of chunks to send in each batch embedding request
+const BATCH_SIZE = 100; // OpenAI supports larger batches
 
 const md = new MarkdownIt();
-const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
+const openai = new OpenAI({
+  apiKey: OPENAI_API_KEY,
+});
 
 async function getEmbeddingsBatch(texts) {
-  if (!GOOGLE_API_KEY) {
-    throw new Error('GOOGLE_API_KEY environment variable is not set.');
+  if (!OPENAI_API_KEY) {
+    throw new Error('OPENAI_API_KEY environment variable is not set.');
   }
-  const model = genAI.getGenerativeModel({ model: "text-embedding-004" });
-  const requests = texts.map(text => ({ content: { parts: [{ text }] } }));
-  const result = await model.batchEmbedContents({ requests });
-  return result.embeddings.map(e => e.values);
+  
+  const response = await openai.embeddings.create({
+    model: 'text-embedding-3-large',
+    input: texts,
+    dimensions: 1536, // Explicitly set dimensions
+  });
+  
+  return response.data.map(item => item.embedding);
 }
 
 async function extractAndChunkDocsBatch() {

@@ -4,7 +4,8 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const { GoogleGenerativeAI } = require('@google/generative-ai'); // Import GoogleGenerativeAI
+const OpenAI = require('openai');
+const Anthropic = require('@anthropic-ai/sdk');
 
 // Helper function for retries with exponential backoff
 async function callWithRetry(apiCall, maxRetries = 5, delay = 1000, validate = (result) => result && result.response) {
@@ -100,11 +101,14 @@ const documentSchema = new mongoose.Schema({
 
 const Document = testConnection.model('Document', documentSchema);
 
-// Initialize Google Generative AI client
-const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
-const genAI = new GoogleGenerativeAI(GOOGLE_API_KEY);
-const embeddingModel = genAI.getGenerativeModel({ model: "text-embedding-004" });
-const chatModel = genAI.getGenerativeModel({ model: process.env.GEMINI_MODEL_ID || "gemini-2.5-pro" });
+// Initialize OpenAI and Anthropic clients
+const openai = new OpenAI({
+  apiKey: process.env.OPENAI_API_KEY,
+});
+
+const anthropic = new Anthropic({
+  apiKey: process.env.ANTHROPIC_API_KEY,
+});
 // API Routes
 // GET all documents (optional, for listing)
 app.get('/api/docs', async (req, res) => {
@@ -227,26 +231,25 @@ app.post('/api/docs/search', async (req, res) => {
   }
 
   try {
-    // 1. Generate embedding for the user query
-    const queryEmbeddingResult = await callWithRetry(
-      () => embeddingModel.embedContent([query]),
-      5, // maxRetries
-      1000, // delay
-      (result) => result && result.embedding && result.embedding.values // Custom validation for embedding model
-    );
-    const queryEmbedding = queryEmbeddingResult.embedding.values;
-    console.log('Query Embedding:', queryEmbedding);
+    // 1. Generate embedding for the user query using OpenAI
+    const embeddingResponse = await openai.embeddings.create({
+      model: 'text-embedding-3-large',
+      input: query,
+      dimensions: 1536, // Explicitly set dimensions
+    });
+    const queryEmbedding = embeddingResponse.data[0].embedding;
+    console.log('Query Embedding dimensions:', queryEmbedding.length);
 
     // 2. Perform Atlas Vector Search
-    const collection = docsConnection.collection('document_chunks'); // Access the raw collection from docsConnection
+    const collection = docsConnection.collection('document_chunks');
     const searchResults = await collection.aggregate([
       {
         $vectorSearch: {
           queryVector: queryEmbedding,
           path: 'embedding',
-          numCandidates: 100, // Number of documents to scan
-          limit: 5, // Number of results to return
-          index: 'vector_index' // Your Atlas Vector Search index name
+          numCandidates: 100,
+          limit: 5,
+          index: 'vector_index'
         }
       },
       {
@@ -259,7 +262,9 @@ app.post('/api/docs/search', async (req, res) => {
       }
     ]).toArray();
 
-    // 3. Construct prompt for LLM
+    console.log('Search results count:', searchResults.length);
+
+    // 3. Construct prompt for Claude
     let context = searchResults.map(result => `Document: ${result.source_file}
 Content: ${result.content}`).join('\n\n');
     
@@ -272,23 +277,23 @@ ${context}
 
 Answer:`;
 
-    // 4. Get answer from LLM
-    console.log('Sending prompt to LLM:', prompt);
-    const chatResult = await callWithRetry(() => chatModel.generateContent({ contents: [{ role: "user", parts: [{ text: prompt }] }] }));
-    console.log('LLM Result:', JSON.stringify(chatResult, null, 2)); // Log the full result for inspection
+    // 4. Get answer from Claude
+    console.log('Sending prompt to Claude...');
+    const message = await anthropic.messages.create({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 2048,
+      messages: [{
+        role: 'user',
+        content: prompt
+      }]
+    });
 
-    // Error handling for no candidates or empty response
-    if (!chatResult.response || !chatResult.response.candidates || chatResult.response.candidates.length === 0 || !chatResult.response.candidates[0].content || !chatResult.response.candidates[0].content.parts || chatResult.response.candidates[0].content.parts.length === 0) {
-      console.error('Invalid LLM response structure:', chatResult);
-      return res.status(500).json({ message: 'Failed to get a valid response from the language model.' });
-    }
+    const llmAnswer = message.content[0].text;
+    console.log('Claude Answer:', llmAnswer);
 
-    const llmAnswer = chatResult.response.candidates[0].content.parts[0].text;
-    console.log('LLM Answer:', llmAnswer);
-
-    // 5. Return LLM's answer and sources
+    // 5. Return Claude's answer and sources
     const sources = searchResults.map(result => result.source_file);
-    res.json({ answer: llmAnswer, sources: [...new Set(sources)] }); // Return unique sources
+    res.json({ answer: llmAnswer, sources: [...new Set(sources)] });
 
   } catch (err) {
     console.error('Error during RAG search:', err);
