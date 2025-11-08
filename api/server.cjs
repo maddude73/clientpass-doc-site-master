@@ -472,7 +472,7 @@ app.post('/api/test-prompt', async (req, res) => {
           return res.status(400).json({ message: 'Google API key is required' });
         }
         const genAI = new GoogleGenerativeAI(config.apiKey);
-        const geminiModel = genAI.getGenerativeModel({ 
+        const geminiModel = genAI.getGenerativeModel({
           model: config.model || 'gemini-2.5-flash',
           systemInstruction: config.systemPrompt || 'You are a helpful assistant.'
         });

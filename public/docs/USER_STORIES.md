@@ -1,9 +1,11 @@
 ---
 id: 68dccbb8479feecff6266aa0
-revision: 14
+revision: 15
 ---
 
 # User Story Backlog
+
+**Last Updated**: November 8, 2025
 
 This document contains the user story backlog for the ClientPass application, organized by feature epics.
 
@@ -78,3 +80,54 @@ This document contains the user story backlog for the ClientPass application, or
 - **Story**: As an admin, I want a dashboard to manage "Pro Deals" that are available to all platform users.
 - **Story**: As an admin, I want to view a system health dashboard to monitor platform activity.
 
+## Epic: AI-Assisted Features (New - 2025)
+
+- **Story**: As an admin, I want to configure which AI provider (Google, OpenAI, Anthropic, Ollama) the platform uses without restarting the application.
+- **Story**: As an admin, I want to customize system prompts for different AI use cases to optimize results.
+- **Story**: As an admin, I want to monitor AI usage metrics including tokens consumed, costs, and response times.
+- **Story**: As a stylist, I want the matching system to consider my specialties and the client's needs when suggesting referrals.
+- **Story**: As a client, I want personalized service recommendations based on my booking history and preferences.
+- **Story**: As a stylist, I want the system to automatically summarize my reviews to highlight my strengths.
+- **Story**: As a new stylist, I want help generating a professional bio for my profile using AI assistance.
+- **Story**: As a client, I want to book appointments using natural language (e.g., "I need a haircut next Tuesday afternoon").
+- **Story**: As a stylist, I want AI to suggest products from the affiliate marketplace that match the services I provide.
+- **Story**: As an admin, I want to test different AI providers with sample prompts before switching production traffic.
+
+## Epic: Service Catalog Management (New - 2025)
+
+- **Story**: As an admin, I want to create and maintain a global catalog of standardized services available on the platform.
+- **Story**: As an admin, I want to organize services using a hierarchical taxonomy (Categories → Subcategories → Service Types).
+- **Story**: As an admin, I want to set typical price ranges and durations for catalog services to guide professionals.
+- **Story**: As a stylist, I want to select services from a pre-defined catalog rather than creating custom services from scratch.
+- **Story**: As a stylist, I want to browse services by category when setting up my profile to find relevant offerings.
+- **Story**: As a client, I want an intuitive category-based interface for selecting services when booking.
+- **Story**: As a client, I want to see typical pricing and duration when selecting services.
+- **Story**: As an admin, I want to bulk-update multiple services at once for efficient catalog management.
+- **Story**: As an admin, I want to deactivate services that are no longer offered without deleting historical data.
+- **Story**: As a stylist, I want my service prices to auto-populate from the catalog but allow customization if needed.
+
+## Epic: Referral Adjustments (New - 2025)
+
+- **Story**: As a stylist, I want to modify the services on a referral after creation if the client's needs change.
+- **Story**: As a stylist, I want to adjust the price of a referral if additional services are needed.
+- **Story**: As a client, I want to request adding services to my existing appointment without creating a new booking.
+- **Story**: As a user, I want minor adjustments (under $20 or 15 minutes) to be approved automatically.
+- **Story**: As a user, I want to see how adjustments will affect the total price and commission before submitting.
+- **Story**: As a stylist, I want to provide a reason when requesting an adjustment so the client understands the change.
+- **Story**: As a client, I want to be notified when an adjustment is requested and have the option to approve or decline.
+- **Story**: As an admin, I want to review the audit trail of all referral adjustments for dispute resolution.
+- **Story**: As a user, I want to see a before/after comparison when an adjustment is proposed.
+- **Story**: As a stylist, I want adjustments that require approval to be processed quickly without long delays.
+
+## Epic: Quick Rebook System (New - 2025)
+
+- **Story**: As a repeat client, I want to rebook my last appointment with one click from my booking history.
+- **Story**: As a client, I want the rebook form to pre-fill with my previous stylist, services, and location.
+- **Story**: As a client, I want AI to suggest optimal time slots based on my past booking patterns.
+- **Story**: As a client, I want to modify the services during rebooking if I want something different this time.
+- **Story**: As a stylist, I want to receive rebook requests in a dedicated interface where I can quickly accept or decline.
+- **Story**: As a stylist, I want to propose alternative times if my client's requested slot is unavailable.
+- **Story**: As a client, I want to see my complete booking history so I can easily find appointments to rebook.
+- **Story**: As a client, I want to set default preferences for rebooking (preferred times, services) to make it even faster.
+- **Story**: As a stylist, I want to prioritize rebook requests from repeat clients to build loyalty.
+- **Story**: As an admin, I want to track rebook rates to measure client retention and stylist loyalty.

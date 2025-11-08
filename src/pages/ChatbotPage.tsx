@@ -58,15 +58,15 @@ const ChatbotPage: React.FC = () => {
   };
 
   return (
-        <div className="flex flex-col bg-background">
-          <div className="flex-1 p-4 space-y-4">
-            {messages.map((msg, index) => (
+    <div className="flex flex-col bg-background">
+      <div className="flex-1 p-4 space-y-4">
+        {messages.map((msg, index) => (
           <div
             key={index}
             className={`flex ${msg.type === 'user' ? 'justify-end' : 'justify-start'}`}
           >
             <Card
-className={`w-fit ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-[#c1c2c3]'}`}
+              className={`w-fit ${msg.type === 'user' ? 'bg-primary text-primary-foreground' : 'bg-[#c1c2c3]'}`}
             >
               <CardContent className="p-3">
                 {msg.type === 'bot' ? (

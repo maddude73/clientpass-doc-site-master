@@ -3,7 +3,7 @@ const path = require('path');
 const axios = require('axios');
 
 const DOCS_DIR = path.join(__dirname, '../public/docs');
-const API_BASE_URL = 'http://localhost:5001/api';
+const API_BASE_URL = process.env.API_URL || 'https://clientpass-doc-site.vercel.app/api';
 
 const frontmatterRegex = /^---\s*\nid:\s*(.*)\s*\nrevision:\s*(.*)\s*\n---\s*/;
 
@@ -28,16 +28,23 @@ async function updateDocuments() {
         }
 
         try {
-          const response = await axios.put(`${API_BASE_URL}/docs/${docName}`, { content, lastUpdatedBy: 'system-update', revision }, {
+          const updatePayload = {
+            content,
+            lastUpdatedBy: 'system-update',
+            revision,
+            updatedAt: new Date().toISOString()
+          };
+
+          const response = await axios.put(`${API_BASE_URL}/docs/${docName}`, updatePayload, {
             validateStatus: function (status) {
               return status >= 200 && status < 300 || status === 304;
             }
           });
           console.log(`Status for ${docName}: ${response.status}`);
           if (response.status === 200) {
-            console.log(`Successfully updated: ${docName}`);
+            console.log(`✓ Successfully updated: ${docName} (revision ${revision})`);
           } else if (response.status === 304) {
-            console.log(`No changes for: ${docName}`);
+            console.log(`○ No changes for: ${docName}`);
           }
         } catch (error) {
           if (error.response && error.response.status === 404) {
