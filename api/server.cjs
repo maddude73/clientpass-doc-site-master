@@ -1,4 +1,9 @@
-require('dotenv').config({ path: '.env.local' });
+// Load environment variables from .env.local for local development
+// In Vercel, environment variables are injected automatically
+if (!process.env.VERCEL) {
+  require('dotenv').config({ path: '.env.local' });
+}
+
 // backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
