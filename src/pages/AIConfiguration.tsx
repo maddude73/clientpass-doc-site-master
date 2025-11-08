@@ -64,7 +64,7 @@ const AIConfiguration = () => {
         },
         openai: {
             apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-            model: 'gpt-4o',
+            model: 'gpt-5',
             systemPrompt: 'You are an expert technical assistant. Always cite document sources and provide clear, actionable responses.',
         },
         anthropic: {
@@ -484,10 +484,15 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="gpt-4o">🚀 GPT-4o</SelectItem>
-                                            <SelectItem value="gpt-4o-mini">⚡ GPT-4o Mini</SelectItem>
-                                            <SelectItem value="o1">🧠 O1</SelectItem>
-                                            <SelectItem value="o1-mini">🧠 O1 Mini</SelectItem>
+                                            <SelectItem value="gpt-5">🚀 GPT-5 (Latest)</SelectItem>
+                                            <SelectItem value="gpt-5-mini">⚡ GPT-5 Mini</SelectItem>
+                                            <SelectItem value="gpt-5-nano">💨 GPT-5 Nano</SelectItem>
+                                            <SelectItem value="gpt-5-pro">💎 GPT-5 Pro</SelectItem>
+                                            <SelectItem value="gpt-4.1">🎯 GPT-4.1</SelectItem>
+                                            <SelectItem value="o3">🧠 O3 (Reasoning)</SelectItem>
+                                            <SelectItem value="o4-mini">🧠 O4 Mini</SelectItem>
+                                            <SelectItem value="gpt-4o">GPT-4o (Legacy)</SelectItem>
+                                            <SelectItem value="gpt-4o-mini">GPT-4o Mini (Legacy)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
