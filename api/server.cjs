@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config({ path: '.env.local' });
 // backend/server.js
 const express = require('express');
 const mongoose = require('mongoose');
@@ -522,8 +522,12 @@ app.post('/api/update-config', async (req, res) => {
   }
 });
 
+// Export for Vercel serverless functions
+module.exports = app;
 
-// Start the server
-app.listen(PORT, () => {
-  console.log(`Backend server running on port ${PORT}`);
-});
+// For local development, start server if not in Vercel environment
+if (process.env.NODE_ENV !== 'production' && !process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Backend server running on port ${PORT}`);
+  });
+}
