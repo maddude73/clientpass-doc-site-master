@@ -9,6 +9,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Textarea } from '@/components/ui/textarea';
 import { Loader2, CheckCircle2, XCircle, Zap, Sparkles, Brain, Cpu, Boxes, MessageSquare } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 
 type AIProvider = 'google' | 'openai' | 'anthropic' | 'ollama';
 
@@ -55,6 +56,7 @@ const providerMetadata = {
 };
 
 const AIConfiguration = () => {
+    const { toast } = useToast();
     const [activeProvider, setActiveProvider] = useState<AIProvider>('openai');
     const [configs, setConfigs] = useState<Record<AIProvider, ProviderConfig>>({
         google: {
@@ -84,6 +86,7 @@ const AIConfiguration = () => {
     const [isTesting, setIsTesting] = useState(false);
     const [isTestingPrompt, setIsTestingPrompt] = useState(false);
     const [testPromptInput, setTestPromptInput] = useState('What is the purpose of this documentation?');
+    const [justSaved, setJustSaved] = useState(false);
 
     const handleConfigChange = (provider: AIProvider, field: string, value: string) => {
         setConfigs((prev) => ({
@@ -198,10 +201,30 @@ const AIConfiguration = () => {
                 success: true,
                 message: '✓ Configuration saved and applied dynamically! No restart needed.',
             });
+
+            // Show success indicator
+            setJustSaved(true);
+            setTimeout(() => setJustSaved(false), 3000);
+
+            // Show success toast
+            toast({
+                title: "✓ Configuration Saved",
+                description: `${providerMetadata[activeProvider].name} settings updated successfully. Changes applied immediately.`,
+                duration: 4000,
+            });
         } catch (error) {
+            const errorMessage = error instanceof Error ? error.message : 'Failed to save configuration';
             setTestResult({
                 success: false,
-                message: error instanceof Error ? error.message : 'Failed to save configuration',
+                message: errorMessage,
+            });
+
+            // Show error toast
+            toast({
+                title: "❌ Save Failed",
+                description: errorMessage,
+                variant: "destructive",
+                duration: 5000,
             });
         }
     };
@@ -238,8 +261,8 @@ const AIConfiguration = () => {
                             </div>
                         </div>
                         {hasConfig && (
-                            <Badge className={`${meta.badgeColor} text-white shadow-md`}>
-                                ✓ Configured
+                            <Badge className={`${justSaved && key === activeProvider ? 'bg-green-500 animate-pulse' : meta.badgeColor} text-white shadow-md transition-all duration-300`}>
+                                {justSaved && key === activeProvider ? '✓ Just Saved!' : '✓ Configured'}
                             </Badge>
                         )}
                     </div>
