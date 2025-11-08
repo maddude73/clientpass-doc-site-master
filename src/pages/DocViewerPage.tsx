@@ -235,10 +235,10 @@ function DocViewerPage() {
 
   const { data: dbDoc, isLoading, isError, error } = useQuery<DocumentData>({
     queryKey: ['document', safeDocName],
-    queryFn: () => docApi.getDocument(safeDocName),
+    queryFn: (): Promise<DocumentData> => docApi.getDocument(safeDocName),
     enabled: !!safeDocName, // Only run query if docName is available
     staleTime: 5 * 60 * 1000,
-    cacheTime: 10 * 60 * 1000,
+    gcTime: 10 * 60 * 1000,
   });
 
   const addCommentMutation = useMutation({
@@ -256,10 +256,15 @@ function DocViewerPage() {
   useEffect(() => {
     if (isLoading) return; // Wait for the query to settle
 
+    const setEditedMarkdownAsync = async (content: string) => {
+      const parsed = await marked.parse(content);
+      setEditedMarkdown(parsed);
+    };
+
     if (dbDoc) {
       // Document found in DB, use its content
       setMarkdown(dbDoc.content);
-      setEditedMarkdown(marked.parse(dbDoc.content));
+      setEditedMarkdownAsync(dbDoc.content);
     } else if (!dbDoc && !isLoading) {
       // Document not found in DB, or DB query finished and returned null
       // Attempt to load from static markdown file as a fallback
@@ -269,17 +274,19 @@ function DocViewerPage() {
           if (response.ok) {
             const fetchedContent = await response.text();
             setMarkdown(fetchedContent);
-            setEditedMarkdown(marked.parse(fetchedContent));
+            setEditedMarkdownAsync(fetchedContent);
             // Optionally, create the document in DB if it was found statically
             docApi.createDocument(safeDocName, fetchedContent).catch(console.error);
           } else {
-            setMarkdown('# Document Not Found\n\nCould not load the requested document.');
-            setEditedMarkdown(marked.parse('# Document Not Found\n\nCould not load the requested document.'));
+            const notFoundContent = '# Document Not Found\n\nCould not load the requested document.';
+            setMarkdown(notFoundContent);
+            setEditedMarkdownAsync(notFoundContent);
           }
         } catch (staticError) {
           console.error("Failed to fetch static document:", staticError);
-          setMarkdown('# Error\n\nThere was an error loading the document.');
-          setEditedMarkdown(marked.parse('# Error\n\nThere was an error loading the document.'));
+          const errorContent = '# Error\n\nThere was an error loading the document.';
+          setMarkdown(errorContent);
+          setEditedMarkdownAsync(errorContent);
         }
       };
       loadStaticDocument();
@@ -292,15 +299,17 @@ function DocViewerPage() {
           if (response.ok) {
             const fetchedContent = await response.text();
             setMarkdown(fetchedContent);
-            setEditedMarkdown(marked.parse(fetchedContent));
+            setEditedMarkdownAsync(fetchedContent);
           } else {
-            setMarkdown('# Document Not Found\n\nCould not load the requested document.');
-            setEditedMarkdown(marked.parse('# Document Not Found\n\nCould not load the requested document.'));
+            const notFoundContent = '# Document Not Found\n\nCould not load the requested document.';
+            setMarkdown(notFoundContent);
+            setEditedMarkdownAsync(notFoundContent);
           }
         } catch (staticError) {
           console.error("Failed to fetch static document on error fallback:", staticError);
-          setMarkdown('# Error\n\nThere was an error loading the document.');
-          setEditedMarkdown(marked.parse('# Error\n\nThere was an error loading the document.'));
+          const errorContent = '# Error\n\nThere was an error loading the document.';
+          setMarkdown(errorContent);
+          setEditedMarkdownAsync(errorContent);
         }
       };
       loadStaticDocumentOnError();
@@ -322,17 +331,19 @@ function DocViewerPage() {
     try {
       await docApi.updateDocument(safeDocName, markdownToSave, profile.full_name);
       setMarkdown(markdownToSave);
-      setIsEditing(false);
-      queryClient.invalidateQueries({ queryKey: ['document', safeDocName] });
-      queryClient.invalidateQueries({ queryKey: ['allDocs'] });
-      console.log('Document saved successfully to simulated DB:', markdownToSave);
+  const handleCancel = async () => {
+    const parsed = await marked.parse(markdown);
+    setEditedMarkdown(parsed);
+    setIsEditing(false);
+  };
     } catch (error) {
       console.error('Failed to save document:', error);
     }
   };
 
-  const handleCancel = () => {
-    setEditedMarkdown(marked.parse(markdown));
+  const handleCancel = async () => {
+    const parsed = await marked.parse(markdown);
+    setEditedMarkdown(parsed);
     setIsEditing(false);
   };
 
@@ -446,16 +457,12 @@ function DocViewerPage() {
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
                 components={{
-                  code({ node, inline, className, children, ...props }) {
+                  code({ node, className, children, ...props }) {
                     const match = /language-(\w+)/.exec(className || '');
                     if (match && match[1] === 'mermaid') {
                       return <MermaidDiagram content={String(children).replace(/\n$/, '')} />;
                     }
-                    return !inline && match ? (
-                      <code className={className} {...props}>
-                        {children}
-                      </code>
-                    ) : (
+                    return (
                       <code className={className} {...props}>
                         {children}
                       </code>
