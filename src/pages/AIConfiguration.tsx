@@ -69,7 +69,7 @@ const AIConfiguration = () => {
         },
         anthropic: {
             apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-            model: 'claude-3-5-sonnet-20241022',
+            model: 'claude-sonnet-4-5-20250929',
             systemPrompt: 'You are a knowledgeable coding assistant. Explain concepts clearly with examples and cite your sources.',
         },
         ollama: {
@@ -638,9 +638,11 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="claude-3-5-sonnet-20241022">🎯 Claude 3.5 Sonnet (Latest)</SelectItem>
-                                            <SelectItem value="claude-3-5-haiku-20241022">⚡ Claude 3.5 Haiku</SelectItem>
-                                            <SelectItem value="claude-3-opus-20240229">💎 Claude 3 Opus</SelectItem>
+                                            <SelectItem value="claude-sonnet-4-5-20250929">🎯 Claude Sonnet 4.5 (Latest)</SelectItem>
+                                            <SelectItem value="claude-haiku-4-5-20251001">⚡ Claude Haiku 4.5</SelectItem>
+                                            <SelectItem value="claude-opus-4-1-20250805">💎 Claude Opus 4.1</SelectItem>
+                                            <SelectItem value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Legacy)</SelectItem>
+                                            <SelectItem value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (Legacy)</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
