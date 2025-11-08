@@ -1,7 +1,6 @@
-```markdown
 ---
 title: Integration Guide
-revision: 2.1
+revision: 2.2
 last_updated: November 8, 2025
 ---
 
@@ -92,4 +91,3 @@ Recent updates to the database schema have removed nullable constraints from the
   - `activity_logs`
 
 These changes improve the robustness of data tracking and session management within the ClientPass platform.
-```

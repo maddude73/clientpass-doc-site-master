@@ -1,7 +1,6 @@
-```markdown
 ---
 title: Frontend Overview
-revision: 2.1
+revision: 2.2
 last_updated: November 8, 2025
 ---
 
@@ -28,6 +27,8 @@ This document provides a high-level overview of the frontend architecture, struc
 - **Referrals**: New `AdjustReferralModal` for managing referral-based bookings with audit trails.
 - **Coverage Mode**: Added navigation fixes and a `Coverage Mode` card for improved user experience.
 - **Service Catalog**: Introduced `AdminServiceCatalog` for managing service categories and services.
+- **Platform Fee Changes**: Removed manual payment fee and updated fee breakdown to reflect in-app payments only.
+- **New Components**: Added `BookDrawer` for a full booking experience for professionals.
 
 ## 2. Mobile Application (`clientpass-react-native`)
 
@@ -77,4 +78,3 @@ Routing is managed by **Expo Router**, which uses a file-based system.
 - **UI Enhancements**: Updated UI components to align with the latest design standards.
 - **Functional Enhancements**: Implemented `QuickRebook` feature for seamless rebooking of services.
 - **Referrals**: Added `AdjustReferralModal` for managing and auditing referral-based bookings.
-```

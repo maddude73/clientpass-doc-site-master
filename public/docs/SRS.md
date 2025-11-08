@@ -1,4 +1,3 @@
-```markdown
 # Software Requirements Specification (SRS)
 
 **Last Updated**: November 8, 2025
@@ -82,6 +81,7 @@ The major functions of the system include:
 - **REQ-203**: The receiving Pro shall be notified and have a 10-minute window to accept or decline.
 - **REQ-204**: If a referral is declined or expires, the system shall automatically reassign it to the next available Pro.
 - **REQ-205**: Upon completion of a referred service, the system shall calculate and record the commission for the sender.
+- **REQ-206**: The system shall support an auto-pass feature for referrals, allowing Pros to automatically pass referrals under certain conditions.
 
 #### 3.1.3 Open Chair
 
@@ -189,4 +189,3 @@ The major functions of the system include:
 - **UI-01**: The application shall be a web-based graphical user interface (GUI) rendered in standard web browsers.
 - **API-01**: The frontend shall communicate with the backend via the Supabase client library, which uses a combination of RESTful API calls (PostgREST) and WebSocket connections for real-time updates.
 - **API-02**: Serverless Edge Functions shall be invoked via HTTPS requests from the client.
-```

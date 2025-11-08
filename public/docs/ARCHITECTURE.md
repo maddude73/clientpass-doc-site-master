@@ -1,4 +1,3 @@
-```markdown
 # Architecture Overview
 
 This document provides a high-level overview of the technical architecture for the ClientPass application, covering both the web and mobile frontends.
@@ -181,4 +180,3 @@ For AI-powered features, an additional layer is introduced:
 - **Encryption**: All data encrypted at rest and in transit
 - **PII Protection**: Personal information handling complies with privacy regulations
 - **AI Data Handling**: User data sent to AI providers is minimized and anonymized where possible
-```

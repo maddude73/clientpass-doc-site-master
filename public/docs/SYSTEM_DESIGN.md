@@ -1,4 +1,3 @@
-```markdown
 # System Design Document
 
 **Last Updated**: November 8, 2025
@@ -237,4 +236,3 @@ Corresponds to streamlined rebooking functionality added in 2025.
 
 - **Responsive Design**: The application will be built using a mobile-first approach with Tailwind CSS to ensure it is fully responsive and usable on all screen sizes.
 - **Component Library**: A consistent look and feel will be maintained by using the `shadcn-ui` component library and a custom theme.
-```

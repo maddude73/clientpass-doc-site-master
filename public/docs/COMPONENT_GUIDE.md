@@ -1,7 +1,6 @@
-```markdown
 ---
 title: Frontend Component Guide
-revision: 2.1
+revision: 2.2
 last_updated: November 8, 2025
 ---
 
@@ -94,4 +93,3 @@ This section highlights some of the most important custom components built for t
 - **`inbox.tsx`**: A screen for users to view notifications, with a focus on actionable referral requests that include countdown timers.
 
 ---
-```

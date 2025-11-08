@@ -1,4 +1,3 @@
-```markdown
 # User Story Backlog
 
 **Last Updated**: November 8, 2025
@@ -32,6 +31,7 @@ This document contains the user story backlog for the ClientPass application, or
 - **Story**: As a user, I want to see a before/after comparison when an adjustment is proposed.
 - **Story**: As a stylist, I want adjustments that require approval to be processed quickly without long delays.
 - **Story**: As a stylist, I want to use an enhanced referral form that provides more options and flexibility for service selection.
+- **Story**: As a stylist, I want to adjust service details for referral-based bookings with an audit trail for transparency.
 
 ## Epic: Open Chair Marketplace
 
@@ -53,6 +53,7 @@ This document contains the user story backlog for the ClientPass application, or
 - **Story**: As a stylist, I want to build a "Coverage List" of specific professionals I trust to handle my clients when I'm away.
 - **Story**: As a covering stylist, I want to receive referral notifications for clients of the unavailable stylist so I can earn extra income.
 - **Story**: As a stylist, I want to manage my trusted network easily through the settings page.
+- **Story**: As a stylist, I want the coverage mode to redirect me to manage my trusted network if no matches are found.
 
 ## Epic: Financials & Earnings
 
@@ -127,4 +128,4 @@ This document contains the user story backlog for the ClientPass application, or
 - **Story**: As a stylist, I want to prioritize rebook requests from repeat clients to build loyalty.
 - **Story**: As an admin, I want to track rebook rates to measure client retention and stylist loyalty.
 - **Story**: As a stylist, I want a quick rebook feature to appear after service completion to encourage repeat bookings.
-```
+- **Story**: As a stylist, I want a booking drawer that allows for a full booking experience with quick rebook options.

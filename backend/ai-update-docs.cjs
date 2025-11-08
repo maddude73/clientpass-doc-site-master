@@ -567,7 +567,16 @@ function applyDocumentationUpdate(docName, newContent) {
         return;
     }
 
-    fs.writeFileSync(docPath, newContent, 'utf8');
+    // Strip markdown code fence wrappers if present (AI sometimes wraps output in ```markdown)
+    let cleanContent = newContent.trim();
+    if (cleanContent.startsWith('```markdown')) {
+        cleanContent = cleanContent.slice(11).trim(); // Remove ```markdown
+    }
+    if (cleanContent.endsWith('```')) {
+        cleanContent = cleanContent.slice(0, -3).trim(); // Remove closing ```
+    }
+
+    fs.writeFileSync(docPath, cleanContent, 'utf8');
     console.log(`✅ Updated ${docName}`);
 }
 

@@ -1,4 +1,3 @@
-```markdown
 # Database Schema Overview
 
 **Last Updated**: November 8, 2025
@@ -297,4 +296,3 @@ For developers pulling these changes:
 3. Run seed data for service catalog: `psql < seed/service_catalog.sql`
 4. Update `.env` with AI provider API keys
 5. Rebuild embeddings for existing content: Run `edge-function/rebuild-embeddings`
-```
