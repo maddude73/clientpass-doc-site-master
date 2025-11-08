@@ -1,6 +1,6 @@
 const fs = require('fs').promises;
 const path = require('path');
-require('dotenv').config({ path: path.resolve(__dirname, '.env') }); // Load .env from backend directory
+require('dotenv').config({ path: path.resolve(__dirname, '.env.local') }); // Load .env.local from backend directory
 const matter = require('gray-matter');
 const MarkdownIt = require('markdown-it');
 const { GoogleGenerativeAI } = require('@google/generative-ai');
@@ -32,8 +32,14 @@ async function extractAndChunkDocs() {
     const files = await fs.readdir(DOCS_DIR);
     const markdownFiles = files.filter(file => path.extname(file) === '.md');
 
-    for (const file of markdownFiles) {
+    console.log(`Found ${markdownFiles.length} markdown files to process`);
+
+    for (let i = 0; i < markdownFiles.length; i++) {
+      const file = markdownFiles[i];
       const filePath = path.join(DOCS_DIR, file);
+
+      console.log(`[${i + 1}/${markdownFiles.length}] Processing ${file}...`);
+
       const fileContent = await fs.readFile(filePath, 'utf8');
 
       const { content, data: frontmatter } = matter(fileContent);
@@ -41,12 +47,13 @@ async function extractAndChunkDocs() {
 
       // Convert markdown to plain text (strip HTML tags and replace newlines with spaces)
       const plainText = md.render(content).replace(/<[^>]*>/g, '').replace(/\n/g, ' '); // Strip HTML tags and replace newlines
-      
-      // Simple chunking logic
+
+      // First pass: Create all chunks without embeddings
+      const fileChunks = [];
       let currentPosition = 0;
       while (currentPosition < plainText.length) {
         let chunk = plainText.substring(currentPosition, currentPosition + CHUNK_SIZE);
-        
+
         // Try to end chunk at a sentence boundary or word boundary
         const lastSentenceEnd = chunk.lastIndexOf('.');
         const lastWordEnd = chunk.lastIndexOf(' ');
@@ -57,27 +64,47 @@ async function extractAndChunkDocs() {
           chunk = chunk.substring(0, lastWordEnd);
         }
 
-        const embedding = await getEmbedding(chunk.trim()); // Generate embedding for the chunk
-
-        allChunks.push({
+        fileChunks.push({
           doc_id: docId,
           content: chunk.trim(),
           start_char: currentPosition,
           end_char: currentPosition + chunk.length,
           source_file: file,
-          frontmatter: frontmatter, // Include frontmatter for potential metadata
-          embedding: embedding // Add the embedding
+          frontmatter: frontmatter
         });
 
         currentPosition += (chunk.length - CHUNK_OVERLAP);
-        if (currentPosition < 0) currentPosition = 0; // Ensure no negative position
+        if (currentPosition < 0) currentPosition = 0;
       }
+
+      // Second pass: Generate embeddings in parallel batches
+      console.log(`  → Generating embeddings for ${fileChunks.length} chunks...`);
+      const BATCH_SIZE = 10; // Process 10 chunks in parallel
+
+      for (let j = 0; j < fileChunks.length; j += BATCH_SIZE) {
+        const batch = fileChunks.slice(j, Math.min(j + BATCH_SIZE, fileChunks.length));
+        process.stdout.write(`  → Processing chunks ${j + 1}-${Math.min(j + BATCH_SIZE, fileChunks.length)}/${fileChunks.length}...\r`);
+
+        // Generate embeddings in parallel for this batch
+        const embeddings = await Promise.all(
+          batch.map(chunk => getEmbedding(chunk.content))
+        );
+
+        // Add embeddings to chunks
+        batch.forEach((chunk, idx) => {
+          chunk.embedding = embeddings[idx];
+          allChunks.push(chunk);
+        });
+      }
+
+      console.log(`  ✓ Generated ${fileChunks.length} chunks for ${file}                    `);
     }
 
     await fs.writeFile(OUTPUT_FILE, JSON.stringify(allChunks, null, 2), 'utf8');
-    console.log(`Successfully extracted, chunked, and embedded ${allChunks.length} chunks to ${OUTPUT_FILE}`);
+    console.log(`\n✅ Successfully processed ${markdownFiles.length} files into ${allChunks.length} chunks → ${OUTPUT_FILE}`);
   } catch (error) {
-    console.error('Error during extraction, chunking, and embedding:', error);
+    console.error('\n❌ Error during extraction, chunking, and embedding:', error);
+    throw error;
   }
 }
 

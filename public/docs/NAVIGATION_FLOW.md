@@ -1,9 +1,9 @@
+```markdown
 ---
-id: 68e2f8d977e8ead370b13d43
-revision: 9
+title: Navigation Flowchart
+revision: 2.1
+last_updated: November 8, 2025
 ---
-
-# Navigation Flowchart
 
 This document describes the navigation flow of the application.
 
@@ -31,10 +31,20 @@ graph TD
     E --> P[Stylist Profile Setup];
     E --> Q[Stylist Profile];
     Q --> R[Boost Profile];
+    E --> U[Coverage Mode];
+    E --> V[Book Drawer];
 
     subgraph "Documentation"
         S[DevDocsPage] --> T[DocViewerPage];
     end
 
     A --> S;
+```
+```markdown
+### Recent Updates
+
+- **Coverage Mode**: A new feature has been added to the Pro Dashboard, allowing users to access the Coverage Mode page.
+- **Book Drawer**: A new component, the Book Drawer, has been integrated into the Pro Dashboard for streamlined booking management.
+- **Tab Navigation**: The Dashboard now supports URL-based tab navigation, allowing users to directly access specific tabs via URL parameters.
+```
 ```

@@ -1,8 +1,4 @@
----
-id: 68dccbb7479feecff6266a7a
-revision: 15
----
-
+```markdown
 # Database Schema Overview
 
 **Last Updated**: November 8, 2025
@@ -25,6 +21,9 @@ Stores user profile information for all roles (stylists, affiliates, clients, et
 - `coverage_mode`: Boolean, if the user has enabled coverage mode to have others handle their clients.
 - `stripe_connect_id`: The user's Stripe account ID, used for payouts.
 - `phone`, `email`, `zip_code`: Contact and location information.
+- **New Fields**:
+  - Service catalog preferences and AI feature preferences (opt-in/opt-out).
+  - Embedding storage for profile matching.
 
 ### `referrals`
 
@@ -41,6 +40,12 @@ The central table for tracking all referral activities from creation to completi
 - `response_deadline`: A specific deadline for a professional to respond to an offer.
 - `open_chair_id`: A foreign key if the referral was booked into an Open Chair session.
 - `hot_seat_id`: A foreign key if the referral was for a Hot Seat offer.
+- **New Fields**:
+  - `adjustment_status`: Status of any adjustments made to the referral.
+  - `last_adjusted_at`: Timestamp of the last adjustment.
+  - `rebooked_from`: Links repeat bookings.
+  - `catalog_service_id`: References the standardized service catalog.
+  - `service_id`: References the `service_catalog` table for service taxonomy.
 
 ### `open_chairs`
 
@@ -102,7 +107,7 @@ Manages a user's list of trusted partners. Referrals can be configured to be sen
 
 Tracks interactions (i.e., completed co-op sessions) between users to power the "auto-suggest" feature, which prompts users to add frequently-worked-with professionals to their trusted network.
 
-## Service Catalog Tables (New)
+## Service Catalog Tables
 
 ### `service_catalog`
 
@@ -118,6 +123,10 @@ Centralized catalog of all available services on the platform. Enables standardi
 - `requires_consultation`: Boolean indicating if consultation is recommended.
 - `active`: Boolean indicating if the service is currently offered.
 - `created_at`, `updated_at`: Timestamps for tracking.
+- **New Fields**:
+  - `price_cents`: Integer, price in cents.
+  - `duration_minutes`: Integer, duration in minutes.
+  - `deposit_pct`: Integer, deposit percentage.
 
 ### `referral_adjustments`
 
@@ -166,7 +175,7 @@ User preferences for quick rebooking features.
 - `notification_preferences`: JSONB, how user wants to be notified of rebook opportunities.
 - `updated_at`: TIMESTAMP.
 
-## AI Integration Tables (New - 2025)
+## AI Integration Tables
 
 ### `ai_configurations`
 
@@ -233,6 +242,7 @@ Stores vector embeddings for semantic search and similarity matching.
 2. **Service Catalog System** (October 2024):
    - `service_catalog`: Centralized service management
    - Enhanced taxonomy with categories and subcategories
+
 3. **Referral Adjustments** (October 2024):
 
    - `referral_adjustments`: Post-creation modification tracking
@@ -248,6 +258,8 @@ Stores vector embeddings for semantic search and similarity matching.
   - Added `adjustment_status` and `last_adjusted_at` fields
   - Added `rebooked_from` field to link repeat bookings
   - Added `catalog_service_id` references
+  - Added `service_id` to support new service taxonomy
+
 - **`services`**:
 
   - Added `catalog_service_id` field to link to standardized catalog entries
@@ -285,3 +297,4 @@ For developers pulling these changes:
 3. Run seed data for service catalog: `psql < seed/service_catalog.sql`
 4. Update `.env` with AI provider API keys
 5. Rebuild embeddings for existing content: Run `edge-function/rebuild-embeddings`
+```

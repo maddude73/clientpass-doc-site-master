@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env.local') });
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;

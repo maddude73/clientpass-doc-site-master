@@ -1,4 +1,4 @@
-require('dotenv').config({ path: require('path').resolve(__dirname, '.env') });
+require('dotenv').config({ path: require('path').resolve(__dirname, '.env.local') });
 const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 const GOOGLE_API_KEY = process.env.GOOGLE_API_KEY;
@@ -15,7 +15,7 @@ async function testEmbedding() {
 
     const text = "Hello, world!";
     const result = await model.embedContent([text]); // Sending as an array of strings
-    
+
     console.log('API Key is valid! Successfully generated embedding for:', text);
     console.log('Embedding dimensions:', result.embedding.values.length);
   } catch (error) {

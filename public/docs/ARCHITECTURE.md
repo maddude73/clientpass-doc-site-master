@@ -1,8 +1,4 @@
----
-id: 68dccbb7479feecff6266a72
-revision: 15
----
-
+```markdown
 # Architecture Overview
 
 This document provides a high-level overview of the technical architecture for the ClientPass application, covering both the web and mobile frontends.
@@ -26,6 +22,7 @@ This document provides a high-level overview of the technical architecture for t
 - **UI Components**: **React Native Paper** for Material Design components.
 - **Routing**: **Expo Router** for file-system based routing.
 - **State Management**: **React Context** for global authentication state.
+- **Capacitor**: Integrated for native functionality with **@capacitor/android**, **@capacitor/ios**, **@capacitor/core**, and **@capacitor/cli**.
 
 ### 1.3. Backend (Shared)
 
@@ -84,7 +81,7 @@ A centralized platform for managing and standardizing service offerings across a
 - **Components**:
   - `ServiceTaxonomySelector`: Hierarchical service selection interface
   - `EnhancedServiceSelector`: Improved UX with taxonomy-based navigation
-- **Data Model**: `service_catalog` table with standardized service definitions
+- **Data Model**: `service_catalog` table with standardized service definitions, including fields for `description`, `price_cents`, `duration_minutes`, and `deposit_pct`.
 
 ### 3.2. AI-Powered Features
 
@@ -103,7 +100,7 @@ Extended referral capabilities beyond the core workflow:
 - **Post-Creation Adjustments**: Modify services, pricing, and duration after referral creation
 - **Auto-Confirmation**: Automated approval for minor adjustments within predefined thresholds
 - **Validation & Calculation**: Real-time recalculation of fees and commissions
-- **Audit Trail**: Complete history of all modifications for transparency
+- **Audit Trail**: Complete history of all modifications for transparency, stored in `service_adjustment_audit` table
 - **Components**:
   - `AdjustReferralModal`: Interface for modifying referral details
   - `EnhancedAdjustServiceModal`: Improved UX with real-time calculations
@@ -184,3 +181,4 @@ For AI-powered features, an additional layer is introduced:
 - **Encryption**: All data encrypted at rest and in transit
 - **PII Protection**: Personal information handling complies with privacy regulations
 - **AI Data Handling**: User data sent to AI providers is minimized and anonymized where possible
+```

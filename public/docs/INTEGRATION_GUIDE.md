@@ -1,6 +1,8 @@
+```markdown
 ---
-id: 68dccbb7479feecff6266a86
-revision: 14
+title: Integration Guide
+revision: 2.1
+last_updated: November 8, 2025
 ---
 
 # Integration Guide
@@ -66,3 +68,28 @@ A future RESTful API could allow external systems to create and manage resources
     - The salon software makes a `POST` request to `/api/v1/referrals` with the client's information.
     - ClientPass receives the request and initiates its internal referral workflow, finding an available stylist nearby.
 3.  **Feedback Loop**: The salon software provides a webhook endpoint. When the referral is `completed`, ClientPass sends a `referral.completed` event to the webhook. The salon software can then use this data to update its own records, perhaps crediting the salon for the referral commission.
+
+## 5. New Features and Updates
+
+### 5.1 Capacitor Integration
+
+ClientPass has integrated Capacitor to enhance mobile application capabilities. This includes support for Android and iOS platforms, allowing for more robust mobile app development.
+
+- **Dependencies Added**:
+  - `@capacitor/android`: `^7.4.3`
+  - `@capacitor/cli`: `^7.4.3`
+  - `@capacitor/core`: `^7.4.3`
+  - `@capacitor/ios`: `^7.4.3`
+
+This integration allows developers to leverage Capacitor's features for building cross-platform mobile applications that can interact with ClientPass services.
+
+### 5.2 Database Schema Updates
+
+Recent updates to the database schema have removed nullable constraints from the `ip_address` field in various tables. This change ensures more consistent data handling and integrity.
+
+- **Affected Tables**:
+  - `sessions`
+  - `activity_logs`
+
+These changes improve the robustness of data tracking and session management within the ClientPass platform.
+```

@@ -1,9 +1,9 @@
+```markdown
 ---
-id: 68dccbb7479feecff6266a82
-revision: 14
+title: Frontend Overview
+revision: 2.1
+last_updated: November 8, 2025
 ---
-
-# Frontend Overview
 
 This document provides a high-level overview of the frontend architecture, structure, and key libraries used in the ClientPass application. It now covers both the web and the React Native mobile application.
 
@@ -19,6 +19,15 @@ This document provides a high-level overview of the frontend architecture, struc
 - **Icons**: **Lucide React**.
 - **Routing**: **React Router**
 - **State Management**: **Zustand**, **TanStack Query**, and **React Context**.
+
+### 1.2. Recent Updates
+
+- **Service Management**: Enhanced service management with `ServiceTaxonomySelector` and `EnhancedServiceSelector` for better categorization and selection of services.
+- **UI Updates**: Consistent UI updates across pages to match new design mockups.
+- **Functional Enhancements**: Added `QuickRebook` feature for faster service rebooking post-completion.
+- **Referrals**: New `AdjustReferralModal` for managing referral-based bookings with audit trails.
+- **Coverage Mode**: Added navigation fixes and a `Coverage Mode` card for improved user experience.
+- **Service Catalog**: Introduced `AdminServiceCatalog` for managing service categories and services.
 
 ## 2. Mobile Application (`clientpass-react-native`)
 
@@ -61,3 +70,11 @@ Routing is managed by **Expo Router**, which uses a file-based system.
 
 - **Global State**: User authentication and profile data are managed globally via `AuthContext`. This makes user data accessible throughout the component tree.
 - **Local/Component State**: Standard React `useState` and `useEffect` hooks are used for managing local component state.
+
+### 2.5. Recent Updates
+
+- **Service Management**: Introduced `ServiceTaxonomySelector` for improved service categorization and selection.
+- **UI Enhancements**: Updated UI components to align with the latest design standards.
+- **Functional Enhancements**: Implemented `QuickRebook` feature for seamless rebooking of services.
+- **Referrals**: Added `AdjustReferralModal` for managing and auditing referral-based bookings.
+```

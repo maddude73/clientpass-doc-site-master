@@ -1,9 +1,9 @@
+```markdown
 ---
-id: 68dccbb7479feecff6266a78
-revision: 14
+title: Frontend Component Guide
+revision: 2.1
+last_updated: November 8, 2025
 ---
-
-# Frontend Component Guide
 
 ## 1. Introduction
 
@@ -29,9 +29,15 @@ This document provides an overview of the component libraries used in the Client
 (This section describes the web app's components which are used as a reference for the mobile app)
 
 - **Authentication (`/auth`)**: `LoginForm`, `SignUpForm`, `RoleGuard`.
-- **Administration (`/admin`)**: `MasterAdminConsole` and its various modules.
-- **Referrals (`/referrals`)**: `EnhancedReferralForm`, `CountdownTimer`.
+- **Administration (`/admin`)**: `MasterAdminConsole` and its various modules, including the new `AdminServiceCatalog`.
+- **Referrals (`/referrals`)**: `EnhancedReferralForm`, `CountdownTimer`, `ReferralTimerDashboard`, `AdjustReferralModal`.
 - **Open Chair (`/open-chair`)**: `PostOpenChairForm`, `LiveSessionCard`.
+- **Coverage Mode (`/coverage`)**: `CoverageModePage`, `VacationReferralForm`.
+- **Boost (`/boost`)**: `BoostStatusCard`.
+- **Booking (`/booking`)**: `QuickRebook`, `RebookForm`.
+- **Client (`/client`)**: `ClientBookingFlow`, `ClientReferralSection`, `ServiceSelection`, `ShareAndEarn`.
+- **Service Management (`/services`)**: `ServiceManager`, `ServiceTaxonomySelector`, `EnhancedServiceSelector`.
+- **Auto-Match (`/auto-match`)**: `AutoMatchSystem`.
 - **And more...**
 
 ---
@@ -86,3 +92,6 @@ This section highlights some of the most important custom components built for t
 - **`earnings.tsx`**: A screen for professionals to track their pending, completed, and total earnings over different time periods.
 - **`pro-hub.tsx`**: A screen that displays featured partner deals and upcoming features for professionals.
 - **`inbox.tsx`**: A screen for users to view notifications, with a focus on actionable referral requests that include countdown timers.
+
+---
+```

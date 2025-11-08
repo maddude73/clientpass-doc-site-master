@@ -1,8 +1,4 @@
----
-id: 68dccbb8479feecff6266a98
-revision: 18
----
-
+```markdown
 # Software Requirements Specification (SRS)
 
 **Last Updated**: November 8, 2025
@@ -52,6 +48,7 @@ The major functions of the system include:
 7.  **Financial Tracking**: Dashboards for viewing pending, available, and total earnings from commissions.
 8.  **Affiliate Portal**: Tools for affiliates to track their recruits and override commissions.
 9.  **Admin Panels**: Interfaces for administrators to manage Pro Deals, export user data, and monitor system health.
+10. **Quick Rebook System**: Allows clients to rebook previous appointments with one click, using AI-powered time slot suggestions.
 
 ### 2.3 User Characteristics
 
@@ -120,7 +117,7 @@ The major functions of the system include:
 - **REQ-610**: A comprehensive, searchable audit log shall record all actions performed by administrators.
 - **REQ-611**: Admins shall have the ability to impersonate a user's account for support and troubleshooting purposes.
 
-#### 3.1.7 AI-Powered Features (New - 2025)
+#### 3.1.7 AI-Powered Features
 
 - **REQ-701**: The system shall provide an AI Gateway that abstracts multiple AI providers (Google Gemini, OpenAI GPT-5, Anthropic Claude 4.5, Ollama).
 - **REQ-702**: Admins shall be able to configure AI providers, models, and system prompts through an AI Configuration interface.
@@ -133,7 +130,7 @@ The major functions of the system include:
 - **REQ-709**: All AI operations shall be logged in an audit trail including provider, model, tokens used, cost, and latency.
 - **REQ-710**: The system shall support vector embeddings for semantic search and similarity matching across profiles and services.
 
-#### 3.1.8 Service Catalog Management (New - 2025)
+#### 3.1.8 Service Catalog Management
 
 - **REQ-801**: The system shall maintain a centralized service catalog with standardized service definitions.
 - **REQ-802**: Admins shall be able to create, edit, and deactivate services in the global catalog.
@@ -144,7 +141,7 @@ The major functions of the system include:
 - **REQ-807**: Service selection interfaces shall auto-populate pricing and duration from the catalog.
 - **REQ-808**: The system shall support bulk operations for managing multiple services efficiently.
 
-#### 3.1.9 Referral Adjustments (New - 2025)
+#### 3.1.9 Referral Adjustments
 
 - **REQ-901**: Professionals and clients shall be able to request modifications to referrals after creation.
 - **REQ-902**: Adjustable fields shall include services, pricing, and estimated duration.
@@ -157,7 +154,7 @@ The major functions of the system include:
 - **REQ-909**: Both parties shall be notified when an adjustment is requested, approved, or declined.
 - **REQ-910**: The adjustment interface shall display before/after comparison of all affected values.
 
-#### 3.1.10 Quick Rebook System (New - 2025)
+#### 3.1.10 Quick Rebook System
 
 - **REQ-1001**: Clients shall be able to rebook previous appointments with one click from their booking history.
 - **REQ-1002**: The rebook interface shall pre-fill information from the previous appointment (professional, services, location).
@@ -192,3 +189,4 @@ The major functions of the system include:
 - **UI-01**: The application shall be a web-based graphical user interface (GUI) rendered in standard web browsers.
 - **API-01**: The frontend shall communicate with the backend via the Supabase client library, which uses a combination of RESTful API calls (PostgREST) and WebSocket connections for real-time updates.
 - **API-02**: Serverless Edge Functions shall be invoked via HTTPS requests from the client.
+```

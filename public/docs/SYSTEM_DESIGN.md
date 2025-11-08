@@ -1,8 +1,4 @@
----
-id: 68dccbb8479feecff6266a9e
-revision: 15
----
-
+```markdown
 # System Design Document
 
 **Last Updated**: November 8, 2025
@@ -56,7 +52,7 @@ Corresponds to SRS Section 3.1.2.
   - `ReferralCard.tsx`: A component to display the status and details of a referral.
   - `CountdownTimer.tsx`: A component to show the real-time expiration timer for a pending referral.
 - **Data Models**:
-  - `public.referrals`: The central table for all referral data.
+  - `public.referrals`: The central table for all referral data, now includes `service_id` to support the new service taxonomy.
   - `public.users`: To link senders and receivers.
   - `public.services`: To specify the service being referred.
 - **Edge Functions**:
@@ -155,7 +151,7 @@ Corresponds to centralized service management added in 2025.
   - `EnhancedServiceSelector.tsx`: Improved service selection with taxonomy navigation
 - **Data Models**:
   - `public.service_catalog`: Centralized repository of all platform services
-    - Fields: `id`, `name`, `category`, `subcategory`, `description`, `base_price`, `duration`, `status`
+    - Fields: `id`, `name`, `category`, `subcategory`, `description`, `base_price`, `duration`, `status`, `price_cents`, `duration_minutes`, `deposit_pct`
   - `public.service_taxonomy`: Hierarchical categorization structure
     - Categories (Hair, Nails, Skincare, etc.)
     - Subcategories (Color, Cuts, Extensions, etc.)
@@ -181,6 +177,7 @@ Corresponds to post-creation referral modifications added in 2025.
   - `public.referral_adjustments`: Audit log of all referral modifications
     - Fields: `referral_id`, `adjustment_type`, `old_value`, `new_value`, `reason`, `approved_by`, `timestamp`
   - `public.referrals`: Extended with `adjustment_status` and `last_adjusted_at` fields
+  - `public.service_adjustment_audit`: Immutable log for service adjustments
 - **Library**: `src/lib/serviceAdjustmentCalculator.ts` - Adjustment calculation utilities
 - **Edge Functions**:
   - `adjust-referral`: Processes referral modification requests
@@ -240,3 +237,4 @@ Corresponds to streamlined rebooking functionality added in 2025.
 
 - **Responsive Design**: The application will be built using a mobile-first approach with Tailwind CSS to ensure it is fully responsive and usable on all screen sizes.
 - **Component Library**: A consistent look and feel will be maintained by using the `shadcn-ui` component library and a custom theme.
+```

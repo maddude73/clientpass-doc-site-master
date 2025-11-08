@@ -23,9 +23,18 @@ async function getEmbeddingsBatch(texts) {
     throw new Error('OPENAI_API_KEY environment variable is not set.');
   }
 
+  // Validate and clean inputs
+  const validTexts = texts
+    .filter(text => text && typeof text === 'string' && text.trim().length > 0)
+    .map(text => text.trim().substring(0, 8000)); // Limit to 8000 chars per chunk
+
+  if (validTexts.length === 0) {
+    throw new Error('No valid text inputs provided for embedding');
+  }
+
   const response = await openai.embeddings.create({
     model: 'text-embedding-3-large',
-    input: texts,
+    input: validTexts,
     dimensions: 1536, // Explicitly set dimensions
   });
 
