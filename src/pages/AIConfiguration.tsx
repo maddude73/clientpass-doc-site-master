@@ -59,7 +59,7 @@ const AIConfiguration = () => {
     const [configs, setConfigs] = useState<Record<AIProvider, ProviderConfig>>({
         google: {
             apiKey: import.meta.env.VITE_GEMINI_API_KEY || '',
-            model: 'gemini-exp-1206',
+            model: 'gemini-2.5-flash',
             systemPrompt: 'You are a helpful documentation assistant. Use the provided context to give accurate, concise answers.',
         },
         openai: {
@@ -330,10 +330,10 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="gemini-exp-1206">✨ Gemini 2.0 Experimental (Latest)</SelectItem>
-                                            <SelectItem value="gemini-2.0-flash-exp">🚀 Gemini 2.0 Flash Exp</SelectItem>
-                                            <SelectItem value="gemini-1.5-pro">🎯 Gemini 1.5 Pro</SelectItem>
-                                            <SelectItem value="gemini-1.5-flash">⚡ Gemini 1.5 Flash</SelectItem>
+                                            <SelectItem value="gemini-2.5-pro">💎 Gemini 2.5 Pro (Most Advanced)</SelectItem>
+                                            <SelectItem value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</SelectItem>
+                                            <SelectItem value="gemini-2.5-flash-lite">⚡ Gemini 2.5 Flash-Lite</SelectItem>
+                                            <SelectItem value="gemini-2.0-flash">🎯 Gemini 2.0 Flash</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
