@@ -138,7 +138,7 @@ const AIConfiguration = () => {
             }
 
             // Call backend API to test the prompt
-            const response = await fetch('http://localhost:5001/api/test-prompt', {
+            const response = await fetch('/api/test-prompt', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -179,7 +179,7 @@ const AIConfiguration = () => {
     const saveConfiguration = async () => {
         try {
             // Save to backend for dynamic reload
-            const response = await fetch('http://localhost:5001/api/update-config', {
+            const response = await fetch('/api/update-config', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

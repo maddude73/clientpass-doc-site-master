@@ -1,7 +1,7 @@
 // src/api/docs.ts
 
-// In a real application, this would be configured via environment variables.
-const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5001/api'; // User needs to change this to their deployed backend URL
+// Use relative path that works on both local (with proxy) and Vercel
+const BASE_API_URL = import.meta.env.VITE_API_BASE_URL || '/api';
 
 interface Comment {
   ownerId: string;

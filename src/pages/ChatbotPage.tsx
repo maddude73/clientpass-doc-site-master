@@ -29,7 +29,7 @@ const ChatbotPage: React.FC = () => {
     }, 15000);
 
     try {
-      const response = await fetch('http://localhost:5001/api/docs/search', {
+      const response = await fetch('/api/docs/search', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
