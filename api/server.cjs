@@ -11,6 +11,7 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 const OpenAI = require('openai');
 const Anthropic = require('@anthropic-ai/sdk');
+const { GoogleGenerativeAI } = require('@google/generative-ai');
 
 // Helper function for retries with exponential backoff
 async function callWithRetry(apiCall, maxRetries = 5, delay = 1000, validate = (result) => result && result.response) {
@@ -467,8 +468,17 @@ app.post('/api/test-prompt', async (req, res) => {
         break;
 
       case 'google':
-        // Note: Google Gemini would require their SDK here
-        return res.status(501).json({ message: 'Google Gemini testing not yet implemented' });
+        if (!config.apiKey) {
+          return res.status(400).json({ message: 'Google API key is required' });
+        }
+        const genAI = new GoogleGenerativeAI(config.apiKey);
+        const geminiModel = genAI.getGenerativeModel({ 
+          model: config.model || 'gemini-2.5-flash',
+          systemInstruction: config.systemPrompt || 'You are a helpful assistant.'
+        });
+        const geminiResult = await geminiModel.generateContent(userMessage);
+        response = geminiResult.response.text();
+        break;
 
       case 'ollama':
         // Note: Ollama would require fetch to local server
