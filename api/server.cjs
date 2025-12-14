@@ -108,13 +108,37 @@ const documentSchema = new mongoose.Schema({
 const Document = testConnection.model('Document', documentSchema);
 
 // Initialize OpenAI and Anthropic clients (make them optional to avoid startup errors)
-const openai = process.env.OPENAI_API_KEY ? new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-}) : null;
+let openai = null;
+let anthropic = null;
 
-const anthropic = process.env.ANTHROPIC_API_KEY ? new Anthropic({
-  apiKey: process.env.ANTHROPIC_API_KEY,
-}) : null;
+if (process.env.OPENAI_API_KEY) {
+  // Validate OpenAI API key format
+  if (process.env.OPENAI_API_KEY.startsWith('sk-proj-') || process.env.OPENAI_API_KEY.startsWith('sk-')) {
+    openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    console.log('✅ OpenAI client initialized with key:', process.env.OPENAI_API_KEY.substring(0, 12) + '...');
+  } else {
+    console.error('❌ Invalid OpenAI API key format. Expected format: sk-proj-... or sk-...');
+    console.error('Current key starts with:', process.env.OPENAI_API_KEY.substring(0, 10) + '...');
+  }
+} else {
+  console.warn('⚠️ OPENAI_API_KEY not provided - RAG search will be disabled');
+}
+
+if (process.env.ANTHROPIC_API_KEY) {
+  if (process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+    anthropic = new Anthropic({
+      apiKey: process.env.ANTHROPIC_API_KEY,
+    });
+    console.log('✅ Anthropic client initialized with key:', process.env.ANTHROPIC_API_KEY.substring(0, 12) + '...');
+  } else {
+    console.error('❌ Invalid Anthropic API key format. Expected format: sk-ant-...');
+    console.error('Current key starts with:', process.env.ANTHROPIC_API_KEY.substring(0, 10) + '...');
+  }
+} else {
+  console.warn('⚠️ ANTHROPIC_API_KEY not provided - RAG search will be disabled');
+}
 
 // Dynamic configuration storage (in-memory for now, could be moved to DB)
 let dynamicConfig = {
@@ -340,26 +364,44 @@ app.post('/api/docs/search', async (req, res) => {
     return res.status(400).json({ message: 'Query is required' });
   }
 
+  // Check if required services are available
   if (!openai) {
+    console.error('OpenAI client not configured - OPENAI_API_KEY missing');
     return res.status(503).json({ message: 'OpenAI client not configured. Please set OPENAI_API_KEY.' });
   }
 
   if (!anthropic) {
+    console.error('Anthropic client not configured - ANTHROPIC_API_KEY missing');
     return res.status(503).json({ message: 'Anthropic client not configured. Please set ANTHROPIC_API_KEY.' });
   }
 
+  // Log the search request
+  console.log('Processing search request for query:', query);
+
   try {
     // 1. Generate embedding for the user query using OpenAI
+    console.log('Generating embedding for query...');
     const embeddingResponse = await openai.embeddings.create({
       model: 'text-embedding-3-large',
       input: query,
       dimensions: 1536, // Explicitly set dimensions
     });
+
+    if (!embeddingResponse?.data?.[0]?.embedding) {
+      throw new Error('Invalid embedding response from OpenAI');
+    }
+
     const queryEmbedding = embeddingResponse.data[0].embedding;
     console.log('Query Embedding dimensions:', queryEmbedding.length);
 
     // 2. Perform Atlas Vector Search
+    console.log('Performing vector search...');
     const collection = docsConnection.collection('document_chunks');
+
+    if (!collection) {
+      throw new Error('Database collection not available');
+    }
+
     const searchResults = await collection.aggregate([
       {
         $vectorSearch: {
@@ -412,16 +454,42 @@ Answer:`;
       }]
     });
 
+    if (!message?.content?.[0]?.text) {
+      throw new Error('Invalid response from Claude API');
+    }
+
     const llmAnswer = message.content[0].text;
-    console.log('Claude Answer:', llmAnswer);
+    console.log('Claude Answer generated successfully');
 
     // 5. Return Claude's answer and sources
     const sources = searchResults.map(result => result.source_file);
-    res.json({ answer: llmAnswer, sources: [...new Set(sources)] });
+    const uniqueSources = [...new Set(sources)];
+
+    console.log('Search completed successfully, returning response');
+    res.json({ answer: llmAnswer, sources: uniqueSources });
 
   } catch (err) {
     console.error('Error during RAG search:', err);
-    res.status(500).json({ message: err.message });
+    console.error('Error stack:', err.stack);
+
+    // Return more specific error messages
+    if (err.code === 'invalid_api_key' && err.message.includes('Incorrect API key')) {
+      console.error('❌ CRITICAL: Invalid OpenAI API key detected!');
+      console.error('Key format check - Current key starts with:', process.env.OPENAI_API_KEY?.substring(0, 12) + '...');
+      res.status(401).json({
+        message: 'Invalid OpenAI API key. Please check your OPENAI_API_KEY environment variable.',
+        error: 'authentication_failed',
+        details: 'The API key should start with sk-proj- or sk-. Visit https://platform.openai.com/api-keys to get a valid key.'
+      });
+    } else if (err.message.includes('OpenAI')) {
+      res.status(503).json({ message: 'OpenAI service error: ' + err.message });
+    } else if (err.message.includes('Claude') || err.message.includes('Anthropic')) {
+      res.status(503).json({ message: 'Anthropic Claude service error: ' + err.message });
+    } else if (err.message.includes('Database') || err.message.includes('collection')) {
+      res.status(503).json({ message: 'Database service error: ' + err.message });
+    } else {
+      res.status(500).json({ message: 'Internal server error: ' + err.message });
+    }
   }
 });
 

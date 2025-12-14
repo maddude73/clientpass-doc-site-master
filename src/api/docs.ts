@@ -104,6 +104,21 @@ export const docApi = {
     return data;
   },
 
+  async searchDocuments(query: string): Promise<{ answer: string; sources: string[] }> {
+    const response = await fetch(`${BASE_API_URL}/docs/search`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ query }),
+    });
+    if (!response.ok) {
+      throw new Error(`Error searching documents: ${response.statusText}`);
+    }
+    const data = await response.json();
+    return data;
+  },
+
   // --- Utility for initial seeding (for demo purposes) ---
   // This will now attempt to create the document via the API.
   async seedDocument(docName: string, content: string): Promise<void> {

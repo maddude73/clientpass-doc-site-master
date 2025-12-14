@@ -95,10 +95,10 @@ The Multi-Agent System (MAS) is an intelligent automation framework that manages
 
 **Key Features**:
 
-- ChromaDB integration
+- MongoDB Atlas Vector Search integration
 - Document chunking and indexing
-- Vector similarity search
-- Automatic embedding generation
+- Vector similarity search with cosine similarity
+- OpenAI text-embedding-3-large embeddings
 
 **Events Subscribed**:
 
@@ -112,8 +112,9 @@ The Multi-Agent System (MAS) is an intelligent automation framework that manages
 
 **Dependencies**:
 
-- ChromaDB for vector storage
-- Sentence transformers for embeddings (optional)
+- MongoDB Atlas for vector storage and search
+- OpenAI API for text embeddings (text-embedding-3-large)
+- PyMongo for database connectivity
 
 #### 4. Logging & Audit Agent (`logging_audit_agent.py`)
 
@@ -204,9 +205,11 @@ class EventType(Enum):
 pip install loguru
 pip install pydantic pydantic-settings
 
-# Optional (for RAG functionality)
-pip install chromadb
-pip install sentence-transformers
+# MongoDB Atlas Integration (for RAG functionality)
+pip install pymongo motor
+
+# AI/ML Dependencies
+pip install openai numpy
 ```
 
 ### Configuration
@@ -224,6 +227,13 @@ DOCUMENT_MANAGEMENT_ENABLED=true
 RAG_MANAGEMENT_ENABLED=true
 LOGGING_AUDIT_ENABLED=true
 SCHEDULER_ENABLED=true
+
+# MongoDB Atlas Configuration (for RAG)
+MONGODB_URI=mongodb+srv://username:password@cluster.mongodb.net/
+MONGODB_DATABASE=docs
+
+# OpenAI Configuration (for embeddings)
+OPENAI_API_KEY=sk-proj-your-openai-key
 
 # Paths
 PROJECT_ROOT=/path/to/project
@@ -248,7 +258,10 @@ LOGS_PATH=automation/logs
     }
   },
   "rag": {
-    "chroma_db_path": "chroma_db",
+    "vector_collection": "document_chunks",
+    "vector_index_name": "vector_index",
+    "embedding_model": "text-embedding-3-large",
+    "embedding_dimensions": 1536,
     "chunk_size": 1000,
     "chunk_overlap": 200
   },
