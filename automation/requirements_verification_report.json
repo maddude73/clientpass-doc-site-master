@@ -1,0 +1,98 @@
+{
+  "timestamp": "2025-12-13T20:00:01.702058",
+  "summary": {
+    "total_tests": 38,
+    "passed_tests": 38,
+    "success_rate": 100.0
+  },
+  "detailed_results": {
+    "file_structure": {
+      "orchestrator.py": true,
+      "base_agent.py": true,
+      "config.py": true,
+      "events.py": true,
+      "agents/change_detection_agent.py": true,
+      "agents/document_management_agent.py": true,
+      "agents/rag_management_agent.py": true,
+      "agents/logging_audit_agent.py": true,
+      "agents/scheduler_agent.py": true,
+      "agents/self_healing_agent.py": true,
+      "requirements.txt": true
+    },
+    "agent_classes": {
+      "ChangeDetectionAgent": true,
+      "DocumentManagementAgent": true,
+      "RAGManagementAgent": true,
+      "LoggingAuditAgent": true,
+      "SchedulerAgent": true,
+      "SelfHealingAgent": true
+    },
+    "orchestrator": {
+      "agent_creation": true,
+      "all_agents_present": true
+    },
+    "configuration": {
+      "config_loading": true,
+      "config_mongodb_uri": true,
+      "config_openai_api_key": true,
+      "config_self_healing_enabled": true,
+      "config_memory_threshold": true,
+      "config_cpu_threshold": true,
+      "config_disk_threshold": true
+    },
+    "self_healing": {
+      "fix_registry_count": 10,
+      "fix_high_memory_usage": true,
+      "fix_large_log_files": true,
+      "fix_agent_not_responding": true,
+      "fix_disk_space_low": true,
+      "fix_failed_mongodb_connection": true,
+      "auto_healing_enabled": true
+    },
+    "dependencies": {
+      "dep_loguru": true,
+      "dep_pydantic": true,
+      "dep_pymongo": true,
+      "dep_openai": true,
+      "dep_psutil": true,
+      "dep_asyncio": true
+    },
+    "srs_mapping": {
+      "REQ-001.1": "File monitoring implemented in ChangeDetectionAgent",
+      "REQ-001.2": "Git change detection in _check_git_changes method",
+      "REQ-001.3": "File type filtering in _should_monitor_file method",
+      "REQ-001.4": "Debounce mechanism in _debounce_changes method",
+      "REQ-001.5": "Change queue via pending_changes list",
+      "REQ-002.1": "Markdown creation in _create_documentation_file method",
+      "REQ-002.2": "Content updates in _update_file_content method",
+      "REQ-002.3": "Formatting consistency built into agent",
+      "REQ-002.4": "Frontmatter handling in _extract_frontmatter method",
+      "REQ-002.5": "Multiple doc types support configured",
+      "REQ-003.1": "OpenAI embedding generation implemented",
+      "REQ-003.2": "MongoDB Atlas storage via document_chunks collection",
+      "REQ-003.3": "Vector similarity search in _vector_search method",
+      "REQ-003.4": "Embedding consistency maintained",
+      "REQ-003.5": "Batch processing support implemented",
+      "REQ-004.1": "System event logging with timestamps",
+      "REQ-004.2": "Performance metrics tracking",
+      "REQ-004.3": "Agent health monitoring",
+      "REQ-004.4": "Audit trail generation",
+      "REQ-004.5": "Anomaly alerting capability",
+      "REQ-005.1": "Daily maintenance task scheduling",
+      "REQ-005.2": "Agent synchronization coordination",
+      "REQ-005.3": "Backup and cleanup operations",
+      "REQ-005.4": "Startup/shutdown sequence handling",
+      "REQ-005.5": "Custom scheduling configurations",
+      "REQ-006.1": "System resource monitoring (CPU, memory, disk)",
+      "REQ-006.2": "Health issue detection and logging",
+      "REQ-006.3": "Automatic fixes for common issues",
+      "REQ-006.4": "Automatic agent restart capability",
+      "REQ-006.5": "Comprehensive health report generation",
+      "REQ-006.6": "Health history and baselines maintenance",
+      "REQ-006.7": "Manual healing operations support",
+      "REQ-006.8": "Cleanup of temporary and corrupted files",
+      "REQ-006.9": "Database and network health monitoring",
+      "REQ-006.10": "Fix cooldown periods implementation"
+    }
+  }
+}

@@ -37,6 +37,40 @@ backend/docker-compose.yml
 
 # Large data files
 backend/docs-chunks-batch.json
+backend/docs-chunks.json
+*.chunks.json
+
+# Automation system files
+automation/logs/
+automation/__pycache__/
+automation/agents/__pycache__/
+automation/chroma_db/
+automation/data/temp/
+automation/*.pid
+automation/*.lock
+automation/health_data/
+
+# Python cache and temporary files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
 
 # Deployment
 deployment_urls.txt
