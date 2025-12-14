@@ -557,6 +557,17 @@ async function reviewChanges(docName, currentContent, proposedContent) {
 }
 
 /**
+ * Generate a MongoDB ObjectId
+ */
+function generateObjectId() {
+    const crypto = require('crypto');
+    const timestamp = Math.floor(Date.now() / 1000).toString(16).padStart(8, '0');
+    const randomBytes = crypto.randomBytes(5).toString('hex');
+    const counter = Math.floor(Math.random() * 0xFFFFFF).toString(16).padStart(6, '0');
+    return timestamp + randomBytes + counter;
+}
+
+/**
  * Apply documentation updates
  */
 function applyDocumentationUpdate(docName, newContent) {
@@ -574,6 +585,19 @@ function applyDocumentationUpdate(docName, newContent) {
     }
     if (cleanContent.endsWith('```')) {
         cleanContent = cleanContent.slice(0, -3).trim(); // Remove closing ```
+    }
+
+    // Ensure frontmatter exists for new documents
+    if (!cleanContent.startsWith('---')) {
+        const docId = generateObjectId();
+        const frontmatter = `---
+id: ${docId}
+revision: 1
+---
+
+`;
+        cleanContent = frontmatter + cleanContent;
+        console.log(`ℹ️  Added missing frontmatter to ${docName} (id: ${docId})`);
     }
 
     fs.writeFileSync(docPath, cleanContent, 'utf8');

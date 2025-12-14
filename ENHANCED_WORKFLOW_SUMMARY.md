@@ -45,7 +45,7 @@ We have successfully **enhanced the ClientPass documentation workflow** by integ
 3. **RAGManagementAgent**
 
    - Auto-generates vector embeddings for new/updated content
-   - Manages ChromaDB and MongoDB Atlas vector databases
+   - Manages MongoDB Atlas vector database
    - Ensures search quality and embedding accuracy
    - Handles embedding model optimization
 

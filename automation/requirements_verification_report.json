@@ -1,9 +1,9 @@
 {
-  "timestamp": "2025-12-13T20:27:25.882879",
+  "timestamp": "2025-12-13T20:33:23.108472",
   "summary": {
-    "total_tests": 30,
-    "passed_tests": 28,
-    "success_rate": 93.33333333333333
+    "total_tests": 38,
+    "passed_tests": 38,
+    "success_rate": 100.0
   },
   "detailed_results": {
     "file_structure": {
@@ -25,10 +25,11 @@
       "RAGManagementAgent": true,
       "LoggingAuditAgent": true,
       "SchedulerAgent": true,
-      "SelfHealingAgent": false
+      "SelfHealingAgent": true
     },
     "orchestrator": {
-      "orchestrator_error": "No module named 'psutil'"
+      "agent_creation": true,
+      "all_agents_present": true
     },
     "configuration": {
       "config_loading": true,
@@ -40,14 +41,20 @@
       "config_disk_threshold": true
     },
     "self_healing": {
-      "self_healing_error": "No module named 'psutil'"
+      "fix_registry_count": 10,
+      "fix_high_memory_usage": true,
+      "fix_large_log_files": true,
+      "fix_agent_not_responding": true,
+      "fix_disk_space_low": true,
+      "fix_failed_mongodb_connection": true,
+      "auto_healing_enabled": true
     },
     "dependencies": {
       "dep_loguru": true,
       "dep_pydantic": true,
       "dep_pymongo": true,
       "dep_openai": true,
-      "dep_psutil": false,
+      "dep_psutil": true,
       "dep_asyncio": true
     },
     "srs_mapping": {

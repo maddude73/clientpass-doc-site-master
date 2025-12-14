@@ -31,6 +31,8 @@ const recommendationsDocs = [
 const architectureDocs = [
   { name: "SAD.md", description: "Software Architecture Document." },
   { name: "SYSTEM_DESIGN.md", description: "The detailed design, responding to the SRS." },
+  { name: "ARCHITECTURE.md", description: "Overall system architecture." },
+  { name: "AI_GATEWAY_PATTERN.md", description: "AI integration architecture." },
   { name: "WIREFRAMES.md", description: "Textual wireframes for the main pages." },
   { name: "NAVIGATION_FLOW.md", description: "Application navigation flowchart." },
   { name: "HLA.md", description: "High Level Architecture." },
@@ -67,6 +69,9 @@ const featuresDocs = [
   { name: "BOOST_PROFILE.md", description: "Feature to boost stylist profile visibility." },
   { name: "COVERAGE_MODE.md", description: "Feature for stylists to manage unavailability." },
   { name: "WAITING_FOR_RESPONSE.md", description: "Page for tracking referral response status." },
+  { name: "SERVICE_CATALOG.md", description: "Service listing and management." },
+  { name: "QUICK_REBOOK.md", description: "Rapid rebooking functionality." },
+  { name: "INBOX_NOTIFICATIONS_SYSTEM.md", description: "Notification system." },
 ];
 
 const componentsDocs = [
@@ -75,6 +80,22 @@ const componentsDocs = [
   { name: "OPEN_CHAIR_FORM.md", description: "Documents the updated open chair form." },
   { name: "COUNTDOWN_TIMER.md", description: "Reusable countdown timer component." },
   { name: "REFERRAL_COMPLETE.md", description: "Confirmation screen for completed referrals." },
+  { name: "HOME_INBOX_COMPONENTS.md", description: "Core navigation and messaging interface components." },
+  { name: "BOOST_PROFILE_COMPONENT.md", description: "Professional profile enhancement component features." },
+  { name: "COMPONENT_GUIDE.md", description: "Comprehensive guide to application components." },
+  { name: "PROHUB_PAGE_COMPONENT.md", description: "Professional advertising and services page component." },
+];
+
+const changesDocs = [
+  { name: "DOCUMENTATION_INDEX.md", description: "Main documentation index." },
+  { name: "CHANGELOG.md", description: "Project change history." },
+  { name: "CHANGELOG_UPDATED.md", description: "Enhanced changelog with automation." },
+  { name: "RECENT_UPDATES_DEC_2025.md", description: "Latest updates documentation." },
+];
+
+const testAutomationDocs = [
+  { name: "FINAL_AUTOMATION_TEST.md", description: "Comprehensive automation test suite and validation." },
+  { name: "TEST_AGENT_TRIGGER.md", description: "Agent trigger testing and validation system." },
 ];
 
 const DocSectionHeader = ({ title }: { title: string }) => (
@@ -285,6 +306,24 @@ const DevDocsPage = () => {
             <DocSectionHeader title="Components" />
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {componentsDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <DocSectionHeader title="Test/Automation Files" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {testAutomationDocs.map((doc) => (
+                <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
+              ))}
+            </div>
+          </section>
+
+          <section>
+            <DocSectionHeader title="Changes" />
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {changesDocs.map((doc) => (
                 <DocCard key={doc.name} doc={doc} updatedAt={docMetadataMap.get(doc.name)?.updatedAt} revision={docMetadataMap.get(doc.name)?.revision} />
               ))}
             </div>

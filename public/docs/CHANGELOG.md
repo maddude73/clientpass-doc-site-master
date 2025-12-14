@@ -1,3 +1,7 @@
+---
+id: 693f21686275321382b2bc34
+revision: 1
+---
 # ClientPass Platform Changelog
 
 **Project**: ClientPass - Beauty Professional Referral & Collaboration Platform  

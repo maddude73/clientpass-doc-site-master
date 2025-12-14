@@ -1,3 +1,7 @@
+---
+id: 693f2168b1f36ce029eb1ac8
+revision: 1
+---
 # Open Chair List
 
 This document provides a detailed description of the Open Chair List feature.

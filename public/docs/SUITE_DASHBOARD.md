@@ -1,3 +1,7 @@
+---
+id: 693f216807e855077de211b6
+revision: 1
+---
 # Suite Dashboard
 
 This document provides a detailed description of the Suite Dashboard, designed for salon suite owners and managers. It serves as a central hub for managing suite operations, stylists, open chairs, and in-suite referrals.

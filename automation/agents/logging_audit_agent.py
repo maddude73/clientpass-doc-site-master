@@ -17,7 +17,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from base_agent import BaseAgent
-from events import event_bus, EventType
+from events import EventType
+from redis_event_bus import event_bus_proxy as event_bus
 from config import config
 
 class LoggingAuditAgent(BaseAgent):
@@ -44,7 +45,7 @@ class LoggingAuditAgent(BaseAgent):
         
         logger.info("LoggingAudit agent initialized")
     
-    def _setup_event_subscriptions(self):
+    async def _setup_event_subscriptions(self):
         """Setup event subscriptions"""
         # Listen to all event types for auditing
         for event_type in EventType:
@@ -465,3 +466,25 @@ class LoggingAuditAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Failed to get audit summary: {e}")
             return {'error': str(e)}
+    
+    def _collect_system_metrics(self) -> Dict[str, Any]:
+        """Collect system performance metrics for audit purposes"""
+        try:
+            import psutil
+            return {
+                'cpu_percent': psutil.cpu_percent(),
+                'memory_percent': psutil.virtual_memory().percent,
+                'disk_usage': psutil.disk_usage('/').percent,
+                'timestamp': datetime.now().isoformat()
+            }
+        except ImportError:
+            return {
+                'cpu_percent': 0,
+                'memory_percent': 0, 
+                'disk_usage': 0,
+                'timestamp': datetime.now().isoformat(),
+                'note': 'psutil not available - install for system metrics'
+            }
+        except Exception as e:
+            logger.error(f"Failed to collect system metrics: {e}")
+            return {'error': str(e), 'timestamp': datetime.now().isoformat()}

@@ -1,4 +1,8 @@
 ---
+id: 693f21683e4d947b0f8c7dcc
+revision: 1
+---
+---
 title: Frontend Component Guide
 revision: 2.2
 last_updated: November 8, 2025

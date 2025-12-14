@@ -1,3 +1,7 @@
+---
+id: 693f2168eea2ab119cf7cb1a
+revision: 1
+---
 # Stylist Profile
 
 This document provides a detailed description of the Stylist Profile feature.

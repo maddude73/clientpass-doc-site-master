@@ -1,3 +1,7 @@
+---
+id: 693f216853f9e5c13ec6682f
+revision: 1
+---
 # Referral Complete Component
 
 This document provides a detailed description of the `ReferralComplete` component.

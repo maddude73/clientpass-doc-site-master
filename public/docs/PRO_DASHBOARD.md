@@ -1,3 +1,7 @@
+---
+id: 693f2168c579c53fdf337edc
+revision: 1
+---
 # Pro Dashboard
 
 This document provides a detailed description of the Pro Dashboard, the central hub for professional users (stylists, barbers) to manage their business on ClientPass.

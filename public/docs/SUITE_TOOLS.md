@@ -1,3 +1,7 @@
+---
+id: 693f2168431945b24a8d7803
+revision: 1
+---
 # Suite Tools
 
 This document provides a detailed description of the Suite Tools feature, designed specifically for salon suite owners and managers.

@@ -44,7 +44,7 @@ backend/docs-chunks.json
 automation/logs/
 automation/__pycache__/
 automation/agents/__pycache__/
-automation/chroma_db/
+
 automation/data/temp/
 automation/*.pid
 automation/*.lock

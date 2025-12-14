@@ -1,3 +1,7 @@
+---
+id: 693f2168fd5352c98a77a105
+revision: 1
+---
 # Affiliate Dashboard
 
 This document provides a detailed description of the Affiliate Dashboard, a dedicated portal for affiliate partners to track their performance, manage their network, and access marketing materials.

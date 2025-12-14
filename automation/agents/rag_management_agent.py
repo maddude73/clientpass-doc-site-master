@@ -18,7 +18,7 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from base_agent import BaseAgent
-from events import event_bus, EventType
+from events import EventType
 from config import config
 
 class RAGManagementAgent(BaseAgent):
@@ -27,13 +27,14 @@ class RAGManagementAgent(BaseAgent):
     def __init__(self):
         super().__init__("RAGManagement")
         
-        # Configuration - Match backend structure
-        self.mongodb_uri = config.get('mongodb_uri')
+        # Configuration - Read from environment with fallbacks
+        import os
+        self.mongodb_uri = config.get('mongodb_uri') or os.getenv('MONGODB_URI')
         self.database_name = config.get('mongodb_database', 'docs')
-        self.vector_collection = 'document_chunks'  # Match existing backend collection
-        self.vector_index_name = 'vector_index'   # Match existing backend index
-        self.embedding_model = 'text-embedding-3-large'  # Match backend model
-        self.embedding_dimensions = 1536  # Match backend dimensions
+        self.vector_collection = config.get('document_collection', 'document_chunks')
+        self.vector_index_name = config.get('vector_index_name', 'vector_index')
+        self.embedding_model = config.get('embedding_model', 'text-embedding-3-small')
+        self.embedding_dimensions = config.get('embedding_dimensions', 1536)
         self.chunk_size = config.get('chunk_size', 1000)
         self.chunk_overlap = config.get('chunk_overlap', 200)
         
@@ -50,11 +51,11 @@ class RAGManagementAgent(BaseAgent):
         self.db = None
         self.embeddings_collection = None
         
-        # Check for dependencies
-        self.rag_enabled = self._check_dependencies()
+        # Check for dependencies and configuration
+        self.rag_enabled = self._check_dependencies() and self._check_configuration()
         
         if not self.rag_enabled:
-            logger.warning("RAG functionality disabled - missing dependencies (pymongo, openai)")
+            logger.warning("RAG functionality disabled - check dependencies (pymongo, openai) and MongoDB Atlas configuration")
         else:
             logger.info("RAG Management agent initialized with MongoDB Atlas Vector Search")
     
@@ -66,17 +67,31 @@ class RAGManagementAgent(BaseAgent):
             return True
         except ImportError:
             return False
+            
+    def _check_configuration(self) -> bool:
+        """Check if MongoDB Atlas is properly configured"""
+        if not self.mongodb_uri:
+            logger.info("MongoDB Atlas URI not configured - RAG functionality disabled")
+            return False
+            
+        if not self.mongodb_uri.startswith('mongodb+srv://'):
+            logger.warning(f"MongoDB URI appears to be local instance, not Atlas: {self.mongodb_uri}")
+            logger.info("For production use, configure MongoDB Atlas with MONGODB_URI environment variable")
+            return False
+            
+        return True
     
-    def _setup_event_subscriptions(self):
+    async def _setup_event_subscriptions(self):
         """Setup event subscriptions"""
         # Listen for document changes that require RAG updates
-        event_bus.subscribe(EventType.DOCUMENT_PROCESSING, self._handle_document_event)
+        self.subscribe_to_event(EventType.DOCUMENT_PROCESSING, self._handle_document_event)
         
         # Listen for RAG update requests
-        event_bus.subscribe(EventType.RAG_UPDATE, self._handle_rag_request)
+        self.subscribe_to_event(EventType.RAG_UPDATE, self._handle_rag_request)
+        
         
         # Listen for daily maintenance
-        event_bus.subscribe(EventType.DAILY_MAINTENANCE, self._handle_maintenance)
+        self.subscribe_to_event(EventType.DAILY_MAINTENANCE, self._handle_maintenance)
     
     async def initialize(self):
         """Initialize the RAG management agent"""
@@ -314,13 +329,14 @@ class RAGManagementAgent(BaseAgent):
         """Generate embedding for text using OpenAI API"""
         try:
             import openai
+            import random
             
             # Set up OpenAI client
             openai_api_key = config.get('openai_api_key')
             if not openai_api_key:
                 logger.warning("OpenAI API key not configured - using mock embeddings")
                 # Return mock embedding for testing
-                return np.random.rand(self.embedding_dimensions).tolist()
+                return [random.random() for _ in range(self.embedding_dimensions)]
             
             client = openai.OpenAI(api_key=openai_api_key)
             
@@ -330,12 +346,15 @@ class RAGManagementAgent(BaseAgent):
                 input=text
             )
             
-            return response.data[0].embedding
+            embedding = response.data[0].embedding
+            logger.debug(f"Generated embedding with {len(embedding)} dimensions")
+            return embedding
             
         except Exception as e:
             logger.error(f"Failed to generate embedding: {e}")
             # Return mock embedding as fallback
-            return np.random.rand(self.embedding_dimensions).tolist()
+            import random
+            return [random.random() for _ in range(self.embedding_dimensions)]
     
     async def _update_document(self, task: Dict[str, Any]):
         """Update an existing document in the index"""

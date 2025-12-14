@@ -40,6 +40,30 @@ class MultiAgentOrchestrator:
         
         logger.info("Multi-Agent Orchestrator initialized")
     
+    async def initialize(self) -> bool:
+        """Initialize the orchestrator and all agents for testing"""
+        try:
+            logger.info("Initializing Multi-Agent Orchestrator...")
+            
+            # Create agents
+            agent_instances = self._create_agents()
+            
+            # Initialize each agent
+            for agent in agent_instances:
+                try:
+                    await agent.initialize()
+                    self.agents[agent.name] = agent
+                    logger.info(f"Initialized agent: {agent.name}")
+                except Exception as e:
+                    logger.error(f"Failed to initialize agent {agent.name}: {e}")
+            
+            logger.info(f"Multi-Agent Orchestrator initialized with {len(self.agents)} agents")
+            return len(self.agents) > 0
+            
+        except Exception as e:
+            logger.error(f"Failed to initialize orchestrator: {e}")
+            return False
+    
     def _setup_signal_handlers(self):
         """Setup graceful shutdown on signals"""
         def signal_handler(signum, frame):
@@ -111,7 +135,7 @@ class MultiAgentOrchestrator:
             self.running = True
             
             # Publish system startup event
-            event_bus.publish(
+            await event_bus.publish(
                 EventType.SYSTEM_STATUS,
                 'orchestrator',
                 {
@@ -198,7 +222,7 @@ class MultiAgentOrchestrator:
                 logger.error(f"Health check failed for {agent_name}: {e}")
         
         # Publish health check results
-        event_bus.publish(
+        await event_bus.publish(
             EventType.HEALTH_CHECK,
             'orchestrator',
             {'results': health_results, 'timestamp': datetime.now().isoformat()}

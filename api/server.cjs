@@ -37,11 +37,11 @@ async function callWithRetry(apiCall, maxRetries = 5, delay = 1000, validate = (
 }
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5500;
 
 // Define trusted origins/domains. These can be configured via environment variables in a real app.
 const TRUSTED_DOMAINS = [
-  'localhost:8080', // Your local frontend development server
+  'localhost:8080', 'localhost:8081',// Your local frontend development server
   '.vercel.app',    // Vercel deployments (wildcard for subdomains)
   // Add your custom production domain here, e.g., 'your-custom-domain.com'
 ];

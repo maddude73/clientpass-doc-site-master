@@ -1,3 +1,7 @@
+---
+id: 693f2168b45aeedb4fc956ce
+revision: 1
+---
 # Boost Profile
 
 This document provides a detailed description of the Boost Profile feature.

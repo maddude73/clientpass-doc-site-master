@@ -1,0 +1,100 @@
+{
+  "test_session": {
+    "start_time": "2025-12-14T14:30:20.236992",
+    "end_time": "2025-12-14T14:30:22.218481",
+    "duration_seconds": 1.981489,
+    "success_rate_percent": 50.0
+  },
+  "summary": {
+    "total_tests": 12,
+    "passed": 6,
+    "failed": 6,
+    "test_results": [
+      {
+        "name": "Kafka Orchestrator Import",
+        "status": "FAIL",
+        "details": "No module named 'kafka'",
+        "timestamp": "2025-12-14T14:30:20.270538"
+      },
+      {
+        "name": "LangGraph Workflows Import",
+        "status": "FAIL",
+        "details": "No module named 'langchain_core'",
+        "timestamp": "2025-12-14T14:30:20.271187"
+      },
+      {
+        "name": "Kafka Event Bus Import",
+        "status": "FAIL",
+        "details": "No module named 'kafka'",
+        "timestamp": "2025-12-14T14:30:20.271462"
+      },
+      {
+        "name": "Source Change Producer Import",
+        "status": "FAIL",
+        "details": "No module named 'kafka'",
+        "timestamp": "2025-12-14T14:30:20.271775"
+      },
+      {
+        "name": "Document Processing Consumer Import",
+        "status": "FAIL",
+        "details": "No module named 'kafka'",
+        "timestamp": "2025-12-14T14:30:20.677076"
+      },
+      {
+        "name": "Configuration Import",
+        "status": "FAIL",
+        "details": "cannot import name 'Config' from 'config' (/Users/rhfluker/Projects/clientpass-doc-site-master/automation/config.py)",
+        "timestamp": "2025-12-14T14:30:20.698340"
+      },
+      {
+        "name": "Agents Directory",
+        "status": "PASS",
+        "details": "",
+        "timestamp": "2025-12-14T14:30:20.698368"
+      },
+      {
+        "name": "Required Agent Files",
+        "status": "PASS",
+        "details": "",
+        "timestamp": "2025-12-14T14:30:20.698422"
+      },
+      {
+        "name": "End-to-End Workflow Performance",
+        "status": "PASS",
+        "details": "Completed in 1.41s",
+        "timestamp": "2025-12-14T14:30:22.105919"
+      },
+      {
+        "name": "End-to-End Workflow Completeness",
+        "status": "PASS",
+        "details": "",
+        "timestamp": "2025-12-14T14:30:22.105961"
+      },
+      {
+        "name": "File Change Detection Performance",
+        "status": "PASS",
+        "details": "0.101s",
+        "timestamp": "2025-12-14T14:30:22.207015"
+      },
+      {
+        "name": "Concurrent Operations Support",
+        "status": "PASS",
+        "details": "105 ops in 0.01s",
+        "timestamp": "2025-12-14T14:30:22.218469"
+      }
+    ]
+  },
+  "srs_compliance": {
+    "requirements_tested": [
+      "REQ-001: Change Detection Agent",
+      "REQ-002: Document Management Agent",
+      "REQ-003: RAG Management Agent",
+      "REQ-004: Logging and Audit Agent",
+      "REQ-005: Scheduler Agent",
+      "NFR-001: Performance Requirements",
+      "NFR-002: Concurrent Operations"
+    ],
+    "automation_architecture": "Kafka + LangGraph Hybrid",
+    "validation_status": "COMPLETED"
+  }
+}

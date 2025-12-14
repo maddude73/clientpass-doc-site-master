@@ -11,7 +11,8 @@ from abc import ABC, abstractmethod
 from datetime import datetime
 from typing import Dict, Any, Optional
 from loguru import logger
-from events import event_bus, EventType
+from events import EventType
+from redis_event_bus import event_bus_proxy
 from config import config
 
 class AgentStatus:
@@ -35,15 +36,30 @@ class BaseAgent(ABC):
         }
         self.running = False
         self.tasks = []
-        
-        # Subscribe to system events
-        self._setup_event_subscriptions()
+        self.consumers = []  # Track Redis consumers
         
         logger.info(f"Initialized {self.name} with ID {self.agent_id}")
     
-    def _setup_event_subscriptions(self):
+    async def _setup_event_subscriptions(self):
         """Setup default event subscriptions - override in subclasses"""
         pass
+    
+    def subscribe_to_event(self, event_type: EventType, handler, **kwargs):
+        """Subscribe to Redis events with proper consumer tracking"""
+        consumer = event_bus_proxy.subscribe(
+            event_type,
+            handler,
+            consumer_group=f"group_{self.name}_{event_type.value}",
+            consumer_name=f"{self.name}_{self.agent_id[:8]}",
+            **kwargs
+        )
+        self.consumers.append(consumer)
+        return consumer
+    
+    async def publish_event(self, event_type: EventType, data: Dict[str, Any] = None):
+        """Publish events through Redis event bus"""
+        await event_bus_proxy.publish(event_type, self.name, data)
+        self.increment_metric('events_published')
     
     @abstractmethod
     async def initialize(self):
@@ -94,6 +110,12 @@ class BaseAgent(ABC):
         try:
             logger.info(f"Starting {self.name}...")
             
+            # Initialize Redis event bus
+            await event_bus_proxy.initialize()
+            
+            # Setup event subscriptions
+            await self._setup_event_subscriptions()
+            
             # Initialize agent
             await self.initialize()
             
@@ -101,7 +123,7 @@ class BaseAgent(ABC):
             self.status = AgentStatus.RUNNING
             
             # Publish system status
-            event_bus.publish(
+            await event_bus_proxy.publish(
                 EventType.SYSTEM_STATUS,
                 self.name,
                 {'status': 'started', 'agent_id': self.agent_id}
@@ -127,6 +149,11 @@ class BaseAgent(ABC):
             self.running = False
             self.status = AgentStatus.STOPPED
             
+            # Stop Redis consumers
+            for consumer in self.consumers:
+                if hasattr(consumer, 'stop'):
+                    consumer.stop()
+            
             # Cancel all tasks
             for task in self.tasks:
                 if not task.done():
@@ -140,7 +167,7 @@ class BaseAgent(ABC):
             await self.cleanup()
             
             # Publish system status
-            event_bus.publish(
+            await event_bus_proxy.publish(
                 EventType.SYSTEM_STATUS,
                 self.name,
                 {'status': 'stopped', 'agent_id': self.agent_id}

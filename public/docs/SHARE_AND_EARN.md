@@ -1,3 +1,7 @@
+---
+id: 693f2168e6be2cc9dda12c2b
+revision: 1
+---
 # Share and Earn
 
 This document provides a detailed description of the Share and Earn feature.

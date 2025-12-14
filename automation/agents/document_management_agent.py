@@ -17,7 +17,8 @@ from pathlib import Path
 sys.path.append(str(Path(__file__).parent.parent))
 
 from base_agent import BaseAgent
-from events import event_bus, EventType
+from events import EventType
+from redis_event_bus import event_bus_proxy as event_bus
 from config import config
 
 class DocumentManagementAgent(BaseAgent):
@@ -45,9 +46,9 @@ class DocumentManagementAgent(BaseAgent):
         
         logger.info(f"DocumentManagement agent configured for path: {self.docs_path}")
     
-    def _setup_event_subscriptions(self):
+    async def _setup_event_subscriptions(self):
         """Setup event subscriptions"""
-        # Listen for file changes to process documents
+        # Listen for file change events
         event_bus.subscribe(EventType.FILE_CHANGE, self._handle_file_change)
         
         # Listen for document processing requests
@@ -56,14 +57,21 @@ class DocumentManagementAgent(BaseAgent):
     async def initialize(self):
         """Initialize the document management agent"""
         try:
+            logger.info("📄 ========================================")
+            logger.info("📄 INITIALIZING DocumentManagement")
+            logger.info("📄 ========================================")
+            
             # Ensure directories exist
+            logger.info("📁 Setting up directories...")
             self.docs_path.mkdir(parents=True, exist_ok=True)
             self.backup_path.mkdir(parents=True, exist_ok=True)
             
             # Initial document scan
+            logger.info("🔍 Scanning existing documents...")
             await self._scan_existing_documents()
             
-            logger.info("DocumentManagement initialized")
+            logger.success("✅ DocumentManagement initialized and ready!")
+            logger.info("📄 Agent ready to process document requests")
             
         except Exception as e:
             logger.error(f"Failed to initialize DocumentManagement: {e}")
@@ -247,6 +255,16 @@ class DocumentManagementAgent(BaseAgent):
         except Exception as e:
             logger.error(f"Failed to backup document {file_path}: {e}")
     
+    async def _process_file(self, file_path: str) -> Dict[str, Any]:
+        """Process a single file (wrapper for _process_document)"""
+        try:
+            path = Path(file_path)
+            result = await self._process_document(path)
+            return result or {'status': 'processed', 'file_path': file_path}
+        except Exception as e:
+            logger.error(f"Failed to process file {file_path}: {e}")
+            return {'status': 'error', 'error': str(e), 'file_path': file_path}
+    
     async def _process_document(self, file_path: Path):
         """Process a document (extract metadata, format, etc.)"""
         try:
@@ -261,7 +279,7 @@ class DocumentManagementAgent(BaseAgent):
             metadata = await self._extract_document_metadata(file_path)
             
             # Publish document processed event
-            event_bus.publish(
+            await event_bus.publish(
                 EventType.DOCUMENT_PROCESSING,
                 self.name,
                 {
@@ -343,7 +361,7 @@ class DocumentManagementAgent(BaseAgent):
             logger.debug(f"Organizing document: {file_path}")
             
             # For now, just log that organization was requested
-            event_bus.publish(
+            await event_bus.publish(
                 EventType.DOCUMENT_PROCESSING,
                 self.name,
                 {
@@ -389,7 +407,7 @@ class DocumentManagementAgent(BaseAgent):
                     logger.info(f"Document deleted: {file_path}")
                     
                     # Publish document deletion event
-                    event_bus.publish(
+                    await event_bus.publish(
                         EventType.DOCUMENT_PROCESSING,
                         self.name,
                         {
@@ -405,7 +423,25 @@ class DocumentManagementAgent(BaseAgent):
     async def _handle_document_request(self, event):
         """Handle document processing requests"""
         try:
+            logger.info("📄 ========================================")
+            logger.info("📄 DOCUMENT PROCESSING REQUEST RECEIVED")
+            logger.info("📄 ========================================")
+            
             request_data = event.data
+            logger.info(f"📋 Request data: {request_data}")
+            
+            # Check if this is source repository changes
+            if request_data.get('type') == 'source_repository_changes':
+                logger.success("🎯 *** SOURCE REPOSITORY CHANGES DETECTED ***")
+                source_commits = request_data.get('source_commits', [])
+                logger.info(f"📦 Processing {len(source_commits)} source commits")
+                
+                for commit in source_commits:
+                    logger.info(f"  🔹 {commit.get('commit_hash', '')[:8]} - {commit.get('message', '')}")
+                
+                logger.success("✅ Source repository changes processed by DocumentManagement")
+                return
+            
             action = request_data.get('action')
             file_path = request_data.get('file_path')
             
@@ -424,3 +460,161 @@ class DocumentManagementAgent(BaseAgent):
             
         except Exception as e:
             logger.error(f"Failed to handle document request: {e}")
+    
+    async def _create_documentation_file(self, doc_data: Dict[str, Any], file_path: str) -> bool:
+        """Create a new documentation file with proper frontmatter"""
+        try:
+            import uuid
+            
+            # Generate unique ID and initialize revision
+            doc_id = doc_data.get('id', f"{doc_data.get('type', 'doc')}_{str(uuid.uuid4())[:8]}")
+            revision = doc_data.get('revision', 1)
+            
+            # Create frontmatter
+            frontmatter = f"""---
+id: {doc_id}
+revision: {revision}
+---
+
+"""
+            
+            # Create document content
+            title = doc_data.get('title', 'New Documentation')
+            content = doc_data.get('content', 'Documentation content to be added.')
+            
+            full_content = frontmatter + f"# {title}\n\n{content}\n\n**Last Updated**: {datetime.now().strftime('%B %d, %Y')}\n"
+            
+            # Write file
+            Path(file_path).parent.mkdir(parents=True, exist_ok=True)
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(full_content)
+            
+            logger.info(f"Created documentation file with frontmatter: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to create documentation file: {e}")
+            return False
+    
+    def _extract_frontmatter(self, content: str) -> Dict[str, Any]:
+        """Extract frontmatter from markdown content"""
+        try:
+            import re
+            
+            # Match frontmatter pattern
+            frontmatter_match = re.match(r'^---\s*\n(.*?)\n---\s*\n', content, re.DOTALL)
+            if not frontmatter_match:
+                return {}
+            
+            frontmatter_text = frontmatter_match.group(1)
+            frontmatter = {}
+            
+            for line in frontmatter_text.split('\n'):
+                if ':' in line:
+                    key, value = line.split(':', 1)
+                    frontmatter[key.strip()] = value.strip()
+            
+            return frontmatter
+            
+        except Exception as e:
+            logger.error(f"Failed to extract frontmatter: {e}")
+            return {}
+    
+    async def _update_file_content(self, file_path: str, content: str) -> bool:
+        """Update file content while preserving frontmatter"""
+        try:
+            # Read existing file
+            if Path(file_path).exists():
+                with open(file_path, 'r', encoding='utf-8') as f:
+                    existing_content = f.read()
+                
+                frontmatter = self._extract_frontmatter(existing_content)
+                if frontmatter:
+                    # Increment revision
+                    revision = int(frontmatter.get('revision', 1)) + 1
+                    frontmatter['revision'] = revision
+                    
+                    # Rebuild frontmatter
+                    frontmatter_text = "---\n"
+                    for key, value in frontmatter.items():
+                        frontmatter_text += f"{key}: {value}\n"
+                    frontmatter_text += "---\n\n"
+                    
+                    content = frontmatter_text + content
+            
+            # Write updated content
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(content)
+            
+            logger.info(f"Updated file content: {file_path}")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to update file content: {e}")
+            return False
+    
+    async def _add_frontmatter_to_document(self, file_path: Path):
+        """Add frontmatter to a document that's missing it"""
+        try:
+            with open(file_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            
+            # Check if frontmatter already exists
+            if content.startswith('---'):
+                logger.debug(f"Document already has frontmatter: {file_path}")
+                return True
+            
+            # Generate MongoDB ObjectId
+            import secrets
+            import time
+            timestamp = hex(int(time.time()))[2:].zfill(8)
+            random_part = secrets.token_hex(5) + secrets.token_hex(3)
+            doc_id = timestamp + random_part
+            frontmatter = f"---\nid: {doc_id}\nrevision: 1\n---\n\n"
+            
+            # Add frontmatter to beginning
+            updated_content = frontmatter + content
+            
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(updated_content)
+            
+            logger.info(f"Added frontmatter to document: {file_path} (id: {doc_id})")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to add frontmatter to {file_path}: {e}")
+            return False
+    
+    async def _create_documentation_file(self, file_path: Path, content: str, metadata: Dict[str, Any] = None):
+        """Create a new documentation file with proper frontmatter"""
+        try:
+            # Generate MongoDB ObjectId or use provided one
+            if metadata and metadata.get('id'):
+                doc_id = metadata['id']
+            else:
+                import secrets
+                import time
+                timestamp = hex(int(time.time()))[2:].zfill(8)
+                random_part = secrets.token_hex(5) + secrets.token_hex(3)
+                doc_id = timestamp + random_part
+            revision = metadata.get('revision', 1) if metadata else 1
+            
+            # Create frontmatter
+            frontmatter = f"---\nid: {doc_id}\nrevision: {revision}\n---\n\n"
+            
+            # Combine frontmatter and content
+            full_content = frontmatter + content
+            
+            # Create directory if needed
+            file_path.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Write file
+            with open(file_path, 'w', encoding='utf-8') as f:
+                f.write(full_content)
+            
+            logger.info(f"Created documentation file: {file_path} (id: {doc_id}, revision: {revision})")
+            return True
+            
+        except Exception as e:
+            logger.error(f"Failed to create documentation file {file_path}: {e}")
+            return False

@@ -1,3 +1,7 @@
+---
+id: 693f21680efa8dc3e3c7314e
+revision: 1
+---
 # Architecture Overview
 
 This document provides a high-level overview of the technical architecture for the ClientPass application, covering both the web and mobile frontends.

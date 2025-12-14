@@ -1,3 +1,7 @@
+---
+id: 693f2168daca0334f416631e
+revision: 1
+---
 # AI Gateway Pattern
 
 ## Overview

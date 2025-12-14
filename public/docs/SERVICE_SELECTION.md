@@ -1,3 +1,7 @@
+---
+id: 693f2168b6caf2554c719569
+revision: 1
+---
 # Service Selection
 
 This document provides a detailed description of the Service Selection feature, which allows stylists to manage the services they offer.

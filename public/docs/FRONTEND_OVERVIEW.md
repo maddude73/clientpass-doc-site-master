@@ -1,4 +1,8 @@
 ---
+id: 693f21684c77dc77d963f4fb
+revision: 1
+---
+---
 title: Frontend Overview
 revision: 2.2
 last_updated: November 8, 2025

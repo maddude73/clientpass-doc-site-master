@@ -1,3 +1,7 @@
+---
+id: 693f2168beac600bbda866ff
+revision: 1
+---
 # Coverage Mode
 
 This document provides a detailed description of the Coverage Mode feature.

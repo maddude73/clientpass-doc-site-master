@@ -1,3 +1,7 @@
+---
+id: 693f2168e080cb236ef2f35b
+revision: 1
+---
 # Demo Mode
 
 This document provides a comprehensive guide to the Demo Mode feature in the ClientPass application.

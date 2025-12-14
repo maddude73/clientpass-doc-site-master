@@ -76,7 +76,7 @@ class EventBus:
             except ValueError:
                 pass
 
-    def publish(self, event_type: EventType, source: str, data: Dict[str, Any] = None):
+    async def publish(self, event_type: EventType, source: str, data: Dict[str, Any] = None):
         """Publish an event to all subscribers"""
         if data is None:
             data = {}
@@ -100,7 +100,7 @@ class EventBus:
             for handler in self.subscribers[event_type]:
                 try:
                     if asyncio.iscoroutinefunction(handler):
-                        asyncio.create_task(handler(event))
+                        await handler(event)
                     else:
                         handler(event)
                 except Exception as e:

@@ -20,6 +20,18 @@ python-dotenv>=1.0.0
 # System Monitoring Dependencies
 psutil>=5.9.0
 
+# Kafka Dependencies
+kafka-python>=2.0.2
+aiokafka>=0.8.0
+
+# Vector Database Dependencies (MongoDB Atlas via pymongo)
+sentence-transformers>=2.2.0
+
+# Web Framework (for health checks and monitoring)
+fastapi>=0.104.0
+uvicorn>=0.24.0
+requests>=2.31.0
+
 # Development Dependencies
 pytest>=7.0.0
 pytest-asyncio>=0.21.0

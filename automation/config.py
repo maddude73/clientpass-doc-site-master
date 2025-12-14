@@ -20,11 +20,17 @@ class Settings(BaseSettings):
     docs_path: str = Field(default="public/docs", env="DOCS_PATH")
     source_monitoring_enabled: bool = Field(default=False, env="SOURCE_MONITORING_ENABLED")
     
-    # MongoDB Settings
-    mongodb_uri: str = Field(default="mongodb://localhost:27017/docs", env="MONGODB_URI")
+    # MongoDB Settings - MongoDB Atlas Vector Search
+    mongodb_uri: Optional[str] = Field(default=None, env="MONGODB_URI")
     mongodb_uri_test: Optional[str] = Field(default=None, env="MONGODB_URI_TEST")
     mongodb_uri_docs: Optional[str] = Field(default=None, env="MONGODB_URI_DOCS")
     mongodb_database: str = Field(default="docs", env="MONGODB_DATABASE")
+    
+    # Redis Settings - Event Bus and Caching
+    redis_url: str = Field(default="redis://localhost:6379", env="REDIS_URL")
+    redis_max_retries: int = Field(default=3, env="REDIS_MAX_RETRIES")
+    redis_enabled: bool = Field(default=True, env="REDIS_ENABLED")
+    redis_stream_block_time: int = Field(default=1000, env="REDIS_STREAM_BLOCK_TIME")  # milliseconds
     
     # AI API Keys
     openai_api_key: Optional[str] = Field(default=None, env="OPENAI_API_KEY")
@@ -47,7 +53,7 @@ class Settings(BaseSettings):
     
     # Vector Database Configuration (MongoDB Atlas)
     atlas_vector_search_index: str = Field(default="vector_index", env="ATLAS_VECTOR_SEARCH_INDEX")
-    embedding_model: str = Field(default="text-embedding-ada-002", env="EMBEDDING_MODEL")
+    embedding_model: str = Field(default="text-embedding-3-small", env="EMBEDDING_MODEL")
     embedding_dimensions: int = Field(default=1536, env="EMBEDDING_DIMENSIONS")
     chunk_size: int = Field(default=1000, env="CHUNK_SIZE")
     chunk_overlap: int = Field(default=200, env="CHUNK_OVERLAP")

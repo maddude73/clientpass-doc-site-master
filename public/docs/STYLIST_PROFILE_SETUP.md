@@ -1,3 +1,7 @@
+---
+id: 693f2168a8465b8d8efdba30
+revision: 1
+---
 # Stylist Profile Setup
 
 This document provides a detailed description of the Stylist Profile Setup feature.

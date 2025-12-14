@@ -1,0 +1,8 @@
+{
+  "source_monitoring_enabled": true,
+  "source_repo_path": "/Users/rhfluker/Projects/style-referral-ring",
+  "source_repo_url": "https://github.com/visionidwork-tech/style-referral-ring",
+  "last_sync_commit": "852825d",
+  "debug_mode": true,
+  "verbose_logging": true
+}

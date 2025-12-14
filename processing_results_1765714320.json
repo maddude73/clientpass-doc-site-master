@@ -1,0 +1,420 @@
+{
+  "status": "unknown",
+  "processing_time": "2025-12-14T07:12:00.426622",
+  "trigger_file": "/Users/rhfluker/Projects/clientpass-doc-site-master/TRIGGER_NOW",
+  "documents_created": 0,
+  "rag_updates_count": 0,
+  "documentation_updates": [],
+  "rag_updates": [],
+  "errors": [],
+  "final_state": {
+    "finalize": {
+      "source_commits": [
+        {
+          "commit_hash": "852825d",
+          "message": "Fix Pro Hub ad click flow",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "impact": "Fixed Pro Hub ad click functionality"
+        },
+        {
+          "commit_hash": "65e82da",
+          "message": "Changes",
+          "files_changed": [
+            "src/components/pages/HomePage.tsx",
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "impact": "Updates to Home and Inbox pages"
+        },
+        {
+          "commit_hash": "3640738",
+          "message": "Improve Pro Hub ads page",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "impact": "Enhanced Pro Hub advertising functionality"
+        },
+        {
+          "commit_hash": "e377dae",
+          "message": "Changes",
+          "files_changed": [
+            "src/components/boost/BoostProfile.tsx"
+          ],
+          "impact": "BoostProfile component improvements"
+        },
+        {
+          "commit_hash": "fba68cf",
+          "message": "Fix inbox notifications display",
+          "files_changed": [
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "impact": "Resolved inbox notification display issues"
+        }
+      ],
+      "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+      "trigger_data": {
+        "source_commits": [
+          {
+            "commit_hash": "852825d",
+            "message": "Fix Pro Hub ad click flow",
+            "files_changed": [
+              "src/components/pages/ProHubPage.tsx"
+            ],
+            "impact": "Fixed Pro Hub ad click functionality"
+          },
+          {
+            "commit_hash": "65e82da",
+            "message": "Changes",
+            "files_changed": [
+              "src/components/pages/HomePage.tsx",
+              "src/components/pages/InboxPage.tsx"
+            ],
+            "impact": "Updates to Home and Inbox pages"
+          },
+          {
+            "commit_hash": "3640738",
+            "message": "Improve Pro Hub ads page",
+            "files_changed": [
+              "src/components/pages/ProHubPage.tsx"
+            ],
+            "impact": "Enhanced Pro Hub advertising functionality"
+          },
+          {
+            "commit_hash": "e377dae",
+            "message": "Changes",
+            "files_changed": [
+              "src/components/boost/BoostProfile.tsx"
+            ],
+            "impact": "BoostProfile component improvements"
+          },
+          {
+            "commit_hash": "fba68cf",
+            "message": "Fix inbox notifications display",
+            "files_changed": [
+              "src/components/pages/InboxPage.tsx"
+            ],
+            "impact": "Resolved inbox notification display issues"
+          }
+        ],
+        "metadata": {
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "commits_since": "2025-11-08",
+          "total_commits": 5,
+          "processing_date": "2025-12-14T01:55:00Z"
+        }
+      },
+      "current_step": "finalize",
+      "processed_commits": [
+        {
+          "commit_hash": "852825d",
+          "message": "Fix Pro Hub ad click flow",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "impact": "Fixed Pro Hub ad click functionality",
+          "component_classification": [
+            "Page Components"
+          ],
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "processing_timestamp": "2025-12-14T07:12:00.421244"
+        },
+        {
+          "commit_hash": "65e82da",
+          "message": "Changes",
+          "files_changed": [
+            "src/components/pages/HomePage.tsx",
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "impact": "Updates to Home and Inbox pages",
+          "component_classification": [
+            "Page Components"
+          ],
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "processing_timestamp": "2025-12-14T07:12:00.421253"
+        },
+        {
+          "commit_hash": "3640738",
+          "message": "Improve Pro Hub ads page",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "impact": "Enhanced Pro Hub advertising functionality",
+          "component_classification": [
+            "Page Components"
+          ],
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "processing_timestamp": "2025-12-14T07:12:00.421258"
+        },
+        {
+          "commit_hash": "e377dae",
+          "message": "Changes",
+          "files_changed": [
+            "src/components/boost/BoostProfile.tsx"
+          ],
+          "impact": "BoostProfile component improvements",
+          "component_classification": [
+            "Boost Features"
+          ],
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "processing_timestamp": "2025-12-14T07:12:00.421262"
+        },
+        {
+          "commit_hash": "fba68cf",
+          "message": "Fix inbox notifications display",
+          "files_changed": [
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "impact": "Resolved inbox notification display issues",
+          "component_classification": [
+            "Page Components"
+          ],
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "processing_timestamp": "2025-12-14T07:12:00.421266"
+        }
+      ],
+      "documentation_updates": [
+        {
+          "commit_hash": "852825d",
+          "title": "Commit 852825d: Fix Pro Hub ad click flow",
+          "content": "## Commit 852825d\n\n**Message:** Fix Pro Hub ad click flow\n**Impact:** Fixed Pro Hub ad click functionality\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/ProHubPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422507\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "timestamp": "2025-12-14T07:12:00.422514",
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ]
+        },
+        {
+          "commit_hash": "65e82da",
+          "title": "Commit 65e82da: Changes",
+          "content": "## Commit 65e82da\n\n**Message:** Changes\n**Impact:** Updates to Home and Inbox pages\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/HomePage.tsx`\n- `src/components/pages/InboxPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422528\n- File Count: 2\n",
+          "files_changed": [
+            "src/components/pages/HomePage.tsx",
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "timestamp": "2025-12-14T07:12:00.422532",
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ]
+        },
+        {
+          "commit_hash": "3640738",
+          "title": "Commit 3640738: Improve Pro Hub ads page",
+          "content": "## Commit 3640738\n\n**Message:** Improve Pro Hub ads page\n**Impact:** Enhanced Pro Hub advertising functionality\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/ProHubPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422541\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "timestamp": "2025-12-14T07:12:00.422544",
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ]
+        },
+        {
+          "commit_hash": "e377dae",
+          "title": "Commit e377dae: Changes",
+          "content": "## Commit e377dae\n\n**Message:** Changes\n**Impact:** BoostProfile component improvements\n**Components:** Boost Features\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/boost/BoostProfile.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Boost Features**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422551\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/boost/BoostProfile.tsx"
+          ],
+          "timestamp": "2025-12-14T07:12:00.422554",
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Boost Features"
+          ]
+        },
+        {
+          "commit_hash": "fba68cf",
+          "title": "Commit fba68cf: Fix inbox notifications display",
+          "content": "## Commit fba68cf\n\n**Message:** Fix inbox notifications display\n**Impact:** Resolved inbox notification display issues\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/InboxPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422561\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "timestamp": "2025-12-14T07:12:00.422564",
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ]
+        }
+      ],
+      "rag_updates": [
+        {
+          "type": "source_commit_update",
+          "commit_hash": "852825d",
+          "title": "Commit 852825d: Fix Pro Hub ad click flow",
+          "content": "## Commit 852825d\n\n**Message:** Fix Pro Hub ad click flow\n**Impact:** Fixed Pro Hub ad click functionality\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/ProHubPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422507\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "timestamp": "2025-12-14T07:12:00.422514",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ],
+          "processed_date": "2025-12-14T07:12:00.423678"
+        },
+        {
+          "type": "source_commit_update",
+          "commit_hash": "65e82da",
+          "title": "Commit 65e82da: Changes",
+          "content": "## Commit 65e82da\n\n**Message:** Changes\n**Impact:** Updates to Home and Inbox pages\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/HomePage.tsx`\n- `src/components/pages/InboxPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422528\n- File Count: 2\n",
+          "files_changed": [
+            "src/components/pages/HomePage.tsx",
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "timestamp": "2025-12-14T07:12:00.422532",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ],
+          "processed_date": "2025-12-14T07:12:00.423684"
+        },
+        {
+          "type": "source_commit_update",
+          "commit_hash": "3640738",
+          "title": "Commit 3640738: Improve Pro Hub ads page",
+          "content": "## Commit 3640738\n\n**Message:** Improve Pro Hub ads page\n**Impact:** Enhanced Pro Hub advertising functionality\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/ProHubPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422541\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/ProHubPage.tsx"
+          ],
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "timestamp": "2025-12-14T07:12:00.422544",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ],
+          "processed_date": "2025-12-14T07:12:00.423688"
+        },
+        {
+          "type": "source_commit_update",
+          "commit_hash": "e377dae",
+          "title": "Commit e377dae: Changes",
+          "content": "## Commit e377dae\n\n**Message:** Changes\n**Impact:** BoostProfile component improvements\n**Components:** Boost Features\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/boost/BoostProfile.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Boost Features**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422551\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/boost/BoostProfile.tsx"
+          ],
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "timestamp": "2025-12-14T07:12:00.422554",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Boost Features"
+          ],
+          "processed_date": "2025-12-14T07:12:00.423690"
+        },
+        {
+          "type": "source_commit_update",
+          "commit_hash": "fba68cf",
+          "title": "Commit fba68cf: Fix inbox notifications display",
+          "content": "## Commit fba68cf\n\n**Message:** Fix inbox notifications display\n**Impact:** Resolved inbox notification display issues\n**Components:** Page Components\n**Date:** 2025-12-14 07:12:00 UTC\n\n### Files Modified\n\n- `src/components/pages/InboxPage.tsx`\n\n### Impact Analysis\nThis commit affects the following areas:\n\n- **Page Components**: Enhanced functionality and user experience\n\n### Technical Details\n- Repository: /Users/rhfluker/Projects/style-referral-ring\n- Processing Date: 2025-12-14T07:12:00.422561\n- File Count: 1\n",
+          "files_changed": [
+            "src/components/pages/InboxPage.tsx"
+          ],
+          "source_repo": "/Users/rhfluker/Projects/style-referral-ring",
+          "timestamp": "2025-12-14T07:12:00.422564",
+          "impact_analysis": {
+            "user_facing": true,
+            "backend_changes": false,
+            "ui_changes": false,
+            "feature_changes": true
+          },
+          "component_classification": [
+            "Page Components"
+          ],
+          "processed_date": "2025-12-14T07:12:00.423693"
+        }
+      ],
+      "status": "completed_successfully",
+      "errors": [],
+      "messages": [
+        "content='\\n            Starting document processing for 5 commits \\n            from repository: /Users/rhfluker/Projects/style-referral-ring\\n            ' additional_kwargs={} response_metadata={}",
+        "content='\\n            Document Processing Complete:\\n            - Commits processed: 5\\n            - Documents created: 5\\n            - RAG entries added: 5\\n            - Status: completed_successfully\\n            - Errors: 0\\n            ' additional_kwargs={} response_metadata={}"
+      ],
+      "start_time": "2025-12-14T07:12:00.420371",
+      "end_time": "2025-12-14T07:12:00.425636",
+      "documents_created": 5,
+      "documents_updated": 0,
+      "rag_entries_added": 5
+    }
+  }
+}

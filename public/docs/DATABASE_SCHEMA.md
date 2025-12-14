@@ -1,3 +1,7 @@
+---
+id: 693f2168b490a7b104b457bb
+revision: 1
+---
 # Database Schema Overview
 
 **Last Updated**: November 8, 2025

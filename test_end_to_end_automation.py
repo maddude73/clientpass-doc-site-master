@@ -288,7 +288,7 @@ def simulate_embedding_generation(generated_content):
     print(f"   📄 Documents Processed: {len(embeddings)}")
     print(f"   🧮 Total Chunks: {sum(e['chunks'] for e in embeddings.values())}")
     print(f"   🎯 Vector Dimensions: 384 (nomic-embed-text)")
-    print(f"   💾 Database Updates: ChromaDB + MongoDB Atlas")
+    print(f"   💾 Database Updates: MongoDB Atlas")
     print()
     
     return embeddings

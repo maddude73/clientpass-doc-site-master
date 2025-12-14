@@ -1,3 +1,7 @@
+---
+id: 693f2168c58790d1ce557475
+revision: 1
+---
 # Waiting for Response Page
 
 This document provides a detailed description of the Waiting for Response page.
