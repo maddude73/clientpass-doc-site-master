@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -14,7 +14,6 @@ import { useToast } from '@/hooks/use-toast';
 type AIProvider = 'google' | 'openai' | 'anthropic' | 'ollama';
 
 interface ProviderConfig {
-    apiKey?: string;
     model?: string;
     url?: string;
     systemPrompt?: string;
@@ -60,23 +59,20 @@ const AIConfiguration = () => {
     const [activeProvider, setActiveProvider] = useState<AIProvider>('openai');
     const [configs, setConfigs] = useState<Record<AIProvider, ProviderConfig>>({
         google: {
-            apiKey: import.meta.env.VITE_GEMINI_API_KEY || '',
             model: 'gemini-2.5-flash',
             systemPrompt: 'You are a helpful documentation assistant. Use the provided context to give accurate, concise answers.',
         },
         openai: {
-            apiKey: import.meta.env.VITE_OPENAI_API_KEY || '',
-            model: 'gpt-5',
+            model: 'gpt-5-mini',
             systemPrompt: 'You are an expert technical assistant. Always cite document sources and provide clear, actionable responses.',
         },
         anthropic: {
-            apiKey: import.meta.env.VITE_ANTHROPIC_API_KEY || '',
-            model: 'claude-sonnet-4-5-20250929',
+            model: 'claude-3-5-sonnet-20241022',
             systemPrompt: 'You are a knowledgeable coding assistant. Explain concepts clearly with examples and cite your sources.',
         },
         ollama: {
             url: import.meta.env.VITE_OLLAMA_URL || 'http://localhost:11434',
-            model: 'llama3.3',
+            model: 'llama3.2',
             systemPrompt: 'You are a helpful AI assistant. Be concise and accurate in your responses.',
         },
     });
@@ -87,6 +83,25 @@ const AIConfiguration = () => {
     const [isTestingPrompt, setIsTestingPrompt] = useState(false);
     const [testPromptInput, setTestPromptInput] = useState('What is the purpose of this documentation?');
     const [justSaved, setJustSaved] = useState(false);
+    const [savedConfigurations, setSavedConfigurations] = useState<Set<AIProvider>>(new Set());
+
+    // Initialize saved configurations from localStorage on component mount
+    React.useEffect(() => {
+        try {
+            const storedConfig = localStorage.getItem('aiGatewayConfig');
+            if (storedConfig) {
+                const config = JSON.parse(storedConfig);
+                // If there's a saved configuration, mark the active provider as saved
+                if (config.activeProvider && config.configs) {
+                    setSavedConfigurations(new Set([config.activeProvider]));
+                    setActiveProvider(config.activeProvider);
+                    setConfigs(config.configs);
+                }
+            }
+        } catch (error) {
+            console.error('Error loading saved configuration:', error);
+        }
+    }, []);
 
     const handleConfigChange = (provider: AIProvider, field: string, value: string) => {
         setConfigs((prev) => ({
@@ -108,9 +123,8 @@ const AIConfiguration = () => {
 
             if (provider === 'ollama') {
                 if (!config.url) throw new Error('Ollama URL is required');
-            } else if (!config.apiKey) {
-                throw new Error('API key is required');
             }
+            // API keys are handled server-side
 
             setTestResult({
                 success: true,
@@ -136,9 +150,8 @@ const AIConfiguration = () => {
             // Validate config
             if (provider === 'ollama') {
                 if (!config.url) throw new Error('Ollama URL is required');
-            } else if (!config.apiKey) {
-                throw new Error('API key is required');
             }
+            // API keys are handled server-side
 
             // Call backend API to test the prompt
             const response = await fetch('/api/test-prompt', {
@@ -149,7 +162,6 @@ const AIConfiguration = () => {
                 body: JSON.stringify({
                     provider,
                     config: {
-                        apiKey: config.apiKey,
                         model: config.model,
                         url: config.url,
                         systemPrompt: config.systemPrompt,
@@ -197,6 +209,13 @@ const AIConfiguration = () => {
                 throw new Error('Failed to save configuration');
             }
 
+            // Save to localStorage for UI synchronization
+            localStorage.setItem('aiGatewayConfig', JSON.stringify({
+                activeProvider,
+                configs,
+                timestamp: new Date().toISOString()
+            }));
+
             setTestResult({
                 success: true,
                 message: '✓ Configuration saved and applied dynamically! No restart needed.',
@@ -205,6 +224,9 @@ const AIConfiguration = () => {
             // Show success indicator
             setJustSaved(true);
             setTimeout(() => setJustSaved(false), 3000);
+
+            // Mark this provider as saved
+            setSavedConfigurations(prev => new Set([...prev, activeProvider]));
 
             // Show success toast
             toast({
@@ -233,7 +255,8 @@ const AIConfiguration = () => {
         const meta = providerMetadata[key];
         const Icon = meta.icon;
         const isActive = activeProvider === key;
-        const hasConfig = key === 'ollama' ? !!configs[key].url : !!configs[key].apiKey;
+        const hasConfig = key === 'ollama' ? !!configs[key].url : true; // API keys handled server-side
+        const isSaved = savedConfigurations.has(key);
 
         return (
             <Card
@@ -260,7 +283,7 @@ const AIConfiguration = () => {
                                 <CardDescription className="mt-1 text-base">{meta.tagline}</CardDescription>
                             </div>
                         </div>
-                        {hasConfig && (
+                        {isSaved && key === activeProvider && (
                             <Badge className={`${justSaved && key === activeProvider ? 'bg-green-500 animate-pulse' : meta.badgeColor} text-white shadow-md transition-all duration-300`}>
                                 {justSaved && key === activeProvider ? '✓ Just Saved!' : '✓ Configured'}
                             </Badge>
@@ -321,29 +344,6 @@ const AIConfiguration = () => {
                             </CardHeader>
                             <CardContent className="space-y-6 pb-8">
                                 <div className="space-y-3">
-                                    <Label htmlFor="google-api-key" className="text-base font-semibold">API Key</Label>
-                                    <Input
-                                        id="google-api-key"
-                                        type="password"
-                                        placeholder="AIza..."
-                                        value={configs.google.apiKey}
-                                        onChange={(e) => handleConfigChange('google', 'apiKey', e.target.value)}
-                                        className="h-12 text-base"
-                                    />
-                                    <p className="text-sm text-muted-foreground">
-                                        Get your API key from{' '}
-                                        <a
-                                            href="https://makersuite.google.com/app/apikey"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-blue-600 hover:text-blue-700 font-medium underline"
-                                        >
-                                            Google AI Studio →
-                                        </a>
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
                                     <Label htmlFor="google-model" className="text-base font-semibold">Model Selection</Label>
                                     <Select
                                         value={configs.google.model}
@@ -353,10 +353,12 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="gemini-2.5-pro">💎 Gemini 2.5 Pro (Most Advanced)</SelectItem>
-                                            <SelectItem value="gemini-2.5-flash">🚀 Gemini 2.5 Flash</SelectItem>
-                                            <SelectItem value="gemini-2.5-flash-lite">⚡ Gemini 2.5 Flash-Lite</SelectItem>
-                                            <SelectItem value="gemini-2.0-flash">🎯 Gemini 2.0 Flash</SelectItem>
+                                            <SelectItem value="gemini-3-pro">🏆 Gemini 3 Pro (Most Intelligent)</SelectItem>
+                                            <SelectItem value="gemini-2.5-pro">🧠 Gemini 2.5 Pro (Advanced Thinking)</SelectItem>
+                                            <SelectItem value="gemini-2.5-flash">🚀 Gemini 2.5 Flash (Best Performance)</SelectItem>
+                                            <SelectItem value="gemini-2.5-flash-lite">⚡ Gemini 2.5 Flash-Lite (Ultra Fast)</SelectItem>
+                                            <SelectItem value="gemini-2.0-flash">💎 Gemini 2.0 Flash (Workhorse)</SelectItem>
+                                            <SelectItem value="gemini-2.0-flash-lite">💨 Gemini 2.0 Flash-Lite</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -417,7 +419,7 @@ const AIConfiguration = () => {
                                 </div>
                                 <Button
                                     onClick={() => testPrompt('google')}
-                                    disabled={isTestingPrompt || !configs.google.apiKey}
+                                    disabled={isTestingPrompt}
                                     size="lg"
                                     className="w-full h-12 text-base font-semibold"
                                 >
@@ -434,14 +436,14 @@ const AIConfiguration = () => {
                                     )}
                                 </Button>
                                 {promptTestResult && activeProvider === 'google' && (
-                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'}`}>
+                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'} `}>
                                         {promptTestResult.success ? (
                                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                         ) : (
                                             <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                                         )}
                                         <AlertDescription className="mt-2">
-                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'} `}>
                                                 {promptTestResult.message}
                                             </p>
                                             {promptTestResult.response && (
@@ -475,29 +477,6 @@ const AIConfiguration = () => {
                             </CardHeader>
                             <CardContent className="space-y-6 pb-8">
                                 <div className="space-y-3">
-                                    <Label htmlFor="openai-api-key" className="text-base font-semibold">API Key</Label>
-                                    <Input
-                                        id="openai-api-key"
-                                        type="password"
-                                        placeholder="sk-..."
-                                        value={configs.openai.apiKey}
-                                        onChange={(e) => handleConfigChange('openai', 'apiKey', e.target.value)}
-                                        className="h-12 text-base"
-                                    />
-                                    <p className="text-sm text-muted-foreground">
-                                        Get your API key from{' '}
-                                        <a
-                                            href="https://platform.openai.com/api-keys"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-green-600 hover:text-green-700 font-medium underline"
-                                        >
-                                            OpenAI Platform →
-                                        </a>
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
                                     <Label htmlFor="openai-model" className="text-base font-semibold">Model Selection</Label>
                                     <Select
                                         value={configs.openai.model}
@@ -507,13 +486,13 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="gpt-5">🚀 GPT-5 (Latest)</SelectItem>
-                                            <SelectItem value="gpt-5-mini">⚡ GPT-5 Mini</SelectItem>
-                                            <SelectItem value="gpt-5-nano">💨 GPT-5 Nano</SelectItem>
-                                            <SelectItem value="gpt-5-pro">💎 GPT-5 Pro</SelectItem>
-                                            <SelectItem value="gpt-4.1">🎯 GPT-4.1</SelectItem>
+                                            <SelectItem value="gpt-5.2">🚀 GPT-5.2 (Flagship)</SelectItem>
+                                            <SelectItem value="gpt-5.2-pro">💎 GPT-5.2 Pro (Premium)</SelectItem>
+                                            <SelectItem value="gpt-5-mini">⚡ GPT-5 Mini (Fast)</SelectItem>
+                                            <SelectItem value="gpt-5-nano">💨 GPT-5 Nano (Fastest)</SelectItem>
+                                            <SelectItem value="gpt-4.1">🎯 GPT-4.1 (Non-reasoning)</SelectItem>
                                             <SelectItem value="o3">🧠 O3 (Reasoning)</SelectItem>
-                                            <SelectItem value="o4-mini">🧠 O4 Mini</SelectItem>
+                                            <SelectItem value="o4-mini">🧠 O4 Mini (Fast reasoning)</SelectItem>
                                             <SelectItem value="gpt-4o">GPT-4o (Legacy)</SelectItem>
                                             <SelectItem value="gpt-4o-mini">GPT-4o Mini (Legacy)</SelectItem>
                                         </SelectContent>
@@ -576,7 +555,7 @@ const AIConfiguration = () => {
                                 </div>
                                 <Button
                                     onClick={() => testPrompt('openai')}
-                                    disabled={isTestingPrompt || !configs.openai.apiKey}
+                                    disabled={isTestingPrompt}
                                     size="lg"
                                     className="w-full h-12 text-base font-semibold"
                                 >
@@ -593,14 +572,14 @@ const AIConfiguration = () => {
                                     )}
                                 </Button>
                                 {promptTestResult && activeProvider === 'openai' && (
-                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'}`}>
+                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'} `}>
                                         {promptTestResult.success ? (
                                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                         ) : (
                                             <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                                         )}
                                         <AlertDescription className="mt-2">
-                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'} `}>
                                                 {promptTestResult.message}
                                             </p>
                                             {promptTestResult.response && (
@@ -634,29 +613,6 @@ const AIConfiguration = () => {
                             </CardHeader>
                             <CardContent className="space-y-6 pb-8">
                                 <div className="space-y-3">
-                                    <Label htmlFor="anthropic-api-key" className="text-base font-semibold">API Key</Label>
-                                    <Input
-                                        id="anthropic-api-key"
-                                        type="password"
-                                        placeholder="sk-ant-..."
-                                        value={configs.anthropic.apiKey}
-                                        onChange={(e) => handleConfigChange('anthropic', 'apiKey', e.target.value)}
-                                        className="h-12 text-base"
-                                    />
-                                    <p className="text-sm text-muted-foreground">
-                                        Get your API key from{' '}
-                                        <a
-                                            href="https://console.anthropic.com/"
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            className="text-orange-600 hover:text-orange-700 font-medium underline"
-                                        >
-                                            Anthropic Console →
-                                        </a>
-                                    </p>
-                                </div>
-
-                                <div className="space-y-3">
                                     <Label htmlFor="anthropic-model" className="text-base font-semibold">Model Selection</Label>
                                     <Select
                                         value={configs.anthropic.model}
@@ -666,11 +622,11 @@ const AIConfiguration = () => {
                                             <SelectValue />
                                         </SelectTrigger>
                                         <SelectContent>
-                                            <SelectItem value="claude-sonnet-4-5-20250929">🎯 Claude Sonnet 4.5 (Latest)</SelectItem>
-                                            <SelectItem value="claude-haiku-4-5-20251001">⚡ Claude Haiku 4.5</SelectItem>
-                                            <SelectItem value="claude-opus-4-1-20250805">💎 Claude Opus 4.1</SelectItem>
-                                            <SelectItem value="claude-3-5-sonnet-20241022">Claude 3.5 Sonnet (Legacy)</SelectItem>
-                                            <SelectItem value="claude-3-5-haiku-20241022">Claude 3.5 Haiku (Legacy)</SelectItem>
+                                            <SelectItem value="claude-3-5-sonnet-20241022">🎯 Claude 3.5 Sonnet (November 2024)</SelectItem>
+                                            <SelectItem value="claude-3-5-haiku-20241022">⚡ Claude 3.5 Haiku (Latest)</SelectItem>
+                                            <SelectItem value="claude-3-sonnet-20240229">💎 Claude 3 Sonnet</SelectItem>
+                                            <SelectItem value="claude-3-opus-20240229">🔥 Claude 3 Opus</SelectItem>
+                                            <SelectItem value="claude-3-haiku-20240307">⚡ Claude 3 Haiku</SelectItem>
                                         </SelectContent>
                                     </Select>
                                 </div>
@@ -731,7 +687,7 @@ const AIConfiguration = () => {
                                 </div>
                                 <Button
                                     onClick={() => testPrompt('anthropic')}
-                                    disabled={isTestingPrompt || !configs.anthropic.apiKey}
+                                    disabled={isTestingPrompt}
                                     size="lg"
                                     className="w-full h-12 text-base font-semibold"
                                 >
@@ -748,14 +704,14 @@ const AIConfiguration = () => {
                                     )}
                                 </Button>
                                 {promptTestResult && activeProvider === 'anthropic' && (
-                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'}`}>
+                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'} `}>
                                         {promptTestResult.success ? (
                                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                         ) : (
                                             <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                                         )}
                                         <AlertDescription className="mt-2">
-                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'} `}>
                                                 {promptTestResult.message}
                                             </p>
                                             {promptTestResult.response && (
@@ -773,7 +729,7 @@ const AIConfiguration = () => {
 
                     {/* Ollama */}
                     <TabsContent value="ollama" className="space-y-6 mt-0">
-                        <Card className={`overflow-hidden border-2 ${providerMetadata.ollama.bgColor}`}>
+                        <Card className={`overflow-hidden border-2 ${providerMetadata.ollama.bgColor} `}>
                             <CardHeader className="space-y-4 pb-8">
                                 <div className="flex items-center gap-4">
                                     <div className={`p-4 rounded-2xl bg-gradient-to-br ${providerMetadata.ollama.color} shadow-xl`}>
@@ -903,14 +859,14 @@ const AIConfiguration = () => {
                                     )}
                                 </Button>
                                 {promptTestResult && activeProvider === 'ollama' && (
-                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'}`}>
+                                    <Alert className={`border-2 ${promptTestResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'} `}>
                                         {promptTestResult.success ? (
                                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                                         ) : (
                                             <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                                         )}
                                         <AlertDescription className="mt-2">
-                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                                            <p className={`font-medium mb-2 ${promptTestResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'} `}>
                                                 {promptTestResult.message}
                                             </p>
                                             {promptTestResult.response && (
@@ -929,13 +885,13 @@ const AIConfiguration = () => {
 
                 {/* Test Results */}
                 {testResult && (
-                    <Alert className={`mt-8 border-2 ${testResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'}`}>
+                    <Alert className={`mt-8 border-2 ${testResult.success ? 'bg-green-50 border-green-200 dark:bg-green-950/20 dark:border-green-800' : 'bg-red-50 border-red-200 dark:bg-red-950/20 dark:border-red-800'} `}>
                         {testResult.success ? (
                             <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                         ) : (
                             <XCircle className="h-5 w-5 text-red-600 dark:text-red-400" />
                         )}
-                        <AlertDescription className={`text-base font-medium ${testResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'}`}>
+                        <AlertDescription className={`text-base font-medium ${testResult.success ? 'text-green-800 dark:text-green-200' : 'text-red-800 dark:text-red-200'} `}>
                             {testResult.message}
                         </AlertDescription>
                     </Alert>

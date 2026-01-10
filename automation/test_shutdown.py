@@ -56,18 +56,8 @@ async def test_shutdown():
         
         print("  • Sending SIGTERM signal...")
         # Simulate signal-based shutdown
-        if hasattr(orchestrator, '_handle_system_event'):
-            # Trigger shutdown via event
-            from events import event_bus, EventType, Event
-            shutdown_event = Event(
-                type=EventType.ERROR_OCCURRED,
-                source="test",
-                data={"message": "shutdown_test"},
-                timestamp=datetime.now()
-            )
-            # Use direct shutdown instead
-            await orchestrator.shutdown()
-            print("  ✅ Signal-based shutdown completed")
+        await orchestrator.shutdown()
+        print("  ✅ Signal-based shutdown completed")
         
     except Exception as e:
         print(f"  ❌ Error during signal test: {e}")

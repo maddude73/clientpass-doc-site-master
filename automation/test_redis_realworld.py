@@ -112,7 +112,7 @@ async def test_cross_agent_communication():
     received_events = []
     consumer_tasks = []
     
-    async def event_monitor(message):
+    def event_monitor(message):
         """Monitor events from other agents"""
         received_events.append({
             'type': getattr(message, 'type', 'unknown'),
@@ -227,7 +227,10 @@ async def main():
         print(f"🧹 Cleaning up {len(tasks)} remaining tasks...")
         for task in tasks:
             task.cancel()
-        await asyncio.gather(*tasks, return_exceptions=True)
+        try:
+            await asyncio.gather(*tasks, return_exceptions=True)
+        except asyncio.CancelledError:
+            raise
 
 if __name__ == "__main__":
     asyncio.run(main())

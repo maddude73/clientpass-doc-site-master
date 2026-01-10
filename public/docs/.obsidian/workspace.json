@@ -1,0 +1,204 @@
+{
+  "main": {
+    "id": "5ec24838f2acf2b7",
+    "type": "split",
+    "children": [
+      {
+        "id": "8d6638346738967f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "00d2864975c6b6f3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "SRS.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "SRS"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "3dca33e83acc7596",
+    "type": "split",
+    "children": [
+      {
+        "id": "6ff8dc1c1b220ddf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "3da8861a8fc161aa",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "20f36ebc21d5a5df",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "1c0fcbff5788a9a3",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "horizontal",
+    "width": 512.5
+  },
+  "right": {
+    "id": "81f492c76c0a2a68",
+    "type": "split",
+    "children": [
+      {
+        "id": "2460cafebc96cf70",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c36a4dd29266e772",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "SRS.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for SRS"
+            }
+          },
+          {
+            "id": "95f43200fc51afd2",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "SRS.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from SRS"
+            }
+          },
+          {
+            "id": "ad116e58f5f170fd",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "cb4949619639929a",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "bc8be59c3cf621de",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "SRS.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of SRS"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "00d2864975c6b6f3",
+  "lastOpenFiles": [
+    "Untitled.base",
+    "Untitled 2.canvas",
+    "2025-12-14.md",
+    "Untitled 1.canvas",
+    "AI_GATEWAY_PATTERN.md",
+    "CHANGELOG.md",
+    "SRS.md",
+    "DOCUMENTATION_INDEX.md",
+    "docs/PROHUB_PAGE_COMPONENT.md",
+    "docs/AI_GATEWAY_PATTERN.md",
+    "docs/ARCHITECTURE.md",
+    "docs",
+    "Untitled.canvas",
+    "AFFILIATE_AUTHENTICATION.md"
+  ]
+}

@@ -201,7 +201,8 @@ class MultiAgentOrchestrator:
                 await asyncio.sleep(interval)
                 
             except asyncio.CancelledError:
-                break
+                logger.info("System monitoring cancelled")
+                raise
             except Exception as e:
                 logger.error(f"Error in system monitoring: {e}")
                 await asyncio.sleep(60)  # Wait 1 minute on error

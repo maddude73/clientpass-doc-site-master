@@ -224,20 +224,34 @@ const DevDocsPage = () => {
           <div className="flex items-center gap-3 mb-6">
             <DocSectionHeader title="Librarian" />
             {(() => {
+              // Use dynamic active provider from AI Gateway instead of env vars
               const getActiveProvider = () => {
-                // Check environment variables that are used by the backend
-                // Since we're using OpenAI embeddings + Claude chat by default
-                const hasOpenAI = import.meta.env.VITE_OPENAI_API_KEY;
-                const hasClaude = import.meta.env.VITE_ANTHROPIC_API_KEY;
-                const hasGemini = import.meta.env.VITE_GEMINI_API_KEY;
+                // Get from localStorage if available (set by AI Configuration page)
+                const storedConfig = localStorage.getItem('aiGatewayConfig');
+                let activeProvider = 'openai'; // default
 
-                // Priority: OpenAI (for embeddings) + Claude (for chat)
-                if (hasOpenAI && hasClaude) return { name: 'OpenAI + Claude', color: 'text-green-500', bgColor: 'bg-green-500/10' };
-                if (hasClaude) return { name: 'Claude', color: 'text-orange-500', bgColor: 'bg-orange-500/10' };
-                if (hasOpenAI) return { name: 'OpenAI', color: 'text-green-500', bgColor: 'bg-green-500/10' };
-                if (hasGemini) return { name: 'Gemini', color: 'text-blue-500', bgColor: 'bg-blue-500/10' };
+                if (storedConfig) {
+                  try {
+                    const config = JSON.parse(storedConfig);
+                    activeProvider = config.activeProvider || 'openai';
+                  } catch (e) {
+                    console.warn('Failed to parse AI Gateway config from localStorage');
+                  }
+                }
 
-                return { name: 'Not configured', color: 'text-gray-400', bgColor: 'bg-gray-400/10' };
+                // Map provider names to display info
+                switch (activeProvider) {
+                  case 'openai':
+                    return { name: 'OpenAI (GPT-5)', color: 'text-green-500', bgColor: 'bg-green-500/10' };
+                  case 'google':
+                    return { name: 'Google Gemini', color: 'text-blue-500', bgColor: 'bg-blue-500/10' };
+                  case 'anthropic':
+                    return { name: 'Anthropic Claude', color: 'text-orange-500', bgColor: 'bg-orange-500/10' };
+                  case 'ollama':
+                    return { name: 'Ollama (Local)', color: 'text-purple-500', bgColor: 'bg-purple-500/10' };
+                  default:
+                    return { name: 'AI Gateway', color: 'text-gray-600', bgColor: 'bg-gray-600/10' };
+                }
               };
               const provider = getActiveProvider();
               return (

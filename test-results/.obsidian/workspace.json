@@ -1,0 +1,233 @@
+{
+  "main": {
+    "id": "6cc9ff5263378f33",
+    "type": "split",
+    "children": [
+      {
+        "id": "f6bbebf48aa403b3",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "9362428b1c9d85d5",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "test-1765770601890.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "test-1765770601890"
+            }
+          },
+          {
+            "id": "cf36d6cabcdbe637",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "Untitled.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "Untitled"
+            }
+          }
+        ],
+        "currentTab": 1
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "02a11871c8dd2580",
+    "type": "split",
+    "children": [
+      {
+        "id": "8f899832d2cb5c32",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "00bdf50ada6745c0",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "Files"
+            }
+          },
+          {
+            "id": "eed4deba254ca883",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "Search"
+            }
+          },
+          {
+            "id": "33adc48d30db3cbb",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "Bookmarks"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "7b2d2f53cb7518d6",
+    "type": "split",
+    "children": [
+      {
+        "id": "01a7620a23c39f41",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "83154425f87f711b",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "Untitled.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "Backlinks for Untitled"
+            }
+          },
+          {
+            "id": "9bd991a6e1f83bea",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "Untitled.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "Outgoing links from Untitled"
+            }
+          },
+          {
+            "id": "793f10e582bc6eb4",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "Tags"
+            }
+          },
+          {
+            "id": "09ae7c96cc91d7c2",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "All properties"
+            }
+          },
+          {
+            "id": "3fe22cfef8512bda",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "Untitled.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "Outline of Untitled"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:Open quick switcher": false,
+      "graph:Open graph view": false,
+      "canvas:Create new canvas": false,
+      "daily-notes:Open today's daily note": false,
+      "templates:Insert template": false,
+      "command-palette:Open command palette": false,
+      "bases:Create new base": false
+    }
+  },
+  "active": "cf36d6cabcdbe637",
+  "lastOpenFiles": [
+    "test-1765770601890.md",
+    "Untitled.md",
+    "test-1765770989666.md",
+    "test-1765769656270.md",
+    "test-1765769527775.md",
+    "test-1765769642770.md",
+    "test-1765769641787.md",
+    "test-1765760208075.md",
+    "test-1765769530531.md",
+    "test-1765769528883.md",
+    "test-1765760209170.md",
+    "test-1765760210459.md",
+    "test-1765768620321.md",
+    "test-1765768622123.md",
+    "test-1765768623658.md",
+    "test-1765768785883.md",
+    "Untitled 1.canvas",
+    "test-1765757626895.md",
+    "test-1765758320221.md",
+    "Untitled.canvas",
+    "test-1765760166604.md",
+    "test-1765760165771.md",
+    "test-1765760164410.md",
+    "Untitled.base",
+    "test-1765759316097.md",
+    "test-1765759317132.md",
+    "test-1765759331578.md",
+    "test-1765758773419.md",
+    "test-1765758642779.md"
+  ]
+}

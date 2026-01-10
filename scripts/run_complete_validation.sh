@@ -12,7 +12,7 @@ echo ""
 # Run quick validation first
 echo "⚡ STEP 1: Quick Requirements Validation"
 echo "----------------------------------------"
-python3 test_quick_requirements.py
+python3 tests/test_quick_requirements.py
 quick_exit_code=$?
 
 if [ $quick_exit_code -ne 0 ]; then
@@ -28,21 +28,21 @@ echo ""
 # Run SRS requirements validation
 echo "📋 STEP 2: SRS Comprehensive Requirements"
 echo "----------------------------------------"
-python3 test_srs_requirements.py
+python3 tests/test_srs_requirements.py
 srs_exit_code=$?
 
 # Run production requirements
 echo ""
 echo "🚨 STEP 3: Production Requirements Validation" 
 echo "--------------------------------------------"
-python3 test_production_requirements.py
+python3 tests/test_production_requirements.py
 prod_exit_code=$?
 
 # Run Kafka + LangGraph system test
 echo ""
 echo "⚡ STEP 4: Kafka + LangGraph System Test"
 echo "--------------------------------------"
-python3 test_kafka_langgraph_requirements.py
+python3 tests/test_kafka_langgraph_requirements.py
 kafka_exit_code=$?
 
 # Summary report

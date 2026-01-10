@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { Menu, X, FileText, Settings, LogOut, ChevronLeft, ChevronRight, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,16 +13,63 @@ export const Sidebar = () => {
     const navigate = useNavigate();
     const { toast } = useToast();
 
-    // Detect active AI provider from environment
+    // Use dynamic active provider from AI Gateway
     const getActiveProvider = () => {
-        if (import.meta.env.VITE_OPENAI_API_KEY) return { name: 'OpenAI', color: 'text-green-400' };
-        if (import.meta.env.VITE_ANTHROPIC_API_KEY) return { name: 'Claude', color: 'text-orange-400' };
-        if (import.meta.env.VITE_GEMINI_API_KEY) return { name: 'Gemini', color: 'text-blue-400' };
-        if (import.meta.env.VITE_OLLAMA_URL) return { name: 'Ollama', color: 'text-purple-400' };
-        return { name: 'None', color: 'text-gray-400' };
+        // Get from localStorage if available (set by AI Configuration page)
+        const storedConfig = localStorage.getItem('aiGatewayConfig');
+        let activeProvider = 'openai'; // default
+
+        if (storedConfig) {
+            try {
+                const config = JSON.parse(storedConfig);
+                activeProvider = config.activeProvider || 'openai';
+            } catch (e) {
+                console.warn('Failed to parse AI Gateway config from localStorage');
+            }
+        }
+
+        // Map provider names to display info
+        switch (activeProvider) {
+            case 'openai':
+                return { name: 'OpenAI', color: 'text-green-400' };
+            case 'google':
+                return { name: 'Gemini', color: 'text-blue-400' };
+            case 'anthropic':
+                return { name: 'Claude', color: 'text-orange-400' };
+            case 'ollama':
+                return { name: 'Ollama', color: 'text-purple-400' };
+            default:
+                return { name: 'AI Gateway', color: 'text-gray-400' };
+        }
     };
 
-    const activeProvider = getActiveProvider();
+    const [activeProvider, setActiveProvider] = useState(getActiveProvider());
+
+    // Listen for localStorage changes to update provider display
+    useEffect(() => {
+        const handleStorageChange = () => {
+            setActiveProvider(getActiveProvider());
+        };
+
+        // Listen for storage events (from other tabs/windows)
+        window.addEventListener('storage', handleStorageChange);
+
+        // Also listen for manual updates within this tab
+        const interval = setInterval(() => {
+            const current = getActiveProvider();
+            setActiveProvider(prev => {
+                if (prev.name !== current.name || prev.color !== current.color) {
+                    return current;
+                }
+                return prev;
+            });
+        }, 1000); // Check every second
+
+        return () => {
+            window.removeEventListener('storage', handleStorageChange);
+            clearInterval(interval);
+        };
+    }, []);
 
     const handleSignOut = async () => {
         const { error } = await supabase.auth.signOut();

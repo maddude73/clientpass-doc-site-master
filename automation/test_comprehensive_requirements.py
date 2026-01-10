@@ -5,7 +5,6 @@ Tests all SRS requirements and validates system functionality
 """
 
 import asyncio
-import pytest
 import sys
 import json
 import time
@@ -68,12 +67,12 @@ class TestSuiteRunner:
         # Generate test report
         self.generate_test_report()
     
-    async def setup_test_environment(self):
+    def setup_test_environment(self):
         """Setup test environment and resources"""
         self.temp_dir = Path(tempfile.mkdtemp())
         print(f"📁 Test environment created: {self.temp_dir}")
     
-    async def cleanup_test_environment(self):
+    def cleanup_test_environment(self):
         """Cleanup test environment"""
         if self.temp_dir and self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
@@ -528,7 +527,7 @@ class TestComponent:
             'REQ-004.5': self._test_anomaly_alerts,
             'REQ-004.6': self._test_health_check_frequency,
             'REQ-004.7': self._test_performance_dashboards,
-            'REQ-004.8': self._test_log_retention'
+            'REQ-004.8': self._test_log_retention
         }
         
         results = {}

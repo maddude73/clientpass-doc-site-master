@@ -76,7 +76,9 @@ setup_environment() {
     
     # Setup repositories
     print_status "Configuring repository access..."
-    if [ -f "./setup-repositories.sh" ]; then
+    if [ -f "./scripts/setup-repositories.sh" ]; then
+        ./scripts/setup-repositories.sh
+    elif [ -f "./setup-repositories.sh" ]; then
         ./setup-repositories.sh
     else
         print_warning "Repository setup script not found. Manual repository configuration may be needed."

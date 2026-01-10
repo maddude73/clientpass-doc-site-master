@@ -51,7 +51,7 @@ async def test_simple_redis():
         print("❌ No messages in stream")
         return False
 
-async def test_manual_consumer():
+def test_manual_consumer():
     """Test manual message consumption without xpending_range"""
     print("\n🔍 Manual Consumer Test")
     print("=" * 30)
@@ -116,7 +116,7 @@ async def test_manual_consumer():
 if __name__ == "__main__":
     async def main():
         result1 = await test_simple_redis()
-        result2 = await test_manual_consumer()
+        result2 = test_manual_consumer()
         
         if result1 and result2:
             print("\n🎉 Simple Redis tests passed!")

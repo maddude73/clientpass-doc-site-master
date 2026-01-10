@@ -20,9 +20,6 @@ async def test_self_healing_agent():
     print("Testing Self-Healing Agent...")
     
     try:
-        # Create config manager
-        config = ConfigManager()
-        
         # Create self-healing agent
         agent = SelfHealingAgent()
         

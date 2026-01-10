@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Send, LogOut, Loader } from "lucide-react";
+import { Send, LogOut, Loader, Bot } from "lucide-react";
 import ReactMarkdown from 'react-markdown';
 import { useAuth } from '@/contexts/AuthContext'; // Import useAuth
 
@@ -11,7 +11,60 @@ const ChatbotPage: React.FC = () => {
   const [messages, setMessages] = useState<Array<{ type: 'user' | 'bot'; text: string; sources?: string[] }>>([]);
   const [loading, setLoading] = useState(false);
   const [isThinking, setIsThinking] = useState(false);
+  const [activeProvider, setActiveProvider] = useState<string>('OpenAI');
   const { signOut } = useAuth(); // Destructure signOut from useAuth
+
+  // Provider display names
+  const providerDisplayNames: { [key: string]: string } = {
+    'google': 'Google Gemini',
+    'openai': 'OpenAI',
+    'anthropic': 'Anthropic Claude',
+    'ollama': 'Ollama'
+  };
+
+  // Function to get active AI provider and model from localStorage
+  const getActiveProviderWithModel = () => {
+    try {
+      const storedConfig = localStorage.getItem('aiGatewayConfig');
+      if (storedConfig) {
+        const config = JSON.parse(storedConfig);
+        const provider = config.activeProvider || 'openai';
+        const providerName = providerDisplayNames[provider] || 'OpenAI';
+
+        // Get the model for the active provider
+        const model = config.configs?.[provider]?.model || 'Unknown Model';
+
+        return `${providerName} (${model})`;
+      }
+      return 'OpenAI (gpt-5-mini)';
+    } catch (error) {
+      console.error('Error reading AI configuration:', error);
+      return 'OpenAI (gpt-5-mini)';
+    }
+  };
+
+  // Set up initial provider and listen for changes
+  useEffect(() => {
+    setActiveProvider(getActiveProviderWithModel());
+
+    // Listen for storage changes (when provider is changed in AI Configuration)
+    const handleStorageChange = () => {
+      setActiveProvider(getActiveProviderWithModel());
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    // Poll for changes (in case the storage event doesn't fire)
+    const interval = setInterval(() => {
+      const currentProvider = getActiveProviderWithModel();
+      setActiveProvider(prev => prev !== currentProvider ? currentProvider : prev);
+    }, 1000);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, []);
 
   const handleSendMessage = async () => {
     if (input.trim() === '') return;
@@ -59,6 +112,13 @@ const ChatbotPage: React.FC = () => {
 
   return (
     <div className="flex flex-col bg-background">
+      {/* AI Provider Header */}
+      <div className="bg-muted/50 border-b border-border p-3">
+        <div className="flex items-center justify-center gap-2 text-sm text-muted-foreground">
+          <Bot className="h-4 w-4" />
+          <span>Powered by <strong className="text-foreground">{activeProvider}</strong></span>
+        </div>
+      </div>
       <div className="flex-1 p-4 space-y-4">
         {messages.map((msg, index) => (
           <div

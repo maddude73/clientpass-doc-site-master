@@ -25,6 +25,9 @@ from config import config
 class ChangeDetectionAgent(BaseAgent):
     """Detects changes in files and Git repository"""
     
+    # Constants
+    TRIGGER_FILE_PATH = "/Users/rhfluker/Projects/clientpass-doc-site-master/automation/TRIGGER_SOURCE_PROCESSING"
+    
     def __init__(self):
         super().__init__("ChangeDetection")
         
@@ -91,7 +94,7 @@ class ChangeDetectionAgent(BaseAgent):
                 
                 # Check for trigger file every cycle - use multiple paths
                 trigger_files = [
-                    "/Users/rhfluker/Projects/clientpass-doc-site-master/automation/TRIGGER_SOURCE_PROCESSING",
+                    self.TRIGGER_FILE_PATH,
                     "/Users/rhfluker/Projects/clientpass-doc-site-master/TRIGGER_NOW",
                     "./TRIGGER_NOW"
                 ]
@@ -331,7 +334,7 @@ class ChangeDetectionAgent(BaseAgent):
             logger.info(f"🎯 ===================================")
             
             # Check for trigger file first
-            trigger_file = "/Users/rhfluker/Projects/clientpass-doc-site-master/automation/TRIGGER_SOURCE_PROCESSING"
+            trigger_file = self.TRIGGER_FILE_PATH
             logger.info(f"🔍 Checking for trigger file: {trigger_file}")
             if os.path.exists(trigger_file):
                 logger.success("🎯 *** TRIGGER FILE FOUND! PROCESSING SOURCE COMMITS ***")
@@ -432,7 +435,7 @@ class ChangeDetectionAgent(BaseAgent):
             logger.info("🎯 =================================")
             
             # Check for trigger file that bypasses Redis event system
-            trigger_file = "/Users/rhfluker/Projects/clientpass-doc-site-master/automation/TRIGGER_SOURCE_PROCESSING"
+            trigger_file = self.TRIGGER_FILE_PATH
             logger.info(f"🔍 Checking for trigger file: {trigger_file}")
             if os.path.exists(trigger_file):
                 logger.success("🎯 *** TRIGGER FILE FOUND FOR SOURCE PROCESSING! ***")

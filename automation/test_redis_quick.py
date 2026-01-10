@@ -50,7 +50,7 @@ async def quick_redis_test():
         )
         print("✅ Proxy publishing works")
         
-        print(f"\n🎉 Core Redis functionality: WORKING")
+        print("\n🎉 Core Redis functionality: WORKING")
         return True
         
     except Exception as e:

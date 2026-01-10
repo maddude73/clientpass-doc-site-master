@@ -42,7 +42,7 @@ class MasterTestRunner:
     
     async def run_srs_requirements_test(self):
         """Run SRS comprehensive requirements validation"""
-        print(f"\n📋 SRS REQUIREMENTS COMPREHENSIVE TEST")
+        print("\n📋 SRS REQUIREMENTS COMPREHENSIVE TEST")
         print("-" * 40)
         
         try:
@@ -76,7 +76,7 @@ class MasterTestRunner:
     
     async def run_kafka_langgraph_test(self):
         """Run Kafka + LangGraph system test"""
-        print(f"\n⚡ KAFKA + LANGGRAPH SYSTEM TEST")
+        print("\n⚡ KAFKA + LANGGRAPH SYSTEM TEST")
         print("-" * 40)
         
         try:
@@ -98,7 +98,7 @@ class MasterTestRunner:
         
         try:
             # Check for existing test files
-            automation_dir = Path("automation")
+            automation_dir = Path("../automation")
             existing_tests = [
                 "test_requirements_verification.py",
                 "test_comprehensive_requirements.py"
@@ -134,7 +134,7 @@ class MasterTestRunner:
     
     async def run_performance_validation(self):
         """Run performance validation tests"""
-        print(f"\n⚡ PERFORMANCE VALIDATION")
+        print("\n⚡ PERFORMANCE VALIDATION")
         print("-" * 40)
         
         try:

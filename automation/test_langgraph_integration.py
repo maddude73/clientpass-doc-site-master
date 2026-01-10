@@ -103,7 +103,7 @@ async def test_workflow_intelligence():
         # Shutdown
         await langgraph_orchestrator.shutdown()
         
-    } except Exception as e:
+    except Exception as e:
         logger.error(f"❌ Workflow intelligence test failed: {e}")
         raise
 

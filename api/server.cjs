@@ -39,6 +39,24 @@ async function callWithRetry(apiCall, maxRetries = 5, delay = 1000, validate = (
 const app = express();
 const PORT = process.env.PORT || 5500;
 
+// Security: Disable X-Powered-By header
+app.disable('x-powered-by');
+
+// Helper function to sanitize MongoDB queries
+function sanitizeForMongoDB(input) {
+  if (typeof input !== 'string') return input;
+  // Remove potential MongoDB operators and injection patterns
+  return input.replace(/[\$\.{}\[\];]/g, '').trim();
+}
+
+// Additional input validation
+function validateStringInput(input, fieldName) {
+  if (typeof input !== 'string' || input.length === 0) {
+    throw new Error(`${fieldName} must be a non-empty string`);
+  }
+  return sanitizeForMongoDB(input);
+}
+
 // Define trusted origins/domains. These can be configured via environment variables in a real app.
 const TRUSTED_DOMAINS = [
   'localhost:8080', 'localhost:8081',// Your local frontend development server
@@ -126,19 +144,21 @@ if (process.env.OPENAI_API_KEY) {
   console.warn('⚠️ OPENAI_API_KEY not provided - RAG search will be disabled');
 }
 
-if (process.env.ANTHROPIC_API_KEY) {
-  if (process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
-    anthropic = new Anthropic({
-      apiKey: process.env.ANTHROPIC_API_KEY,
-    });
-    console.log('✅ Anthropic client initialized with key:', process.env.ANTHROPIC_API_KEY.substring(0, 12) + '...');
-  } else {
-    console.error('❌ Invalid Anthropic API key format. Expected format: sk-ant-...');
-    console.error('Current key starts with:', process.env.ANTHROPIC_API_KEY.substring(0, 10) + '...');
-  }
-} else {
-  console.warn('⚠️ ANTHROPIC_API_KEY not provided - RAG search will be disabled');
-}
+// Anthropic disabled - using OpenAI only
+// if (process.env.ANTHROPIC_API_KEY) {
+//   if (process.env.ANTHROPIC_API_KEY.startsWith('sk-ant-')) {
+//     anthropic = new Anthropic({
+//       apiKey: process.env.ANTHROPIC_API_KEY,
+//     });
+//     console.log('✅ Anthropic client initialized with key:', process.env.ANTHROPIC_API_KEY.substring(0, 12) + '...');
+//   } else {
+//     console.error('❌ Invalid Anthropic API key format. Expected format: sk-ant-...');
+//     console.error('Current key starts with:', process.env.ANTHROPIC_API_KEY.substring(0, 10) + '...');
+//   }
+// } else {
+//   console.warn('⚠️ ANTHROPIC_API_KEY not provided - RAG search will be disabled');
+// }
+console.log('Using OpenAI only - Anthropic disabled');
 
 // Dynamic configuration storage (in-memory for now, could be moved to DB)
 let dynamicConfig = {
@@ -177,72 +197,7 @@ app.post('/api/update-config', async (req, res) => {
   }
 });
 
-// POST: Test prompt with specific provider
-app.post('/api/test-prompt', async (req, res) => {
-  try {
-    const { provider, config, userMessage } = req.body;
-
-    if (!provider || !config || !userMessage) {
-      return res.status(400).json({ message: 'Provider, config, and userMessage are required' });
-    }
-
-    let response = '';
-
-    switch (provider) {
-      case 'google':
-        // Note: Gemini support would require @google/generative-ai package
-        return res.status(501).json({ message: 'Google Gemini testing not yet implemented' });
-
-      case 'openai':
-        const openaiClient = new OpenAI({ apiKey: config.apiKey });
-        const openaiResponse = await openaiClient.chat.completions.create({
-          model: config.model || 'gpt-4-turbo-preview',
-          messages: [
-            { role: 'system', content: config.systemPrompt || 'You are a helpful assistant.' },
-            { role: 'user', content: userMessage }
-          ],
-          max_tokens: 500
-        });
-        response = openaiResponse.choices[0].message.content;
-        break;
-
-      case 'anthropic':
-        const anthropicClient = new Anthropic({ apiKey: config.apiKey });
-        const anthropicResponse = await anthropicClient.messages.create({
-          model: config.model || 'claude-3-5-sonnet-20241022',
-          max_tokens: 500,
-          system: config.systemPrompt || 'You are a helpful assistant.',
-          messages: [{ role: 'user', content: userMessage }]
-        });
-        response = anthropicResponse.content[0].text;
-        break;
-
-      case 'ollama':
-        // Basic Ollama support
-        const ollamaUrl = config.url || 'http://localhost:11434';
-        const ollamaResponse = await fetch(`${ollamaUrl}/api/generate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({
-            model: config.model || 'llama3.2',
-            prompt: `${config.systemPrompt || 'You are a helpful assistant.'}\n\nUser: ${userMessage}\n\nAssistant:`,
-            stream: false
-          })
-        });
-        const ollamaData = await ollamaResponse.json();
-        response = ollamaData.response;
-        break;
-
-      default:
-        return res.status(400).json({ message: 'Invalid provider' });
-    }
-
-    res.json({ success: true, response });
-  } catch (error) {
-    console.error('Error testing prompt:', error);
-    res.status(500).json({ success: false, message: error.message });
-  }
-});
+// Removed duplicate test-prompt endpoint - using the more complete one below
 
 // GET all documents (optional, for listing)
 app.get('/api/docs', async (req, res) => {
@@ -257,7 +212,8 @@ app.get('/api/docs', async (req, res) => {
 // GET a single document by name
 app.get('/api/docs/:docName', async (req, res) => {
   try {
-    const doc = await Document.findOne({ name: req.params.docName.toUpperCase() });
+    const docName = sanitizeForMongoDB(req.params.docName).toUpperCase();
+    const doc = await Document.findOne({ name: docName });
     if (!doc) {
       return res.status(404).json({ message: 'Document not found' });
     }
@@ -274,7 +230,8 @@ app.post('/api/docs', async (req, res) => {
     return res.status(400).json({ message: 'Document name and content are required' });
   }
   try {
-    const newDoc = new Document({ name: name.toUpperCase(), content });
+    const sanitizedName = sanitizeForMongoDB(name).toUpperCase();
+    const newDoc = new Document({ name: sanitizedName, content });
     await newDoc.save();
     res.status(201).json(newDoc);
   } catch (err) {
@@ -289,7 +246,7 @@ app.put('/api/docs/:docName', async (req, res) => {
     return res.status(400).json({ message: 'Document content is required' });
   }
   try {
-    const docName = req.params.docName.toUpperCase();
+    const docName = sanitizeForMongoDB(req.params.docName).toUpperCase();
     const existingDoc = await Document.findOne({ name: docName });
 
     if (!existingDoc) {
@@ -326,7 +283,8 @@ app.put('/api/docs/:docName', async (req, res) => {
 // DELETE a document by name
 app.delete('/api/docs/:docName', async (req, res) => {
   try {
-    const deletedDoc = await Document.findOneAndDelete({ name: req.params.docName.toUpperCase() });
+    const docName = sanitizeForMongoDB(req.params.docName).toUpperCase();
+    const deletedDoc = await Document.findOneAndDelete({ name: docName });
     if (!deletedDoc) {
       return res.status(404).json({ message: 'Document not found' });
     }
@@ -370,9 +328,14 @@ app.post('/api/docs/search', async (req, res) => {
     return res.status(503).json({ message: 'OpenAI client not configured. Please set OPENAI_API_KEY.' });
   }
 
-  if (!anthropic) {
-    console.error('Anthropic client not configured - ANTHROPIC_API_KEY missing');
-    return res.status(503).json({ message: 'Anthropic client not configured. Please set ANTHROPIC_API_KEY.' });
+  // Initialize Gemini if not already done
+  let genAI;
+  if (process.env.GEMINI_API_KEY) {
+    const { GoogleGenerativeAI } = require('@google/generative-ai');
+    genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+  } else {
+    console.error('Gemini API key not configured - GEMINI_API_KEY missing');
+    return res.status(503).json({ message: 'Gemini API key not configured. Please set GEMINI_API_KEY.' });
   }
 
   // Log the search request
@@ -429,12 +392,10 @@ app.post('/api/docs/search', async (req, res) => {
 Content: ${result.content}`).join('\n\n');
 
     // Use dynamic system prompt if available
-    const systemPrompt = dynamicConfig.configs.anthropic?.systemPrompt ||
+    const systemPrompt = dynamicConfig.configs.google?.systemPrompt ||
       'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.';
 
-    const prompt = `${systemPrompt}
-
-Answer the following question based *only* on the provided context. If the answer is not in the context, state that you don't know. Cite the document names you used (e.g., [DEMO_MODE.md]).
+    const prompt = `Answer the following question based *only* on the provided context. If the answer is not in the context, state that you don't know. Cite the document names you used (e.g., [DEMO_MODE.md]).
 
 Question: ${query}
 
@@ -443,25 +404,132 @@ ${context}
 
 Answer:`;
 
-    // 4. Get answer from Claude
-    console.log('Sending prompt to Claude...');
-    const message = await anthropic.messages.create({
-      model: 'claude-sonnet-4-20250514',
-      max_tokens: 2048,
-      messages: [{
-        role: 'user',
-        content: prompt
-      }]
-    });
+    // 4. Get answer using AI Gateway pattern (respects activeProvider)
+    const activeProvider = dynamicConfig.activeProvider;
+    console.log(`Sending prompt to ${activeProvider.toUpperCase()} via AI Gateway...`);
+    let llmAnswer;
 
-    if (!message?.content?.[0]?.text) {
-      throw new Error('Invalid response from Claude API');
+    try {
+      switch (activeProvider) {
+        case 'openai':
+          if (!openai) {
+            throw new Error('OpenAI client not initialized');
+          }
+          const openaiResponse = await openai.chat.completions.create({
+            model: dynamicConfig.configs.openai?.model || 'gpt-5-mini',
+            messages: [
+              {
+                role: 'system',
+                content: dynamicConfig.configs.openai?.systemPrompt || 'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.'
+              },
+              { role: 'user', content: prompt }
+            ],
+            max_completion_tokens: 1000
+          });
+
+          if (!openaiResponse?.choices?.[0]?.message?.content) {
+            throw new Error('Invalid response from OpenAI API');
+          }
+
+          llmAnswer = openaiResponse.choices[0].message.content;
+          break;
+
+        case 'google':
+          // Use dynamic API key if available
+          const googleApiKey = dynamicConfig.configs.google?.apiKey || process.env.GEMINI_API_KEY;
+          console.log('Google API key check:', googleApiKey ? `Key found (${googleApiKey.substring(0, 12)}...)` : 'No key found');
+
+          if (!googleApiKey) {
+            throw new Error('Google API key not found in configuration');
+          }
+
+          // Use the actual selected model - no proactive fallbacks
+          const modelToUse = dynamicConfig.configs.google?.model || 'gemini-2.5-flash';
+          console.log('Testing Google model:', modelToUse);
+
+          const dynamicGenAI = new GoogleGenerativeAI(googleApiKey);
+
+          try {
+            // Try the actual selected model first
+            const geminiModel = dynamicGenAI.getGenerativeModel({
+              model: modelToUse,
+              systemInstruction: dynamicConfig.configs.google?.systemPrompt || 'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.'
+            });
+
+            console.log('Google AI client created with model:', modelToUse);
+
+            const geminiResult = await geminiModel.generateContent(prompt);
+
+            if (!geminiResult?.response?.text()) {
+              throw new Error('Invalid response from Gemini API');
+            }
+
+            llmAnswer = geminiResult.response.text();
+            console.log(`Successfully used ${modelToUse}!`);
+
+          } catch (modelError) {
+            console.warn(`❌ Error with ${modelToUse}:`, modelError.message);
+
+            // Only fallback if there's an actual error AND we're not already using the fallback
+            if (modelToUse !== 'gemini-2.5-flash') {
+              console.log('🔄 Trying fallback: gemini-2.5-flash');
+
+              const fallbackModel = dynamicGenAI.getGenerativeModel({
+                model: 'gemini-2.5-flash',
+                systemInstruction: dynamicConfig.configs.google?.systemPrompt || 'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.'
+              });
+
+              const fallbackResult = await fallbackModel.generateContent(prompt);
+
+              if (!fallbackResult?.response?.text()) {
+                throw new Error('Invalid response from fallback Gemini API');
+              }
+
+              llmAnswer = fallbackResult.response.text();
+              console.log('✅ Fallback to gemini-2.5-flash succeeded');
+            } else {
+              throw modelError; // Re-throw if already using fallback model
+            }
+          }
+          break;
+
+        case 'anthropic':
+          // Use dynamic API key if available
+          const anthropicApiKey = dynamicConfig.configs.anthropic?.apiKey || process.env.ANTHROPIC_API_KEY;
+          if (!anthropicApiKey) {
+            throw new Error('Anthropic API key not found in configuration');
+          }
+
+          const dynamicAnthropic = new Anthropic({ apiKey: anthropicApiKey });
+          const anthropicResponse = await dynamicAnthropic.messages.create({
+            model: dynamicConfig.configs.anthropic?.model || 'claude-3-5-sonnet-20241022',
+            max_tokens: 1000,
+            system: dynamicConfig.configs.anthropic?.systemPrompt || 'You are a helpful assistant for the ClientPass documentation. Answer questions based on the provided context.',
+            messages: [{ role: 'user', content: prompt }]
+          });
+
+          if (!anthropicResponse?.content?.[0]?.text) {
+            throw new Error('Invalid response from Anthropic API');
+          }
+
+          llmAnswer = anthropicResponse.content[0].text;
+          break;
+
+        default:
+          throw new Error(`Unsupported AI provider: ${activeProvider}`);
+      }
+
+      console.log(`${activeProvider.toUpperCase()} answer generated successfully`);
+
+    } catch (providerError) {
+      console.error(`Error from ${activeProvider.toUpperCase()} API:`, providerError.message);
+
+      // Provide fallback response with search results
+      llmAnswer = `I found relevant information in these documents: ${searchResults.map(r => r.source_file).join(', ')}. Based on the search results, here are the key points related to "${query}":\n\n${searchResults.map((r, i) => `${i + 1}. From ${r.source_file}: ${r.content.substring(0, 200)}...`).join('\n\n')}`;
+      console.log(`Using fallback response with search results due to ${activeProvider.toUpperCase()} error`);
     }
 
-    const llmAnswer = message.content[0].text;
-    console.log('Claude Answer generated successfully');
-
-    // 5. Return Claude's answer and sources
+    // 5. Return AI Gateway answer and sources
     const sources = searchResults.map(result => result.source_file);
     const uniqueSources = [...new Set(sources)];
 
@@ -511,12 +579,12 @@ app.post('/api/test-prompt', async (req, res) => {
         }
         const openaiClient = new OpenAI({ apiKey: config.apiKey });
         const openaiResponse = await openaiClient.chat.completions.create({
-          model: config.model || 'gpt-4-turbo-preview',
+          model: config.model || 'gpt-5-mini',
           messages: [
             { role: 'system', content: config.systemPrompt || 'You are a helpful assistant.' },
             { role: 'user', content: userMessage }
           ],
-          max_tokens: 500,
+          max_completion_tokens: 500,
         });
         response = openaiResponse.choices[0].message.content;
         break;
@@ -552,6 +620,10 @@ app.post('/api/test-prompt', async (req, res) => {
         // Note: Ollama would require fetch to local server
         if (!config.url) {
           return res.status(400).json({ message: 'Ollama URL is required' });
+        }
+        // Validate Ollama URL to prevent SSRF
+        if (!config.url.startsWith('http://localhost:') && !config.url.startsWith('http://127.0.0.1:')) {
+          return res.status(400).json({ message: 'Ollama URL must be localhost for security' });
         }
         const ollamaResponse = await fetch(`${config.url}/api/generate`, {
           method: 'POST',

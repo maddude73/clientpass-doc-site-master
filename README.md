@@ -32,8 +32,8 @@ This directory contains the comprehensive technical and project management docum
 #### Processing Results and Updates
 
 - **[Recent Updates December 2025](public/docs/RECENT_UPDATES_DEC_2025.md)** - Latest AI-processed component updates
-- **[Documentation Update Summary](DOCUMENTATION_UPDATE_SUMMARY_NOV_2025.md)** - Comprehensive update tracking
-- **[Changelog Updated](CHANGELOG_UPDATED.md)** - Version history with automated processing results
+- **[Documentation Update Summary](doc/scripts&automation/DOCUMENTATION_UPDATE_SUMMARY_NOV_2025.md)** - Comprehensive update tracking
+- **[Changelog Updated](public/docs/CHANGELOG_UPDATED.md)** - Version history with automated processing results
 
 ### 🏗️ System Architecture & Design
 
@@ -48,7 +48,7 @@ This directory contains the comprehensive technical and project management docum
 - **[LangGraph Workflows](automation/langgraph_workflows.py)**: Intelligent processing workflows with AI analysis
 - **[Kafka Streams Architecture](automation/kafka_event_bus.py)**: Event-driven processing with guaranteed delivery
 - **[Multi-Agent System](automation/README.md)**: Automated processing and orchestration documentation
-- **[Automated Documentation Processing](AI_DOCUMENTATION_GUIDE.md)**: AI-powered documentation generation guide
+- **[Automated Documentation Processing](doc/scripts&automation/AI_DOCUMENTATION_GUIDE.md)**: AI-powered documentation generation guide
 
 ### 📋 Planning & Requirements
 
@@ -61,7 +61,7 @@ This directory contains the comprehensive technical and project management docum
 
 - **[Development Guidelines](public/docs/DEVELOPMENT_GUIDELINES.md)**: Development standards and practices
 - **[CI/CD Strategy](public/docs/CICD_STRATEGY.md)**: Continuous integration and deployment strategy
-- **[Testing Strategy](TESTING.md)**: Comprehensive testing documentation and quick start guide
+- **[Testing Strategy](public/docs/TESTING_STRATEGY.md)**: Comprehensive testing documentation and quick start guide
 - **[Deployment Guide](public/docs/DEPLOYMENT_GUIDE.md)**: Deployment procedures and environments
 
 ## 🎯 AI Processing Methodology
@@ -124,7 +124,7 @@ tail -f logs/processing.log
 
 ```bash
 # Test intelligent diff analysis
-python3 test_intelligent_diff_analysis.py
+python3 tests/test_intelligent_diff_analysis.py
 
 # Run automation system tests
 cd automation && python3 -m pytest

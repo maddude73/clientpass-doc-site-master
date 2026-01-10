@@ -212,7 +212,7 @@ main() {
     
     echo ""
     print_success "Repository setup completed!"
-    print_status "You can now run: ./docker-setup.sh start"
+    print_status "You can now run: ./scripts/docker-setup.sh start"
 }
 
 # Run main function if script is executed directly
